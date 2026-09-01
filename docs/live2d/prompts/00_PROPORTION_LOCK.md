@@ -28,29 +28,45 @@ Non reinterpretare Luna. Mantieni invariati volto, occhi viola, carnagione, cape
 ## PROPORTION LOCK
 Mantieni invariati tra file diversi: rapporto testa-corpo, larghezza spalle, collo, busto, vita, fianchi, bacino, lunghezza braccia, femore, tibia, mani, piedi e volume/lunghezza capelli. La posa cambia; l'anatomia no.
 
-## SCALE LOCK — NORMALIZZAZIONE OBBLIGATORIA
-TUTTE le immagini e tutti i componenti devono usare lo stesso sistema metrico derivato dalla CLEAN MASTER v1 / METRIC MASTER.
+## SCALE LOCK — SISTEMA METRICO PROPORZIONALE OBBLIGATORIO
+TUTTI gli asset devono appartenere allo **stesso sistema metrico globale** derivato dalla METRIC MASTER. La metrica cambia estensione in base al tipo di immagine, ma NON cambia scala anatomica.
 
-Standard globale:
-- altezza full-body normalizzata = **1000 unità** dalla punta più alta dei capelli alla suola più bassa;
-- suole sulla stessa baseline `Y=0`;
-- punta capelli sulla stessa quota `Y=1000` per le pose verticali;
-- ridimensionamento sempre uniforme, mai stirare X o Y separatamente;
-- stessa scala relativa di testa, volto, spalle, busto, vita, bacino, arti, mani, piedi, capelli e outfit;
-- i landmark anatomici devono restare alle stesse quote relative della METRIC MASTER, salvo deformazioni reali dovute alla posa/prospettiva;
-- canvas e risoluzione possono cambiare, ma il soggetto deve essere normalizzato allo stesso sistema metrico prima dell'uso tecnico;
-- Tavola A, Tavola B e posteriore devono risultare sovrapponibili per scala dopo la normalizzazione;
+### Unità globale
+- full-body verticale della METRIC MASTER = **1000 unità** dalla punta più alta dei capelli alla suola più bassa;
+- suole = `Y=0`;
+- punta capelli = `Y=1000`;
+- `1 unità master` mantiene lo stesso significato proporzionale in tutti gli asset.
+
+### Regola fondamentale per crop e componenti
+Un asset parziale NON viene riscalato a 1000 unità.
+Deve invece conservare **la porzione reale delle 1000 unità master** che occupa nel corpo completo.
+
+Esempi concettuali:
+- head-to-hips: usa il numero di unità realmente misurato tra punta capelli e landmark del bacino nella METRIC MASTER;
+- testa/volto: usa l'intervallo di unità realmente occupato dalla testa nella METRIC MASTER;
+- occhi, bocca, mani, piedi, capelli, outfit e accessori: usano dimensioni e distanze derivate dai rispettivi landmark della METRIC MASTER;
+- nessun sotto-asset può dichiararsi arbitrariamente `1000 unità` se non rappresenta l'intero full-body.
+
+I valori locali esatti vengono **misurati dalla METRIC MASTER**, non inventati nel prompt. Finché non sono misurati, il prompt deve indicare il segmento anatomico e richiedere la derivazione dalla master.
+
+### Coerenza tra immagini
+- scaling sempre uniforme; vietato stirare X/Y separatamente;
+- stessi landmark anatomici, stessa proporzione e stessa distanza relativa tra parti;
+- canvas e risoluzione possono cambiare per ottenere più dettaglio, ma devono conservare una trasformazione nota verso le unità master;
+- un close-up può essere visualizzato più grande in pixel, ma la sua **scala tecnica** resta quella derivata dalla master e deve poter essere ricondotta senza deformazioni alla posizione/dimensione originale;
+- asset dello stesso set devono usare identico crop metrico, identici landmark di riferimento e identico rapporto di scala;
 - le immagini generate NON diventano riferimento metrico per la successiva: ogni file riparte dalla CLEAN MASTER v1 / METRIC MASTER;
-- per pose supine, prone o fortemente inclinate NON si forza il bounding-box verticale a 1000: si preservano invece le stesse lunghezze segmentali anatomiche della METRIC MASTER;
-- close-up e componenti separati usano la scala derivata dalla rispettiva parte della METRIC MASTER;
-- accessori Prompt 09 usano dimensioni, pivot e punti di aggancio misurati nello stesso sistema metrico.
+- pose supine, prone o fortemente inclinate conservano lunghezze segmentali e distanze tra landmark; non si forza il bounding-box a 1000;
+- accessori Prompt 09 usano dimensioni, pivot e punti di aggancio nello stesso sistema master.
 
 ### Validazione SCALE LOCK
 Prima di approvare un asset:
-1. normalizzare la figura/componente allo standard;
-2. allineare baseline e asse centrale quando applicabile;
-3. confrontare per overlay con METRIC MASTER o con il riferimento anatomico corrispondente;
-4. scartare il file se richiede deformazione non uniforme per combaciare o se presenta drift evidente.
+1. identificare i landmark master che delimitano il tipo di immagine;
+2. ricavare dalla METRIC MASTER il relativo intervallo/dimensione in unità;
+3. normalizzare l'asset a quell'intervallo, non automaticamente a 1000;
+4. allineare asse, pivot e landmark pertinenti;
+5. confrontare per overlay con la METRIC MASTER o con il riferimento anatomico corrispondente;
+6. SCARTARE se serve deformazione non uniforme per combaciare o se compare drift evidente.
 
 ## IMAGE QUALITY / RAM LOCK — DEFINIZIONE ALTA, COSTO MOBILE CONTROLLATO
 La qualità del source art e il peso runtime sono due problemi separati: mantenere il source abbastanza definito da permettere un buon rig, ma NON usare texture runtime più grandi del necessario.
@@ -109,9 +125,10 @@ Ogni prompt deve produrre SOLO ciò che serve a quella funzione tecnica.
 - niente elementi extra;
 - sfondo neutro semplice;
 - massimo spazio utile ai soggetti;
-- nessun crop;
+- nessun crop accidentale;
 - margine 12–15% quando full-body;
-- se troppe figure non entrano, dividere in più tavole coordinate mantenendo identica scala.
+- crop tecnico consentito per asset parziali solo se definito dal prompt e identico tra viste coordinate;
+- se troppe figure non entrano, dividere in più tavole coordinate mantenendo identica scala tecnica.
 
 ## Regola anti-drift
 Se volto, proporzioni, outfit statico, capelli, scala o geometria di base cambiano in modo evidente rispetto alla CLEAN MASTER v1 / METRIC MASTER approvata, il file è SCARTATO.
