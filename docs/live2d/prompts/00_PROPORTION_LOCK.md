@@ -52,6 +52,27 @@ Prima di approvare un asset:
 3. confrontare per overlay con METRIC MASTER o con il riferimento anatomico corrispondente;
 4. scartare il file se richiede deformazione non uniforme per combaciare o se presenta drift evidente.
 
+## IMAGE QUALITY / RAM LOCK — DEFINIZIONE ALTA, COSTO MOBILE CONTROLLATO
+La qualità del source art e il peso runtime sono due problemi separati: mantenere il source abbastanza definito da permettere un buon rig, ma NON usare texture runtime più grandi del necessario.
+
+Regole globali:
+- evitare 4K per default e non aumentare la risoluzione solo per compensare un disegno poco pulito;
+- reference/turnaround: usare immagini nitide e leggibili, con dettaglio sufficiente per occhi, capelli, mani e bordi outfit, senza supercampionamento inutile;
+- la CLEAN MASTER corrente è 1024×1536 RGBA e resta una base di dettaglio adeguata per le reference tecniche;
+- per il modello Live2D finale, usare **2048² solo per volto/capelli principali quando il guadagno visivo è reale**;
+- corpo/outfit: target iniziale **1024²**;
+- capelli secondari, accessori e parti minori: **512–1024²** quando sufficiente;
+- niente atlas 4096² come default;
+- non duplicare la stessa grafica ad alta risoluzione in più texture se può essere condivisa o impacchettata senza perdita visibile;
+- un solo personaggio attivo di default e scaricare texture/modelli inattivi;
+- preservare alpha e bordi puliti nel source; ottimizzare/comprimere solo nella fase runtime/export, non distruggere il master;
+- priorità qualità mobile: volto/occhi/capelli > silhouette/outfit > dettagli secondari/accessori;
+- ogni aumento di texture deve essere giustificato da un miglioramento visivo osservabile sul telefono.
+
+Budget avatar già approvato:
+- tetto assoluto: **<300 MB RAM**;
+- target operativo: **150–220 MB RAM** per un personaggio attivo.
+
 ## OUTFIT LOCK
 Per tutti i prompt della base canonica 01–07 usa ESATTAMENTE l'outfit statico della CLEAN MASTER v1:
 - top nero aderente identico;
