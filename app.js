@@ -9,6 +9,9 @@
   const physicsRange = document.getElementById('physicsRange');
   const speakingCheck = document.getElementById('speakingCheck');
   const rigStatus = document.getElementById('rigStatus');
+  const speechTestForm = document.getElementById('speechTestForm');
+  const speechTestInput = document.getElementById('speechTestInput');
+  const speechTestStop = document.getElementById('speechTestStop');
   const rigLayers = [...document.querySelectorAll('[data-layer]')];
 
   const VALID_EMOTIONS = ['neutral','happy','shy','sad','angry','flirty','provocative','focused'];
@@ -27,6 +30,7 @@
 
   let blinkTimer=0, blinkUntil=0, mouthTimer=0;
   let lastPointer=null;
+  let speechTimer=null;
   const clamp01=(value,fallback=0)=>{const n=Number(value);return Number.isFinite(n)?Math.max(0,Math.min(1,n)):fallback};
   const spring=(pos,vel,target,k,d,dt)=>{vel+=(target-pos)*k*dt;vel*=Math.exp(-d*dt);pos+=vel*dt;return[pos,vel]};
 
@@ -42,7 +46,7 @@
     const complete=REQUIRED_LAYERS.every(name=>loaded.has(name));
     state.rig=complete?'layered':'pseudo';
     avatar.dataset.rig=state.rig;
-    if(rigStatus)rigStatus.textContent=complete?'Rig: layered · blink/lip-sync/fisica indipendente':'Rig: pseudo-layer · testa/capelli/torace animati dalla PNG canonica';
+    if(rigStatus)rigStatus.textContent=complete?'Rig: layered · blink/lip-sync/fisica indipendente':'Rig: pseudo-layer · il test frase attiva speaking, ma la bocca reale richiede mouth_open/mouth_closed';
     return complete;
   }
 
@@ -95,13 +99,22 @@
     return true;
   }
 
+  function stopSpeaking(){
+    if(speechTimer!==null){clearTimeout(speechTimer);speechTimer=null;}
+    setState({speaking:false});
+  }
+
   function speak(text,options={}){
-    setState({text,speaking:true,emotion:options.emotion||state.emotion,intensity:options.intensity??state.intensity});
+    const spoken=String(text??'').trim();
+    if(!spoken)return false;
+    if(speechTimer!==null){clearTimeout(speechTimer);speechTimer=null;}
+    setState({text:spoken,speaking:true,emotion:options.emotion||state.emotion,intensity:options.intensity??state.intensity});
     impulse(0,-3,.18);
     if(options.autoStopMs!==0){
-      const duration=options.autoStopMs||Math.max(1300,Math.min(8000,String(text).length*48));
-      setTimeout(()=>setState({speaking:false}),duration);
+      const duration=options.autoStopMs||Math.max(1300,Math.min(10000,spoken.length*48));
+      speechTimer=setTimeout(()=>{speechTimer=null;setState({speaking:false});},duration);
     }
+    return true;
   }
 
   function onMatrixEvent(payload){
@@ -204,7 +217,7 @@
     render();
   }
 
-  window.LunaAvatar={version:'0.3.2',setState,getState:()=>({...state}),gesture,impulse,speak,onMatrixEvent,emotions:[...VALID_EMOTIONS],gestures:[...VALID_GESTURES],detectRig};
+  window.LunaAvatar={version:'0.3.3',setState,getState:()=>({...state}),gesture,impulse,speak,stopSpeaking,onMatrixEvent,emotions:[...VALID_EMOTIONS],gestures:[...VALID_GESTURES],detectRig};
   window.addEventListener('message',event=>{const data=event.data;if(data&&typeof data==='object'&&String(data.type||'').startsWith('luna.'))onMatrixEvent(data)});
   window.addEventListener('pointermove',onPointerMove,{passive:true});
   window.addEventListener('pointerdown',()=>impulse(0,-4,0),{passive:true});
@@ -213,8 +226,14 @@
   emotionSelect.addEventListener('change',e=>setState({emotion:e.target.value}));
   intensityRange.addEventListener('input',e=>setState({intensity:e.target.value}));
   physicsRange.addEventListener('input',e=>setState({physics:e.target.value}));
-  speakingCheck.addEventListener('change',e=>setState({speaking:e.target.checked}));
+  speakingCheck.addEventListener('change',e=>e.target.checked?setState({speaking:true}):stopSpeaking());
   panel.querySelectorAll('[data-gesture]').forEach(button=>button.addEventListener('click',()=>gesture(button.dataset.gesture)));
+  speechTestForm?.addEventListener('submit',event=>{
+    event.preventDefault();
+    const text=speechTestInput?.value||'';
+    if(!speak(text)){speechTestInput?.focus();}
+  });
+  speechTestStop?.addEventListener('click',stopSpeaking);
 
   render();
   detectRig().then(render);
