@@ -1,34 +1,56 @@
-# Luna Live2D — Prompt 01: Turnaround
+# Luna Live2D — Prompt 01: Turnaround 360°
 
 ## Scopo
-Creare la tavola tecnica principale del corpo di Luna per il rig Live2D.
+Creare la tavola geometrica principale di Luna e la METRIC MASTER per tutte le tavole successive.
 
 ## Prompt
-Usa ESATTAMENTE il personaggio dell’immagine di riferimento canonica allegata come identità di Luna. Mantieni invariati volto, lineamenti, forma e colore viola degli occhi, proporzioni del corpo, rapporto testa/torso/gambe, seno, vita, fianchi, lunghezza delle gambe, carnagione, capelli nero-viola molto lunghi e voluminosi, gioielli principali e outfit canonico nero/viola con catene e gemme.
+Usa **LUNA master.png** come identità canonica. Mantieni invariati volto, occhi viola, capelli nero-viola, carnagione, proporzioni corporee, silhouette e outfit canonico.
 
-NON reinterpretare Luna. NON cambiare età apparente, corporatura, pettinatura, outfit, palette o proporzioni. Questa è una tavola tecnica Live2D, non concept art.
+PROPORTION LOCK: stessa anatomia e stesse proporzioni in tutte le viste. La prospettiva cambia; il corpo no.
 
-Crea SOLO 5 viste full-body grandi e separate:
-1. frontale neutra;
+Crea **8 viste full-body complete a 360°**:
+1. frontale;
 2. 3/4 sinistra;
 3. profilo sinistro;
-4. 3/4 posteriore;
-5. retro.
+4. 3/4 posteriore sinistro;
+5. retro;
+6. 3/4 posteriore destro;
+7. profilo destro;
+8. 3/4 destro.
 
-Ogni figura deve essere COMPLETAMENTE visibile dalla punta più alta dei capelli alla punta delle scarpe, comprese entrambe le mani, dita visibili, gomiti, ginocchia, piedi, tacchi, capelli e accessori. Lascia almeno 12–15% di margine vuoto intorno a ogni figura. Nessuna parte può toccare o uscire dal bordo del riquadro.
+Non specchiare semplicemente il lato sinistro: capelli, catene, orecchini, gioielli e dettagli asimmetrici devono essere coerenti realmente in L/R.
 
-Tutte le viste devono avere la stessa scala, stessa altezza apparente, stessa anatomia e lo stesso outfit canonico. Postura neutra e utile al rig: niente pose drammatiche, niente gambe o braccia che nascondano troppo il torso. Nessuna figura deve sovrapporsi a un’altra.
+Ogni figura deve essere completamente visibile dalla punta dei capelli ai piedi, incluse mani, dita visibili, tacchi e accessori, con almeno 12–15% di margine. Nessuna parte deve toccare il bordo.
 
-Sfondo uniforme chiaro o trasparente visivamente neutro, bordi puliti, alta definizione. Priorità assoluta: volto, capelli, mani, silhouette e coerenza anatomica tra le 5 viste.
+### Base statica
+La base corpo+outfit deve essere pensata **senza accessori dinamici fusi**. Collane, catene, pendenti, orecchini e oggetti oscillanti sono layer separati. Le zone sotto di essi devono essere completamente ricostruite.
 
-Se lo spazio non basta, RIDUCI la dimensione delle figure mantenendo margine; NON tagliare mai corpo, capelli, mani, piedi o accessori.
+### Accessori per ogni vista
+Per ognuna delle 8 viste crea un riferimento coerente della posizione di:
+- choker/collana;
+- catena centrale;
+- pendente/gemma;
+- catene laterali/fianchi;
+- orecchino L;
+- orecchino R;
+- altri charms o gemme sospese presenti nella reference.
+
+Ogni oggetto deve avere prospettiva, lato, ancoraggio e occlusione corretti per quella specifica vista. Non riutilizzare la posizione frontale per profilo o retro.
+
+L'output tecnico deve distinguere concettualmente:
+- **BASE CLEAN** per ogni angolo;
+- **ACCESSORY POSITION MAP** per lo stesso angolo.
+
+Se 8 viste non entrano grandi e leggibili in una tavola, dividere in **Turnaround A: 4 viste** e **Turnaround B: 4 viste** mantenendo identica scala. NON comprimere e NON tagliare.
 
 ## Criteri di accettazione
-- 5 viste e solo 5;
-- nessun taglio;
-- outfit identico in tutte;
-- stesso volto e stesse proporzioni;
-- piedi e mani sempre completi;
-- retro realmente utile, non coperto interamente dai capelli;
-- nessun arto duplicato, fuso o mancante;
-- risoluzione master alta; target finale mobile previsto: atlas corpo 1024 e dettagli volto/capelli fino a 2048.
+- 8 viste realmente complete a 360°;
+- frontale approvabile come METRIC MASTER;
+- zero parti del corpo tagliate;
+- stesse proporzioni in tutte le viste;
+- outfit base coerente;
+- accessori dinamici non fusi nella base;
+- posizione di ogni accessorio definita per ogni vista;
+- nessun arto duplicato/fuso/mancante;
+- retro e profili realmente leggibili;
+- alta risoluzione, adatta a ricavare una sorgente Live2D mobile di qualità.
