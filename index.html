@@ -11,11 +11,18 @@
   <main class="stage" aria-label="Luna Virtual Assistant">
     <div id="aura" class="aura"></div>
 
-    <section id="avatar" class="avatar state-idle emotion-neutral" data-speaking="false" data-rig="fallback">
+    <section id="avatar" class="avatar state-idle emotion-neutral" data-speaking="false" data-rig="pseudo">
       <div class="shadow"></div>
       <div class="sprite-wrap">
         <div class="body-rig">
           <img id="lunaSprite" class="sprite fallback-sprite" src="luna_08_no_cape.png" alt="Luna" draggable="false" />
+
+          <div id="pseudoRig" class="pseudo-rig" aria-hidden="true">
+            <img class="pseudo-layer pseudo-hair-left" src="luna_08_no_cape.png" alt="" draggable="false" />
+            <img class="pseudo-layer pseudo-hair-right" src="luna_08_no_cape.png" alt="" draggable="false" />
+            <img class="pseudo-layer pseudo-chest" src="luna_08_no_cape.png" alt="" draggable="false" />
+            <img class="pseudo-layer pseudo-head" src="luna_08_no_cape.png" alt="" draggable="false" />
+          </div>
 
           <div id="layerRig" class="layer-rig" aria-hidden="true">
             <img class="rig-layer layer-hair-back" data-layer="hairBack" src="assets/rig/hair_back.png" alt="" draggable="false" />
@@ -35,45 +42,24 @@
     </section>
 
     <section class="hud">
-      <div class="status-row">
-        <span id="presenceDot" class="presence-dot"></span>
-        <span id="statusText">Luna · pronta</span>
-      </div>
+      <div class="status-row"><span id="presenceDot" class="presence-dot"></span><span id="statusText">Luna · pronta</span></div>
       <div id="speechBubble" class="speech-bubble" aria-live="polite">Ciao. Sono qui.</div>
     </section>
 
     <button id="debugToggle" class="debug-toggle" type="button" aria-label="Apri controlli test">⋯</button>
-
     <aside id="debugPanel" class="debug-panel" hidden>
       <label>Emozione
         <select id="emotionSelect">
-          <option value="neutral">neutral</option>
-          <option value="happy">happy</option>
-          <option value="shy">shy</option>
-          <option value="sad">sad</option>
-          <option value="angry">angry</option>
-          <option value="flirty">flirty</option>
-          <option value="provocative">provocative</option>
-          <option value="focused">focused</option>
+          <option value="neutral">neutral</option><option value="happy">happy</option><option value="shy">shy</option><option value="sad">sad</option><option value="angry">angry</option><option value="flirty">flirty</option><option value="provocative">provocative</option><option value="focused">focused</option>
         </select>
       </label>
-      <label>Intensità emotiva
-        <input id="intensityRange" type="range" min="0" max="1" value="0.55" step="0.05" />
-      </label>
-      <label>Fisica movimento
-        <input id="physicsRange" type="range" min="0" max="1" value="0.62" step="0.05" />
-      </label>
+      <label>Intensità emotiva<input id="intensityRange" type="range" min="0" max="1" value="0.55" step="0.05" /></label>
+      <label>Fisica movimento<input id="physicsRange" type="range" min="0" max="1" value="0.62" step="0.05" /></label>
       <label class="check"><input id="speakingCheck" type="checkbox" /> Parla</label>
-      <div class="debug-actions">
-        <button type="button" data-gesture="nod">Nod</button>
-        <button type="button" data-gesture="tilt">Tilt</button>
-        <button type="button" data-gesture="bounce">Bounce</button>
-        <button type="button" data-gesture="step">Step</button>
-      </div>
+      <div class="debug-actions"><button type="button" data-gesture="nod">Nod</button><button type="button" data-gesture="tilt">Tilt</button><button type="button" data-gesture="bounce">Bounce</button><button type="button" data-gesture="step">Step</button></div>
       <div id="rigStatus" class="rig-status">Rig: verifica asset…</div>
     </aside>
   </main>
-
   <script src="app.js"></script>
 </body>
 </html>
