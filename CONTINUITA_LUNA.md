@@ -18,6 +18,22 @@ Priorità identità: volto > capelli > colori/tratti > outfit > espressione/posa
 
 Regola: dopo approvazione della master, nessuna reinterpretazione o rigenerazione. Gli asset devono derivare dai pixel della master approvata.
 
+## Requisito prestazionale e di movimento — OBBLIGATORIO
+Luna deve muoversi in modo **fluido, continuo e naturale**. Un renderer che funziona tecnicamente ma appare scattoso, oscilla come un cartonato, sfarfalla o cambia bruscamente pose NON è accettabile.
+
+Criteri di accettazione sul telefono di test:
+- obiettivo: ~60 FPS quando il dispositivo/WebView lo consente;
+- frame time medio idealmente vicino o sotto 16.7 ms;
+- p95 indicativamente <= 20 ms come target di qualità;
+- jank >33 ms idealmente <5%;
+- nessun cambio automatico di sprite full-body per blink/lip-sync;
+- nessun dondolio periodico artificiale dell'intero corpo;
+- movimenti con easing/spring coerenti e senza salti di posizione;
+- idle quasi impercettibile: respirazione e micro-movimenti, non oscillazione laterale evidente;
+- occhi, bocca, capelli e chest devono muoversi tramite layer/mesh dedicati quando implementati, non tramite copie sfasate del full-body.
+
+Le soglie numeriche sono target pratici, non una scusa per dichiarare riuscito un movimento visivamente brutto: la validazione finale resta visiva + diagnostica reale sul telefono.
+
 ## Checkpoint grafici
 ### CP0 — MASTER CANONICA — APPROVATO
 Master 1536x1024 approvata dall'utente.
@@ -146,6 +162,7 @@ Regole:
 - non dichiarare risolto un problema solo perché il comportamento difettoso è stato disattivato;
 - se una funzione richiesta (blink, lip-sync, hair/chest physics) non è realmente attiva e verificata, deve risultare PENDING/NON IMPLEMENTATA;
 - se un test reale fallisce, invalidare il checkpoint e registrare metriche e motivo;
+- fluidità percepita e stabilità visiva sono requisiti bloccanti, non miglioramenti opzionali;
 - `main` resta intatta finché il rig non supera test visivo e prestazionale sul telefono.
 
 ## UI laboratorio
@@ -170,8 +187,10 @@ Sequenza:
 3. costruire CP3 con occhi aperti/chiusi reali e testare blink isolato;
 4. solo dopo CP3 approvato, costruire CP4 con bocca chiusa + aperture e testare lip-sync isolato;
 5. eliminare il dondolio dell'intero corpo;
-6. solo dopo occhi/bocca stabili affrontare capelli e busto con veri layer/mesh;
-7. ogni funzione va testata singolarmente sul telefono prima di aggiungere la successiva.
+6. implementare il movimento con trasformazioni leggere/compositor e interpolazione continua, non con salti di sprite;
+7. solo dopo occhi/bocca stabili affrontare capelli e busto con veri layer/mesh;
+8. ogni funzione va testata singolarmente sul telefono prima di aggiungere la successiva;
+9. non considerare CP11/CP12 approvati finché il movimento non è visivamente fluido e la diagnostica non mostra un netto miglioramento rispetto al benchmark negativo v0.5.1.
 
 ## Regola di continuità
 Aggiornare questo file dopo ogni checkpoint validato e dopo ogni modifica rilevante a versione, grafica, asset, test, rig, API, build Android o architettura. Registrare anche checkpoint scartati e motivo.
