@@ -5,10 +5,15 @@ Creare pose in piedi utili a gesture e deformazioni, senza cambiare identità, p
 
 ## Regole obbligatorie
 Applica integralmente `00_PROPORTION_LOCK.md`, incluso lo **SCALE LOCK**.
-Usa come reference primaria la **CLEAN MASTER v1 approvata il 2026-09-01** e la METRIC MASTER/Turnaround normalizzata approvata.
+
+## PRIORITÀ REFERENCE — OBBLIGATORIA
+1. **CLEAN MASTER v1** = reference VISIVA PRIMARIA e assoluta per volto, capelli, corporatura, outfit, materiali, colori e proporzioni.
+2. Turnaround/METRIC MASTER approvata = reference SECONDARIA soltanto per angoli, orientamento, baseline e scala metrica.
+3. NON ricavare mai identità, volto, capelli o outfit da una tavola generata precedente se differisce dalla CLEAN MASTER v1.
+4. Ogni nuova tavola deve ripartire direttamente dalla CLEAN MASTER v1.
 
 Mantieni ESATTAMENTE:
-- identità e volto;
+- identità e volto della CLEAN MASTER v1;
 - occhi viola;
 - capelli lunghissimi, voluminosi e ondulati nero-viola;
 - proporzioni corporee;
@@ -48,7 +53,9 @@ Ogni figura deve essere completamente visibile con 12–15% di margine. La posa 
 Le tavole di reference devono essere nitide e abbastanza definite per il rig, ma non introdurre dettagli ornamentali inutili. Il runtime mobile userà texture atlas ottimizzate separatamente: priorità qualità a volto/capelli, corpo/outfit più leggero dove possibile.
 
 ## Criteri di accettazione
-- stesso personaggio e stesso outfit del Turnaround;
+- stessa identità della CLEAN MASTER v1;
+- stesso outfit della CLEAN MASTER v1;
+- turnaround usato solo per scala/orientamento, non come nuova identità;
 - SCALE LOCK rispettato;
 - nessun accessorio dinamico visibile;
 - zero crop;
