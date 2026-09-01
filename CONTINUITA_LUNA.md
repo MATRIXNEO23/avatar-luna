@@ -12,11 +12,11 @@ Laboratorio separato da Neon Tides / Matrix Engine per sviluppare avatar, grafic
 ## Identità visiva
 La vecchia `luna_08_no_cape.png` è soltanto fallback storico e NON è la sorgente canonica.
 
-Master canonica approvata il 2026-09-01: character sheet 1536x1024 con Luna capelli nero/viola, occhi viola, outfit nero/viola, 8 pose full-body e componenti di riferimento.
+Master canonica storica approvata il 2026-09-01: character sheet 1536x1024 con Luna capelli nero/viola, occhi viola, outfit nero/viola, 8 pose full-body e componenti di riferimento.
 
 Priorità identità: volto > capelli > colori/tratti > outfit > espressione/posa > movimento.
 
-Regola: dopo approvazione della master, nessuna reinterpretazione o rigenerazione. Gli asset devono derivare dai pixel della master approvata.
+La master storica resta riferimento di identità, ma NON è più considerata automaticamente idonea come sorgente tecnica Live2D. Se la separazione dei layer richiede ritagli fragili o ricostruzioni imprecise, va creata una nuova master specificamente Live2D-ready preservando l'identità di Luna.
 
 ## Requisito prestazionale e di movimento — OBBLIGATORIO
 Luna deve muoversi in modo **fluido, continuo e naturale**. Un renderer che funziona tecnicamente ma appare scattoso, oscilla come un cartonato, sfarfalla o cambia bruscamente pose NON è accettabile.
@@ -35,46 +35,31 @@ Criteri di accettazione sul telefono di test:
 Le soglie numeriche sono target pratici, non una scusa per dichiarare riuscito un movimento visivamente brutto: la validazione finale resta visiva + diagnostica reale sul telefono.
 
 ## Checkpoint grafici storici
-### CP0 — MASTER CANONICA — APPROVATO
-Master 1536x1024 approvata dall'utente.
+### CP0 — MASTER CANONICA — APPROVATO COME IDENTITÀ / RIFERIMENTO
+La master 1536x1024 resta riferimento visivo di Luna, ma non è vincolante come asset tecnico per il nuovo Live2D.
 
 ### CP1 — POSE FULL-BODY — APPROVATO COME RIFERIMENTO
 `Luna_Master_Extract_v1` SCARTATO: ritaglio manuale a colonne, con parti mancanti e contaminazioni da pose vicine.
 
-`Luna_Poses_v2_corrected` APPROVATO: 8 pose ricavate dalla sagoma reale con bounding box per componente e margine di sicurezza:
-- IDLE
-- TALK
-- BLINK
-- SMILE
-- SHY
-- ANGRY
-- SURPRISED
-- SEXY
+`Luna_Poses_v2_corrected` APPROVATO come materiale di riferimento: 8 pose IDLE, TALK, BLINK, SMILE, SHY, ANGRY, SURPRISED, SEXY.
 
-Le 8 pose CP1 restano valide come riferimento visivo e materiale sorgente. NON implicano che blink o lip-sync siano funzionanti.
+Le 8 pose CP1 restano valide come riferimento visivo. NON implicano che blink o lip-sync siano funzionanti.
 
-### CP2 — VOLTO/TESTA/ESPRESSIONI — PENDING
-Non esiste ancora un set di layer facciali puliti e perfettamente allineati alla IDLE canonica.
+### CP2 — VOLTO/TESTA/ESPRESSIONI — DA RIFARE NELLA NUOVA MASTER LIVE2D
+Il tentativo di estrarre componenti dal foglio esistente non produce layer abbastanza puliti.
 
 ### CP3 — OCCHI + BLINK — NON IMPLEMENTATO / PENDING
 Il blink NON ha mai funzionato correttamente in nessuna build finora.
 
-Tentativi precedenti:
-- v0.4.x: mancavano veri layer occhi;
-- v0.5.0: copie/sovrapposizioni della figura -> sfasamento/ghosting;
-- v0.5.1: alternanza full-body IDLE/BLINK -> sfarfallio;
-- v0.5.2: alternanza rimossa -> difetto nascosto, non risolto; occhi fermi.
-
 ### CP4 — BOCCA + LIP-SYNC — NON IMPLEMENTATO / PENDING
-Il lip-sync NON ha mai funzionato correttamente in nessuna build finora.
+Il lip-sync NON ha mai funzionato correttamente in nessuna build finora. La voce audio/TTS è un sottosistema separato.
 
-Tentativi precedenti:
-- v0.4.x: mancavano veri layer bocca;
-- v0.5.0: patch/copie sovrapposte -> sfasamento;
-- v0.5.1: alternanza full-body IDLE/TALK -> sfarfallio;
-- v0.5.2: alternanza rimossa -> difetto nascosto, non risolto; bocca ferma.
+## Tentativo Live2D L1A — SCARTATO
+Pacchetto `Luna_Live2D_L1A_face_candidates` SCARTATO dall'utente: i componenti occhi/bocca risultano ritagliati male e non sono adatti a un rig serio.
 
-La voce audio/TTS è un sottosistema separato e non è ancora implementato nel laboratorio avatar.
+Errore metodologico: tentare di ricavare layer Live2D puliti da un character sheet composito già impaginato, invece di partire da una sorgente progettata per la separazione.
+
+Regola nuova: **non continuare a ritagliare componenti dalla vecchia master se il risultato non è pulito. È preferibile rifare una master Live2D-ready apposita, mantenendo l'identità di Luna.**
 
 ## Componenti separati storici
 `Luna_RigComponents_v3_validated` SCARTATO: zone nere residue estranee agli asset.
@@ -88,19 +73,7 @@ Regola permanente: checkerboard obbligatorio; nessun asset con fondo nero, aloni
 Duplicati ritagliati della posa full-body per simulare testa/capelli/chest indipendenti. Risultato: immagini sfasate, ghosting, parti duplicate.
 
 ### v0.5.1 — SCARTATO
-Sprite full-body + alternanza pose TALK/BLINK.
-Report Android #3 reale:
-- FPS medio: 39.1
-- frame medio: 25.56 ms
-- p95: 33.8 ms
-- jank >33 ms: 40%
-- viewport: 443x984
-- DPR: 2.4375
-- memoria JS: 9.5 MB
-- Android 16 / moto g56 5G / WebView Chrome 151
-- `prefers-reduced-motion = true`
-
-Difetti: sfarfallio, movimento scattoso, blink/lip-sync falsi, loop JS costoso.
+Sprite full-body + alternanza pose TALK/BLINK. Report Android #3: 39.1 FPS medi, 25.56 ms frame medio, p95 33.8 ms, jank >33 ms 40%. Difetti: sfarfallio, movimento scattoso, blink/lip-sync falsi, loop JS costoso.
 
 ### v0.5.2 — SCARTATO COME SOLUZIONE FUNZIONALE
 Ha soltanto nascosto/disabilitato parti difettose. Il movimento idle dell'intera figura produce un dondolio artificiale. Occhi, bocca, capelli e chest non sono risolti.
@@ -118,15 +91,6 @@ Per Android il target preferito è **Cubism SDK for Native + OpenGL**, non il ve
 ### Budget memoria mobile
 Tetto assoluto avatar: **300 MB RAM**.
 Target operativo: **150–220 MB** per un singolo personaggio attivo.
-
-Budget indicativo da validare sul telefono:
-- Core/Framework/native app + strutture modello: 20–50 MB;
-- texture decode/GPU: 40–90 MB;
-- render target/mask/buffer: 20–50 MB;
-- motion/physics/JSON/espressioni: 10–25 MB;
-- margine runtime/driver: 40–70 MB.
-
-Il budget è un obiettivo tecnico, NON una misura ancora validata.
 
 ### Strategia texture mobile
 Non usare 4096x4096 come default.
@@ -155,44 +119,40 @@ Il modello Live2D deve supportare almeno:
 - angry;
 - surprised;
 - focused;
-- **sad / tristezza**;
-- **flirty / flirt**;
-- **sensual / sensuale**;
-- **provocative / sexy**;
-- **erotic_explicit / erotica esplicita**, esclusivamente per personaggi adulti e solo quando Matrix Engine seleziona questo registro in base a contesto e stato relazionale.
+- sad / tristezza;
+- flirty / flirt;
+- sensual / sensuale;
+- provocative / sexy;
+- erotic_explicit / erotica esplicita, esclusivamente per personaggi adulti e solo quando Matrix Engine seleziona questo registro in base a contesto e stato relazionale.
 
 Questi stati NON devono essere semplici filtri o cambi di sprite: devono risultare da combinazioni fluide di occhi, palpebre, sopracciglia, bocca, sguardo, inclinazione testa/corpo, respirazione, postura e parametri locali del rig.
-
-La tristezza è un'emozione obbligatoria, non opzionale. Gli stati sensuale ed erotico esplicito sono registri espressivi separati e non devono essere attivati automaticamente.
 
 Matrix Engine continuerà a decidere quale emozione/registro/intensità applicare; il modello Live2D deve solo essere capace di rappresentarli in modo fluido e coerente.
 
 ## Nuova pipeline Live2D obbligatoria
-### L0 — SORGENTE CANONICA
-Usare la master Luna approvata. Nessuna reinterpretazione.
+### L0 — NUOVA MASTER LIVE2D-READY — PENDING
+Creare una nuova master specificamente pensata per Live2D, mantenendo con massima fedeltà identità, volto, capelli, palette e outfit di Luna.
+
+La nuova master NON deve essere un character sheet composito da ritagliare. Deve essere progettata per produrre layer puliti, sovrapponibili e con parti nascoste ricostruite.
+
+Requisiti minimi della nuova master:
+- posa frontale/neutra coerente;
+- testa e corpo geometricamente centrati;
+- capelli dietro e davanti separabili;
+- volto completo sotto capelli/accessori;
+- entrambi gli occhi completi sotto palpebre/ciglia;
+- bocca completa con interno ricostruibile;
+- collo e busto completi sotto testa/capelli/outfit;
+- braccia/mani separabili dalle zone del torso che coprono;
+- chest/bust deformabile senza buchi;
+- accessori con geometria completa sotto sovrapposizioni;
+- nessun fondo incorporato;
+- nessun elemento adiacente che renda ambiguo il ritaglio.
+
+La vecchia master viene usata come **reference di identità**, non come obbligo tecnico di pixel-identità durante la ricostruzione Live2D-ready.
 
 ### L1 — ART SEPARATION / PSD LIVE2D-READY
-Creare un PSD/layer set pulito e coerente. Minimo:
-- hair_back;
-- ciocche posteriori separate dove serve fisica;
-- torso/body base;
-- neck;
-- head/face base;
-- ears se visibili;
-- eyebrows L/R;
-- eye white L/R;
-- iris/pupil L/R;
-- upper/lower eyelid L/R;
-- lash/eye-line L/R;
-- mouth base;
-- mouth interior;
-- upper/lower lip;
-- eventuale tongue/teeth se realmente necessari;
-- hair_front;
-- ciocche frontali fisiche;
-- arms/hands dove devono muoversi;
-- chest/bust deformable region;
-- accessori con movimento indipendente.
+Solo dopo L0 approvata, produrre i layer reali: hair_back, ciocche fisiche, body/torso, neck, face base, eyebrows, eye whites, iris/pupils, eyelids/lashes, mouth parts, hair_front, arms/hands, chest region, accessori.
 
 Tutti i layer devono essere trasparenti, puliti e ricostruire Luna senza buchi/contaminazioni.
 
@@ -200,15 +160,7 @@ Tutti i layer devono essere trasparenti, puliti e ricostruire Luna senza buchi/c
 Creare ArtMesh e deformers con densità controllata. Priorità qualità: volto/capelli > busto > mani/accessori > parti inferiori.
 
 ### L3 — PARAMETRI MINIMI
-- ParamAngleX/Y/Z;
-- BodyAngleX/Y/Z dove necessario;
-- EyeBallX/Y;
-- EyeLOpen / EyeROpen;
-- MouthOpenY;
-- MouthForm;
-- Breath;
-- brow parameters;
-- eventuali parametri chest/hair/accessori.
+ParamAngleX/Y/Z; BodyAngleX/Y/Z dove necessario; EyeBallX/Y; EyeLOpen/EyeROpen; MouthOpenY; MouthForm; Breath; brow parameters; parametri chest/hair/accessori.
 
 ### L4 — BLINK / GAZE / LIP-SYNC
 Blink indipendente, sguardo indipendente, bocca deformata localmente. Vietato cambiare full-body per queste funzioni.
@@ -217,33 +169,16 @@ Blink indipendente, sguardo indipendente, bocca deformata localmente. Vietato ca
 Physics leggere per capelli, accessori e chest/bust. Spring/damping naturali, niente oscillazione globale artificiale.
 
 ### L6 — MOTION / EXPRESSIONS
-Idle, talk e set emozioni completo, inclusi **sad/tristezza, sensual/sensuale ed erotic_explicit/erotica esplicita per adulti**, come motion/espressioni del modello, non sprite completi.
+Idle, talk e set emozioni completo, inclusi sad/tristezza, sensual/sensuale ed erotic_explicit/erotica esplicita per adulti, come motion/espressioni del modello, non sprite completi.
 
 ### L7 — ANDROID NATIVE INTEGRATION
 Integrare Cubism SDK for Native/OpenGL nel laboratorio Android separato. Mantenere API Matrix ad alto livello: emotion, register, intensity, speaking, gaze, gesture, motion.
 
 ### L8 — BENCHMARK MOBILE
-Misurare sul telefono reale:
-- PSS/RSS app;
-- memoria nativa;
-- memoria GPU se ottenibile;
-- FPS medio;
-- p95 frame time;
-- jank;
-- temperatura/carico prolungato;
-- tempo caricamento modello;
-- stabilità dopo cambio personaggio.
+Misurare sul telefono reale PSS/RSS, memoria nativa/GPU se ottenibile, FPS, p95, jank, temperatura, tempo caricamento e stabilità.
 
 ### L9 — VALIDAZIONE
-Il modello non entra in `main` finché non supera:
-- identità visiva;
-- fluidità;
-- blink/gaze/lip-sync;
-- emozioni/registri completi inclusi tristezza, sensuale ed erotico esplicito per adulti;
-- physics capelli/chest;
-- RAM <300 MB per avatar;
-- assenza di seam/ghosting;
-- test mobile prolungato.
+Il modello non entra in `main` finché non supera identità visiva, fluidità, blink/gaze/lip-sync, emozioni/registri richiesti, physics capelli/chest, RAM <300 MB per avatar, assenza seam/ghosting e test mobile prolungato.
 
 ## Regole per tutti i personaggi futuri
 - stessa pipeline Live2D-ready;
@@ -253,19 +188,18 @@ Il modello non entra in `main` finché non supera:
 - asset grafici e rig separati dalla bio/persona Matrix;
 - nessuna funzione dichiarata risolta se è solo disabilitata;
 - ogni checkpoint deve avere stato APPROVATO/SCARTATO/PENDING;
-- il set emozioni deve includere tristezza quando il personaggio la può esprimere;
-- per personaggi esclusivamente adulti il rig deve poter rappresentare anche registri sensuale ed erotico esplicito, mantenendoli separati dagli stati emotivi di base e sotto controllo di Matrix Engine.
+- se una master non nasce già pensando alla separazione Live2D, rifarla prima di perdere tempo in ritagli fragili.
 
 ## Prossimo passo operativo
-1. non produrre altre build del custom sprite rig come percorso finale;
-2. preparare la separazione grafica Live2D-ready di Luna dalla master approvata;
-3. validare prima il volto completo e la ricostruzione neutrale;
-4. poi occhi/blink/gaze;
-5. poi bocca/lip-sync;
-6. poi espressioni/emozioni e registri incluso sad/tristezza, sensuale ed erotico esplicito;
-7. poi capelli/chest physics;
-8. solo dopo creare il modello Cubism e il runtime Android Native;
-9. benchmark memoria/FPS prima dell'integrazione con Matrix.
+1. SCARTARE definitivamente `Luna_Live2D_L1A_face_candidates`;
+2. creare nuova master Luna **Live2D-ready** usando la master storica come reference di identità;
+3. validare la nuova master L0 prima di estrarre qualunque layer;
+4. solo dopo L0 approvata fare L1 art separation;
+5. volto/occhi/blink/gaze;
+6. bocca/lip-sync;
+7. espressioni/emozioni/registri;
+8. capelli/chest physics;
+9. Cubism Native Android + benchmark memoria/FPS.
 
 ## Regola di continuità
 Aggiornare questo file dopo ogni checkpoint validato e dopo ogni modifica rilevante a versione, grafica, asset, test, rig, API, build Android o architettura. Registrare anche checkpoint scartati e motivo.
