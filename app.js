@@ -9,181 +9,144 @@
   const intensityRange = document.getElementById('intensityRange');
   const physicsRange = document.getElementById('physicsRange');
   const speakingCheck = document.getElementById('speakingCheck');
+  const rigStatus = document.getElementById('rigStatus');
+  const rigLayers = [...document.querySelectorAll('[data-layer]')];
 
-  const VALID_EMOTIONS = ['neutral', 'happy', 'shy', 'sad', 'angry', 'flirty', 'provocative', 'focused'];
-  const VALID_GESTURES = ['nod', 'tilt', 'bounce', 'step'];
+  const VALID_EMOTIONS = ['neutral','happy','shy','sad','angry','flirty','provocative','focused'];
+  const VALID_GESTURES = ['nod','tilt','bounce','step'];
+  const REQUIRED_LAYERS = ['hairBack','body','chest','head','eyesOpen','eyesClosed','mouthClosed','mouthOpen','hairFront'];
 
-  const state = {
-    emotion: 'neutral',
-    intensity: 0.55,
-    physics: 0.62,
-    speaking: false,
-    text: 'Ciao. Sono qui.'
-  };
-
+  const state = { emotion:'neutral', intensity:.55, physics:.62, speaking:false, text:'Ciao. Sono qui.', rig:'fallback' };
   const motion = {
-    targetX: 0,
-    targetY: 0,
-    x: 0,
-    y: 0,
-    vx: 0,
-    vy: 0,
-    rot: 0,
-    vrot: 0,
-    lastT: performance.now()
+    targetX:0,targetY:0,x:0,y:0,vx:0,vy:0,rot:0,vrot:0,
+    headX:0,headY:0,headVX:0,headVY:0,headRot:0,headVRot:0,
+    hairX:0,hairY:0,hairVX:0,hairVY:0,hairRot:0,hairVRot:0,
+    chestX:0,chestY:0,chestVX:0,chestVY:0,
+    lastT:performance.now()
   };
 
-  const clamp01 = (value, fallback = 0) => {
-    const n = Number(value);
-    return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
-  };
+  let blinkTimer = 0;
+  let blinkUntil = 0;
+  let mouthTimer = 0;
+
+  const clamp01 = (value,fallback=0) => { const n=Number(value); return Number.isFinite(n)?Math.max(0,Math.min(1,n)):fallback; };
+  const spring = (pos,vel,target,k,d,dt) => { vel += (target-pos)*k*dt; vel *= Math.exp(-d*dt); pos += vel*dt; return [pos,vel]; };
+
+  async function detectRig() {
+    const loaded = new Set();
+    await Promise.all(rigLayers.map(img => new Promise(resolve => {
+      const name = img.dataset.layer;
+      const done = ok => { if (ok) loaded.add(name); resolve(); };
+      if (img.complete) return done(img.naturalWidth > 0);
+      img.addEventListener('load',() => done(true),{once:true});
+      img.addEventListener('error',() => done(false),{once:true});
+    })));
+    const complete = REQUIRED_LAYERS.every(name => loaded.has(name));
+    state.rig = complete ? 'layered' : 'fallback';
+    avatar.dataset.rig = state.rig;
+    if (rigStatus) rigStatus.textContent = complete ? 'Rig: layered · blink/lip-sync/fisica attivi' : `Rig: fallback PNG · ${loaded.size}/${REQUIRED_LAYERS.length} layer trovati`;
+    return complete;
+  }
 
   function render() {
     avatar.className = `avatar state-idle emotion-${state.emotion}`;
     avatar.dataset.speaking = String(state.speaking);
-    document.documentElement.style.setProperty('--intensity', state.intensity.toFixed(2));
-    document.documentElement.style.setProperty('--physics', state.physics.toFixed(2));
-
-    statusText.textContent = state.speaking
-      ? `Luna · sta parlando · ${state.emotion}`
-      : `Luna · pronta · ${state.emotion}`;
-
+    avatar.dataset.rig = state.rig;
+    document.documentElement.style.setProperty('--intensity',state.intensity.toFixed(2));
+    document.documentElement.style.setProperty('--physics',state.physics.toFixed(2));
+    statusText.textContent = state.speaking ? `Luna · sta parlando · ${state.emotion}` : `Luna · pronta · ${state.emotion}`;
     speechBubble.textContent = state.text || '';
-    speechBubble.style.visibility = state.text ? 'visible' : 'hidden';
+    speechBubble.style.visibility = state.text ? 'visible':'hidden';
     emotionSelect.value = state.emotion;
     intensityRange.value = String(state.intensity);
     physicsRange.value = String(state.physics);
     speakingCheck.checked = state.speaking;
   }
 
-  function setState(next = {}) {
+  function setState(next={}) {
     if (next.emotion && VALID_EMOTIONS.includes(next.emotion)) state.emotion = next.emotion;
-    if (next.intensity !== undefined) state.intensity = clamp01(next.intensity, state.intensity);
-    if (next.physics !== undefined) state.physics = clamp01(next.physics, state.physics);
+    if (next.intensity !== undefined) state.intensity = clamp01(next.intensity,state.intensity);
+    if (next.physics !== undefined) state.physics = clamp01(next.physics,state.physics);
     if (next.speaking !== undefined) state.speaking = Boolean(next.speaking);
     if (next.text !== undefined) state.text = String(next.text);
-    render();
-    return { ...state };
+    render(); return {...state};
   }
 
-  function impulse(x = 0, y = 0, rotation = 0) {
-    const p = 0.25 + state.physics * 1.1;
-    motion.vx += Number(x) * p;
-    motion.vy += Number(y) * p;
-    motion.vrot += Number(rotation) * p;
+  function impulse(x=0,y=0,rotation=0) {
+    const p=.25+state.physics*1.1;
+    motion.vx += Number(x)*p; motion.vy += Number(y)*p; motion.vrot += Number(rotation)*p;
+    motion.headVX += Number(x)*p*.16; motion.headVY += Number(y)*p*.11; motion.headVRot += Number(rotation)*p*.42;
+    motion.hairVX -= Number(x)*p*.24; motion.hairVY -= Number(y)*p*.16; motion.hairVRot -= Number(rotation)*p*.62;
+    motion.chestVX -= Number(x)*p*.08; motion.chestVY -= Number(y)*p*.28;
   }
 
   function gesture(name) {
     if (!VALID_GESTURES.includes(name)) return false;
-    avatar.classList.remove(...VALID_GESTURES.map(g => `gesture-${g}`));
-    void avatar.offsetWidth;
-    avatar.classList.add(`gesture-${name}`);
-
-    if (name === 'nod') impulse(0, 9, 0);
-    if (name === 'tilt') impulse(-5, 1, -1.2);
-    if (name === 'bounce') impulse(0, -18, .35);
-    if (name === 'step') impulse(9, -5, .8);
-
-    window.setTimeout(() => avatar.classList.remove(`gesture-${name}`), 950);
-    return true;
+    avatar.classList.remove(...VALID_GESTURES.map(g=>`gesture-${g}`)); void avatar.offsetWidth; avatar.classList.add(`gesture-${name}`);
+    if(name==='nod') impulse(0,9,0); if(name==='tilt') impulse(-5,1,-1.2); if(name==='bounce') impulse(0,-18,.35); if(name==='step') impulse(9,-5,.8);
+    setTimeout(()=>avatar.classList.remove(`gesture-${name}`),950); return true;
   }
 
-  function speak(text, options = {}) {
-    setState({
-      text,
-      speaking: true,
-      emotion: options.emotion || state.emotion,
-      intensity: options.intensity ?? state.intensity
-    });
-    impulse(0, -3, .18);
-
-    if (options.autoStopMs !== 0) {
-      const duration = options.autoStopMs || Math.max(1300, Math.min(8000, String(text).length * 48));
-      window.setTimeout(() => setState({ speaking: false }), duration);
-    }
+  function speak(text,options={}) {
+    setState({text,speaking:true,emotion:options.emotion||state.emotion,intensity:options.intensity??state.intensity}); impulse(0,-3,.18);
+    if(options.autoStopMs!==0){const duration=options.autoStopMs||Math.max(1300,Math.min(8000,String(text).length*48));setTimeout(()=>setState({speaking:false}),duration);}
   }
 
-  function onMatrixEvent(payload) {
-    if (!payload || typeof payload !== 'object') return;
-    if (payload.type === 'luna.state') return void setState(payload);
-    if (payload.type === 'luna.speak') return void speak(payload.text || '', payload);
-    if (payload.type === 'luna.gesture') return void gesture(payload.gesture);
-    if (payload.type === 'luna.motion') return void impulse(payload.x || 0, payload.y || 0, payload.rotation || 0);
+  function onMatrixEvent(payload){
+    if(!payload||typeof payload!=='object') return;
+    if(payload.type==='luna.state') return void setState(payload);
+    if(payload.type==='luna.speak') return void speak(payload.text||'',payload);
+    if(payload.type==='luna.gesture') return void gesture(payload.gesture);
+    if(payload.type==='luna.motion') return void impulse(payload.x||0,payload.y||0,payload.rotation||0);
   }
 
-  function physicsLoop(now) {
-    const dt = Math.min(0.032, Math.max(0.001, (now - motion.lastT) / 1000));
-    motion.lastT = now;
-
-    const stiffness = 28 + state.physics * 34;
-    const damping = 7.5 + (1 - state.physics) * 3.5;
-
-    motion.vx += (motion.targetX - motion.x) * stiffness * dt;
-    motion.vy += (motion.targetY - motion.y) * stiffness * dt;
-    motion.vx *= Math.exp(-damping * dt);
-    motion.vy *= Math.exp(-damping * dt);
-    motion.x += motion.vx * dt;
-    motion.y += motion.vy * dt;
-
-    const targetRot = motion.x * .035;
-    motion.vrot += (targetRot - motion.rot) * (stiffness * .8) * dt;
-    motion.vrot *= Math.exp(-(damping + 1.2) * dt);
-    motion.rot += motion.vrot * dt;
-
-    const maxX = 10 + state.physics * 9;
-    const maxY = 8 + state.physics * 11;
-    const x = Math.max(-maxX, Math.min(maxX, motion.x));
-    const y = Math.max(-maxY, Math.min(maxY, motion.y));
-    const r = Math.max(-1.8, Math.min(1.8, motion.rot));
-
-    wrap.style.setProperty('--spring-x', `${x.toFixed(2)}px`);
-    wrap.style.setProperty('--spring-y', `${y.toFixed(2)}px`);
-    wrap.style.setProperty('--spring-r', `${r.toFixed(3)}deg`);
-
-    requestAnimationFrame(physicsLoop);
+  function updateFace(now){
+    if(state.rig!=='layered'){avatar.dataset.blink='false';avatar.dataset.mouth='closed';return;}
+    if(now>blinkTimer){blinkUntil=now+90+Math.random()*70;blinkTimer=now+2200+Math.random()*4200;}
+    avatar.dataset.blink=String(now<blinkUntil);
+    if(state.speaking){
+      if(now>mouthTimer){avatar.dataset.mouth=avatar.dataset.mouth==='open'?'closed':'open';mouthTimer=now+75+Math.random()*125;}
+    }else avatar.dataset.mouth='closed';
   }
 
-  window.LunaAvatar = {
-    version: '0.2.0',
-    setState,
-    getState: () => ({ ...state }),
-    gesture,
-    impulse,
-    speak,
-    onMatrixEvent,
-    emotions: [...VALID_EMOTIONS],
-    gestures: [...VALID_GESTURES]
-  };
+  function physicsLoop(now){
+    const dt=Math.min(.032,Math.max(.001,(now-motion.lastT)/1000)); motion.lastT=now;
+    const stiffness=28+state.physics*34,damping=7.5+(1-state.physics)*3.5;
+    [motion.x,motion.vx]=spring(motion.x,motion.vx,motion.targetX,stiffness,damping,dt);
+    [motion.y,motion.vy]=spring(motion.y,motion.vy,motion.targetY,stiffness,damping,dt);
+    const targetRot=motion.x*.035; [motion.rot,motion.vrot]=spring(motion.rot,motion.vrot,targetRot,stiffness*.8,damping+1.2,dt);
 
-  window.addEventListener('message', (event) => {
-    const data = event.data;
-    if (data && typeof data === 'object' && String(data.type || '').startsWith('luna.')) onMatrixEvent(data);
-  });
+    const headTX=motion.x*.12+Number(getComputedStyle(document.documentElement).getPropertyValue('--look-x')||0)*1.4;
+    const headTY=motion.y*.08+Number(getComputedStyle(document.documentElement).getPropertyValue('--look-y')||0)*.8;
+    [motion.headX,motion.headVX]=spring(motion.headX,motion.headVX,headTX,52,9.4,dt);
+    [motion.headY,motion.headVY]=spring(motion.headY,motion.headVY,headTY,50,9.2,dt);
+    [motion.headRot,motion.headVRot]=spring(motion.headRot,motion.headVRot,motion.rot*.28,44,8.8,dt);
 
-  toggle.addEventListener('click', () => { panel.hidden = !panel.hidden; });
-  emotionSelect.addEventListener('change', (event) => setState({ emotion: event.target.value }));
-  intensityRange.addEventListener('input', (event) => setState({ intensity: event.target.value }));
-  physicsRange.addEventListener('input', (event) => setState({ physics: event.target.value }));
-  speakingCheck.addEventListener('change', (event) => setState({ speaking: event.target.checked }));
-  panel.querySelectorAll('[data-gesture]').forEach((button) => button.addEventListener('click', () => gesture(button.dataset.gesture)));
+    [motion.hairX,motion.hairVX]=spring(motion.hairX,motion.hairVX,-motion.x*.18,24,5.8,dt);
+    [motion.hairY,motion.hairVY]=spring(motion.hairY,motion.hairVY,-motion.y*.10,22,5.6,dt);
+    [motion.hairRot,motion.hairVRot]=spring(motion.hairRot,motion.hairVRot,-motion.rot*.42,20,5.4,dt);
 
-  let lastPointer = null;
-  window.addEventListener('pointermove', (event) => {
-    const nx = (event.clientX / window.innerWidth - 0.5) * 2;
-    const ny = (event.clientY / window.innerHeight - 0.5) * 2;
-    wrap.style.setProperty('--look-x', nx.toFixed(3));
-    wrap.style.setProperty('--look-y', ny.toFixed(3));
+    const breath=Math.sin(now/660)*(.18+.22*state.physics);
+    [motion.chestX,motion.chestVX]=spring(motion.chestX,motion.chestVX,-motion.x*.055,31,6.4,dt);
+    [motion.chestY,motion.chestVY]=spring(motion.chestY,motion.chestVY,-motion.y*.16+breath,27,5.8,dt);
 
-    if (lastPointer) {
-      const dx = event.clientX - lastPointer.x;
-      const dy = event.clientY - lastPointer.y;
-      impulse(dx * .035, dy * .02, dx * .002);
-    }
-    lastPointer = { x: event.clientX, y: event.clientY };
-  }, { passive: true });
+    const maxX=10+state.physics*9,maxY=8+state.physics*11;
+    const x=Math.max(-maxX,Math.min(maxX,motion.x)),y=Math.max(-maxY,Math.min(maxY,motion.y)),r=Math.max(-1.8,Math.min(1.8,motion.rot));
+    const root=document.documentElement.style;
+    root.setProperty('--spring-x',`${x.toFixed(2)}px`);root.setProperty('--spring-y',`${y.toFixed(2)}px`);root.setProperty('--spring-r',`${r.toFixed(3)}deg`);
+    root.setProperty('--head-x',`${motion.headX.toFixed(2)}px`);root.setProperty('--head-y',`${motion.headY.toFixed(2)}px`);root.setProperty('--head-r',`${motion.headRot.toFixed(3)}deg`);
+    root.setProperty('--hair-x',`${motion.hairX.toFixed(2)}px`);root.setProperty('--hair-y',`${motion.hairY.toFixed(2)}px`);root.setProperty('--hair-r',`${motion.hairRot.toFixed(3)}deg`);
+    root.setProperty('--chest-x',`${motion.chestX.toFixed(2)}px`);root.setProperty('--chest-y',`${motion.chestY.toFixed(2)}px`);
+    root.setProperty('--chest-sx',(1+Math.abs(motion.chestX)*.0008).toFixed(4));root.setProperty('--chest-sy',(1+Math.max(-.004,breath*.0024)).toFixed(4));
+    updateFace(now); requestAnimationFrame(physicsLoop);
+  }
 
-  window.addEventListener('pointerdown', () => impulse(0, -4, 0));
-
-  render();
-  requestAnimationFrame(physicsLoop);
+  window.LunaAvatar={version:'0.3.0',setState,getState:()=>({...state}),gesture,impulse,speak,onMatrixEvent,emotions:[...VALID_EMOTIONS],gestures:[...VALID_GESTURES],detectRig};
+  window.addEventListener('message',event=>{const data=event.data;if(data&&typeof data==='object'&&String(data.type||'').startsWith('luna.'))onMatrixEvent(data);});
+  toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;});
+  emotionSelect.addEventListener('change',e=>setState({emotion:e.target.value})); intensityRange.addEventListener('input',e=>setState({intensity:e.target.value})); physicsRange.addEventListener('input',e=>setState({physics:e.target.value})); speakingCheck.addEventListener('change',e=>setState({speaking:e.target.checked}));
+  panel.querySelectorAll('[data-gesture]').forEach(button=>button.addEventListener('click',()=>gesture(button.dataset.gesture)));
+  let lastPointer=null; window.addEventListener('pointermove',event=>{const nx=(event.clientX/window.innerWidth-.5)*2,ny=(event.clientY/window.innerHeight-.5)*2;document.documentElement.style.setProperty('--look-x',nx.toFixed(3));document.documentElement.style.setProperty('--look-y',ny.toFixed(3));if(lastPointer){const dx=event.clientX-lastPointer.x,dy=event.clientY-lastPointer.y;impulse(dx*.035,dy*.02,dx*.002)}lastPointer={x:event.clientX,y:event.clientY};},{passive:true});
+  window.addEventListener('pointerdown',()=>impulse(0,-4,0));
+  render(); detectRig().then(render); requestAnimationFrame(physicsLoop);
 })();
