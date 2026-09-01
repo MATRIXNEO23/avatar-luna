@@ -24,7 +24,7 @@ Non accettare sprite che cambiano significativamente volto, occhi, forma del vis
 
 ## Stato renderer
 
-Versione runtime attuale: v0.3.2.
+Versione runtime attuale: v0.3.3.
 
 Funzioni presenti:
 - idle continuo;
@@ -36,7 +36,9 @@ Funzioni presenti:
 - fisica secondaria predisposta per testa, capelli e torace;
 - API JavaScript `window.LunaAvatar`;
 - eventi Matrix via `window.postMessage`;
-- rilevamento automatico del rig.
+- rilevamento automatico del rig;
+- pannello manuale per digitare una frase e attivare lo stato speaking/lip-sync;
+- comando Stop per interrompere il parlato di test.
 
 ### Modifiche v0.3.2
 
@@ -49,6 +51,22 @@ Ottimizzazione mirata Android/mobile del loop di animazione:
 - API runtime aggiornata a `window.LunaAvatar.version = '0.3.2'`.
 
 Commit v0.3.2: `7593c203d6e02d23f118d652fd5d3622beffb753`.
+
+### Modifiche v0.3.3
+
+Aggiunto un test manuale del parlato nel pannello debug:
+- textarea `Test bocca / frase`;
+- pulsante `Fai parlare Luna`;
+- pulsante `Stop`;
+- la frase digitata viene mostrata nella speech bubble e passa al metodo `speak()`;
+- durata speaking calcolata automaticamente in base alla lunghezza del testo;
+- nuovo metodo pubblico `LunaAvatar.stopSpeaking()`;
+- gestione dei timer di speaking resa più sicura quando si avviano frasi consecutive.
+
+Commit UI test frase: `97e168b5c1b3e7c0a510ac1c53b6279b77d29710`.
+Commit runtime v0.3.3: `a77b26c819d117c56853784e6382d1c22a92aa7a`.
+
+Nota importante: con il rig `pseudo` la frase e lo stato speaking funzionano, ma non esiste ancora una vera apertura/chiusura della bocca perché la PNG canonica è piatta. Il movimento reale della bocca si vedrà quando saranno presenti `mouth_closed.png` e `mouth_open.png` nel rig layered.
 
 ## Modalità rig
 
@@ -105,7 +123,8 @@ Controlli richiesti:
 - touch/pointer;
 - artefatti del pseudo-rig;
 - tuning delle molle;
-- fluidità generale.
+- fluidità generale;
+- test del pannello frase e dello stato speaking.
 
 Ottimizzazioni tecniche:
 - [x] rimuovere `getComputedStyle()` dal loop per-frame e mantenere lo sguardo in stato JS;
@@ -143,6 +162,7 @@ Esempi:
 ```js
 LunaAvatar.setState({ emotion: 'happy', intensity: 0.8, physics: 0.65, speaking: false });
 LunaAvatar.speak('Ciao.', { emotion: 'happy', intensity: 0.7 });
+LunaAvatar.stopSpeaking();
 LunaAvatar.gesture('nod');
 LunaAvatar.impulse(8, -5, 0.4);
 ```
@@ -160,11 +180,12 @@ window.postMessage({ type: 'luna.motion', x: 8, y: -4, rotation: 0.3 }, '*');
 
 1. Eliminare l'aritmetica CSS non affidabile su alcuni WebView Android (`var(...) * px`) spostando gli offset di sguardo completamente in JS.
 2. Validare visivamente la nuova sprite sheet contro la reference canonica.
-3. Ricavare asset layered reali fedeli a Luna.
-4. Eseguire test Android reale.
-5. Misurare FPS/CPU/RAM e artefatti.
-6. Tuning finale di spring, hair lag e chest secondary motion.
-7. Solo dopo, collegare semanticamente gli stati Matrix al renderer.
+3. Ricavare asset layered reali fedeli a Luna, in particolare `mouth_closed.png` e `mouth_open.png` per il primo test bocca reale.
+4. Eseguire Test Android #1 reale.
+5. Usare la nuova finestra frase per verificare speaking e, appena il rig layered è disponibile, lip-sync visivo.
+6. Misurare FPS/CPU/RAM e artefatti.
+7. Tuning finale di spring, hair lag e chest secondary motion.
+8. Solo dopo, collegare semanticamente gli stati Matrix al renderer.
 
 ## Regola di continuità
 
