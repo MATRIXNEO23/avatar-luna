@@ -1,7 +1,7 @@
 # Luna Live2D — Prompt 06: Hair / Physics
 
 ## Scopo
-Creare riferimenti puliti per separare i capelli di Luna in layer fisici Live2D e mantenere la loro coerenza durante rotazioni L/R.
+Creare riferimenti puliti per separare i capelli di Luna in layer fisici Live2D e mantenerne la coerenza durante le rotazioni L/R.
 
 ## Prompt
 Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni ESATTAMENTE colore nero-viola, lunghezza, volume, attaccatura, frangia, ciocche frontali e stile ondulato. NON accorciare, lisciare o reinterpretare la pettinatura.
@@ -30,26 +30,18 @@ Mostra inoltre componenti separati grandi:
 - ciocche secondarie di volume;
 - piccoli gruppi vicino al viso solo se utili al movimento.
 
-Ogni componente deve essere completo, con margine, senza sovrapposizioni o contaminazioni. Le parti devono avere radice stabile, zona deformabile e estremità libera per spring/physics.
+Ogni componente deve essere completo, con margine, senza sovrapposizioni o contaminazioni. Le parti devono avere radice stabile, zona deformabile ed estremità libera per spring/physics.
 
-### Accessori capelli
-Qualunque fermaglio, charm, pendente, catena o gioiello applicato ai capelli deve essere un **layer dinamico separato**. NON fonderlo con hair_front, hair_back o ciocche.
+### CLEAN HAIR LOCK
+NON mostrare alcun accessorio dinamico sui capelli o sulla testa: niente fermagli mobili, charms, pendenti, catene, orecchini o gioielli oscillanti.
 
-Per ogni angolo sopra elencato, inclusi INTERMEDIO L/R, deve esistere un riferimento della posizione dell'accessorio capelli con:
-- punto di ancoraggio costante;
-- prospettiva corretta;
-- lato L/R corretto;
-- occlusione corretta rispetto alle ciocche;
-- risposta alla gravità coerente.
-
-La base capelli deve essere completa sotto l'accessorio.
+La capigliatura sottostante deve essere completamente ricostruita. Gli accessori capelli vengono creati esclusivamente nel Prompt 09, comprese le varianti per tutti gli angoli L/R e le pose soggette a gravità.
 
 ## Criteri di accettazione
 - pettinatura identica alla Luna canonica;
 - front/back/L/R/intermedi coerenti;
 - hair_back e hair_front separabili;
 - ciocche fisiche complete;
-- accessori capelli non fusi;
-- position map degli accessori per ogni angolo;
+- nessun accessorio dinamico visibile;
 - nessuna ciocca tagliata;
 - numero di layer controllato per il target mobile sotto 300 MB.
