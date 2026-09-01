@@ -1,38 +1,55 @@
 # Luna Live2D — Prompt 06: Hair / Physics
 
 ## Scopo
-Creare riferimenti puliti per separare i capelli di Luna in layer fisici Live2D.
+Creare riferimenti puliti per separare i capelli di Luna in layer fisici Live2D e mantenere la loro coerenza durante rotazioni L/R.
 
 ## Prompt
-Usa ESATTAMENTE i capelli della Luna canonica: stesso colore nero-viola, stessa lunghezza, stesso volume, stessa attaccatura, stessa frangia/ciocche frontali e stesso stile ondulato. NON accorciare, lisciare o reinterpretare la pettinatura.
+Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni ESATTAMENTE colore nero-viola, lunghezza, volume, attaccatura, frangia, ciocche frontali e stile ondulato. NON accorciare, lisciare o reinterpretare la pettinatura.
 
-Crea una tavola tecnica dedicata SOLO ai capelli, senza pose full-body multiple.
+Crea una tavola tecnica dedicata SOLO ai capelli e ai loro layer.
 
-Mostra:
-1. vista frontale testa/spalle;
-2. vista 3/4;
-3. profilo;
-4. retro completo dei capelli;
-5. hair_back completo;
-6. hair_front completo;
-7. frangia/front bangs separata;
-8. ciocca laterale sinistra principale;
-9. ciocca laterale destra principale;
-10. 3–5 ciocche lunghe posteriori separate per fisica;
-11. ciocche secondarie di volume;
-12. eventuali piccoli gruppi di capelli vicino al viso.
+Mostra reference testa/spalle per:
+1. frontale 0°;
+2. INTERMEDIO L ~22.5°;
+3. 3/4 L ~45°;
+4. profilo L ~90°;
+5. retro;
+6. profilo R ~90°;
+7. 3/4 R ~45°;
+8. INTERMEDIO R ~22.5°.
 
-Ogni componente separato deve essere completo, non tagliato, con sufficiente margine attorno alla forma. NON mettere testo sopra le ciocche. Nessun pezzo deve sovrapporsi a un altro.
+Gli intermedi devono essere presenti su entrambi i lati e non ottenuti da semplice mirroring.
 
-Le parti devono essere pensate per spring/physics indipendenti: radice stabile, parte centrale deformabile, estremità libere. Mantieni coerenza perfetta con il volume totale dei capelli della reference.
+Mostra inoltre componenti separati grandi:
+- hair_back completo;
+- hair_front completo;
+- frangia/front bangs;
+- ciocca laterale L principale;
+- ciocca laterale R principale;
+- 3–5 gruppi di ciocche lunghe posteriori per physics;
+- ciocche secondarie di volume;
+- piccoli gruppi vicino al viso solo se utili al movimento.
 
-Sfondo uniforme chiaro o trasparente visivamente neutro. Alta definizione, bordi puliti e dettagli sufficienti per ArtMesh senza eccedere in micro-ciocche inutili.
+Ogni componente deve essere completo, con margine, senza sovrapposizioni o contaminazioni. Le parti devono avere radice stabile, zona deformabile e estremità libera per spring/physics.
+
+### Accessori capelli
+Qualunque fermaglio, charm, pendente, catena o gioiello applicato ai capelli deve essere un **layer dinamico separato**. NON fonderlo con hair_front, hair_back o ciocche.
+
+Per ogni angolo sopra elencato, inclusi INTERMEDIO L/R, deve esistere un riferimento della posizione dell'accessorio capelli con:
+- punto di ancoraggio costante;
+- prospettiva corretta;
+- lato L/R corretto;
+- occlusione corretta rispetto alle ciocche;
+- risposta alla gravità coerente.
+
+La base capelli deve essere completa sotto l'accessorio.
 
 ## Criteri di accettazione
 - pettinatura identica alla Luna canonica;
-- front/back/side coerenti;
-- hair_back e hair_front realmente separabili;
-- ciocche fisiche complete e non amputate;
-- nessuna ciocca tocca il bordo;
-- niente elementi di volto/outfit che contaminino i componenti separati;
-- numero di layer controllato per mantenere il target mobile sotto 300 MB.
+- front/back/L/R/intermedi coerenti;
+- hair_back e hair_front separabili;
+- ciocche fisiche complete;
+- accessori capelli non fusi;
+- position map degli accessori per ogni angolo;
+- nessuna ciocca tagliata;
+- numero di layer controllato per il target mobile sotto 300 MB.
