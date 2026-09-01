@@ -16,108 +16,98 @@
   const VALID_GESTURES = ['nod','tilt','bounce','step'];
   const REQUIRED_LAYERS = ['hairBack','body','chest','head','eyesOpen','eyesClosed','mouthClosed','mouthOpen','hairFront'];
 
-  const state = { emotion:'neutral', intensity:.55, physics:.62, speaking:false, text:'Ciao. Sono qui.', rig:'fallback' };
+  const state = { emotion:'neutral', intensity:.55, physics:.62, speaking:false, text:'Ciao. Sono qui.', rig:'pseudo' };
   const motion = {
     targetX:0,targetY:0,x:0,y:0,vx:0,vy:0,rot:0,vrot:0,
     headX:0,headY:0,headVX:0,headVY:0,headRot:0,headVRot:0,
     hairX:0,hairY:0,hairVX:0,hairVY:0,hairRot:0,hairVRot:0,
-    chestX:0,chestY:0,chestVX:0,chestVY:0,
-    lastT:performance.now()
+    chestX:0,chestY:0,chestVX:0,chestVY:0,lastT:performance.now()
   };
 
-  let blinkTimer = 0;
-  let blinkUntil = 0;
-  let mouthTimer = 0;
+  let blinkTimer=0, blinkUntil=0, mouthTimer=0;
+  const clamp01=(value,fallback=0)=>{const n=Number(value);return Number.isFinite(n)?Math.max(0,Math.min(1,n)):fallback};
+  const spring=(pos,vel,target,k,d,dt)=>{vel+=(target-pos)*k*dt;vel*=Math.exp(-d*dt);pos+=vel*dt;return[pos,vel]};
 
-  const clamp01 = (value,fallback=0) => { const n=Number(value); return Number.isFinite(n)?Math.max(0,Math.min(1,n)):fallback; };
-  const spring = (pos,vel,target,k,d,dt) => { vel += (target-pos)*k*dt; vel *= Math.exp(-d*dt); pos += vel*dt; return [pos,vel]; };
-
-  async function detectRig() {
-    const loaded = new Set();
-    await Promise.all(rigLayers.map(img => new Promise(resolve => {
-      const name = img.dataset.layer;
-      const done = ok => { if (ok) loaded.add(name); resolve(); };
-      if (img.complete) return done(img.naturalWidth > 0);
-      img.addEventListener('load',() => done(true),{once:true});
-      img.addEventListener('error',() => done(false),{once:true});
+  async function detectRig(){
+    const loaded=new Set();
+    await Promise.all(rigLayers.map(img=>new Promise(resolve=>{
+      const name=img.dataset.layer;
+      const done=ok=>{if(ok)loaded.add(name);resolve()};
+      if(img.complete)return done(img.naturalWidth>0);
+      img.addEventListener('load',()=>done(true),{once:true});
+      img.addEventListener('error',()=>done(false),{once:true});
     })));
-    const complete = REQUIRED_LAYERS.every(name => loaded.has(name));
-    state.rig = complete ? 'layered' : 'fallback';
-    avatar.dataset.rig = state.rig;
-    if (rigStatus) rigStatus.textContent = complete ? 'Rig: layered · blink/lip-sync/fisica attivi' : `Rig: fallback PNG · ${loaded.size}/${REQUIRED_LAYERS.length} layer trovati`;
+    const complete=REQUIRED_LAYERS.every(name=>loaded.has(name));
+    state.rig=complete?'layered':'pseudo';
+    avatar.dataset.rig=state.rig;
+    if(rigStatus)rigStatus.textContent=complete?'Rig: layered · blink/lip-sync/fisica indipendente':'Rig: pseudo-layer · testa/capelli/torace animati dalla PNG canonica';
     return complete;
   }
 
-  function render() {
-    avatar.className = `avatar state-idle emotion-${state.emotion}`;
-    avatar.dataset.speaking = String(state.speaking);
-    avatar.dataset.rig = state.rig;
+  function render(){
+    avatar.className=`avatar state-idle emotion-${state.emotion}`;
+    avatar.dataset.speaking=String(state.speaking);avatar.dataset.rig=state.rig;
     document.documentElement.style.setProperty('--intensity',state.intensity.toFixed(2));
     document.documentElement.style.setProperty('--physics',state.physics.toFixed(2));
-    statusText.textContent = state.speaking ? `Luna · sta parlando · ${state.emotion}` : `Luna · pronta · ${state.emotion}`;
-    speechBubble.textContent = state.text || '';
-    speechBubble.style.visibility = state.text ? 'visible':'hidden';
-    emotionSelect.value = state.emotion;
-    intensityRange.value = String(state.intensity);
-    physicsRange.value = String(state.physics);
-    speakingCheck.checked = state.speaking;
+    statusText.textContent=state.speaking?`Luna · sta parlando · ${state.emotion}`:`Luna · pronta · ${state.emotion}`;
+    speechBubble.textContent=state.text||'';speechBubble.style.visibility=state.text?'visible':'hidden';
+    emotionSelect.value=state.emotion;intensityRange.value=String(state.intensity);physicsRange.value=String(state.physics);speakingCheck.checked=state.speaking;
   }
 
-  function setState(next={}) {
-    if (next.emotion && VALID_EMOTIONS.includes(next.emotion)) state.emotion = next.emotion;
-    if (next.intensity !== undefined) state.intensity = clamp01(next.intensity,state.intensity);
-    if (next.physics !== undefined) state.physics = clamp01(next.physics,state.physics);
-    if (next.speaking !== undefined) state.speaking = Boolean(next.speaking);
-    if (next.text !== undefined) state.text = String(next.text);
-    render(); return {...state};
+  function setState(next={}){
+    if(next.emotion&&VALID_EMOTIONS.includes(next.emotion))state.emotion=next.emotion;
+    if(next.intensity!==undefined)state.intensity=clamp01(next.intensity,state.intensity);
+    if(next.physics!==undefined)state.physics=clamp01(next.physics,state.physics);
+    if(next.speaking!==undefined)state.speaking=Boolean(next.speaking);
+    if(next.text!==undefined)state.text=String(next.text);
+    render();return{...state};
   }
 
-  function impulse(x=0,y=0,rotation=0) {
+  function impulse(x=0,y=0,rotation=0){
     const p=.25+state.physics*1.1;
-    motion.vx += Number(x)*p; motion.vy += Number(y)*p; motion.vrot += Number(rotation)*p;
-    motion.headVX += Number(x)*p*.16; motion.headVY += Number(y)*p*.11; motion.headVRot += Number(rotation)*p*.42;
-    motion.hairVX -= Number(x)*p*.24; motion.hairVY -= Number(y)*p*.16; motion.hairVRot -= Number(rotation)*p*.62;
-    motion.chestVX -= Number(x)*p*.08; motion.chestVY -= Number(y)*p*.28;
+    motion.vx+=Number(x)*p;motion.vy+=Number(y)*p;motion.vrot+=Number(rotation)*p;
+    motion.headVX+=Number(x)*p*.16;motion.headVY+=Number(y)*p*.11;motion.headVRot+=Number(rotation)*p*.42;
+    motion.hairVX-=Number(x)*p*.24;motion.hairVY-=Number(y)*p*.16;motion.hairVRot-=Number(rotation)*p*.62;
+    motion.chestVX-=Number(x)*p*.08;motion.chestVY-=Number(y)*p*.28;
   }
 
-  function gesture(name) {
-    if (!VALID_GESTURES.includes(name)) return false;
-    avatar.classList.remove(...VALID_GESTURES.map(g=>`gesture-${g}`)); void avatar.offsetWidth; avatar.classList.add(`gesture-${name}`);
-    if(name==='nod') impulse(0,9,0); if(name==='tilt') impulse(-5,1,-1.2); if(name==='bounce') impulse(0,-18,.35); if(name==='step') impulse(9,-5,.8);
-    setTimeout(()=>avatar.classList.remove(`gesture-${name}`),950); return true;
+  function gesture(name){
+    if(!VALID_GESTURES.includes(name))return false;
+    avatar.classList.remove(...VALID_GESTURES.map(g=>`gesture-${g}`));void avatar.offsetWidth;avatar.classList.add(`gesture-${name}`);
+    if(name==='nod')impulse(0,9,0);if(name==='tilt')impulse(-5,1,-1.2);if(name==='bounce')impulse(0,-18,.35);if(name==='step')impulse(9,-5,.8);
+    setTimeout(()=>avatar.classList.remove(`gesture-${name}`),950);return true;
   }
 
-  function speak(text,options={}) {
-    setState({text,speaking:true,emotion:options.emotion||state.emotion,intensity:options.intensity??state.intensity}); impulse(0,-3,.18);
-    if(options.autoStopMs!==0){const duration=options.autoStopMs||Math.max(1300,Math.min(8000,String(text).length*48));setTimeout(()=>setState({speaking:false}),duration);}
+  function speak(text,options={}){
+    setState({text,speaking:true,emotion:options.emotion||state.emotion,intensity:options.intensity??state.intensity});impulse(0,-3,.18);
+    if(options.autoStopMs!==0){const duration=options.autoStopMs||Math.max(1300,Math.min(8000,String(text).length*48));setTimeout(()=>setState({speaking:false}),duration)}
   }
 
   function onMatrixEvent(payload){
-    if(!payload||typeof payload!=='object') return;
-    if(payload.type==='luna.state') return void setState(payload);
-    if(payload.type==='luna.speak') return void speak(payload.text||'',payload);
-    if(payload.type==='luna.gesture') return void gesture(payload.gesture);
-    if(payload.type==='luna.motion') return void impulse(payload.x||0,payload.y||0,payload.rotation||0);
+    if(!payload||typeof payload!=='object')return;
+    if(payload.type==='luna.state')return void setState(payload);
+    if(payload.type==='luna.speak')return void speak(payload.text||'',payload);
+    if(payload.type==='luna.gesture')return void gesture(payload.gesture);
+    if(payload.type==='luna.motion')return void impulse(payload.x||0,payload.y||0,payload.rotation||0);
   }
 
   function updateFace(now){
-    if(state.rig!=='layered'){avatar.dataset.blink='false';avatar.dataset.mouth='closed';return;}
-    if(now>blinkTimer){blinkUntil=now+90+Math.random()*70;blinkTimer=now+2200+Math.random()*4200;}
+    if(state.rig!=='layered'){avatar.dataset.blink='false';avatar.dataset.mouth='closed';return}
+    if(now>blinkTimer){blinkUntil=now+90+Math.random()*70;blinkTimer=now+2200+Math.random()*4200}
     avatar.dataset.blink=String(now<blinkUntil);
-    if(state.speaking){
-      if(now>mouthTimer){avatar.dataset.mouth=avatar.dataset.mouth==='open'?'closed':'open';mouthTimer=now+75+Math.random()*125;}
-    }else avatar.dataset.mouth='closed';
+    if(state.speaking){if(now>mouthTimer){avatar.dataset.mouth=avatar.dataset.mouth==='open'?'closed':'open';mouthTimer=now+75+Math.random()*125}}else avatar.dataset.mouth='closed';
   }
 
   function physicsLoop(now){
-    const dt=Math.min(.032,Math.max(.001,(now-motion.lastT)/1000)); motion.lastT=now;
+    const dt=Math.min(.032,Math.max(.001,(now-motion.lastT)/1000));motion.lastT=now;
     const stiffness=28+state.physics*34,damping=7.5+(1-state.physics)*3.5;
     [motion.x,motion.vx]=spring(motion.x,motion.vx,motion.targetX,stiffness,damping,dt);
     [motion.y,motion.vy]=spring(motion.y,motion.vy,motion.targetY,stiffness,damping,dt);
-    const targetRot=motion.x*.035; [motion.rot,motion.vrot]=spring(motion.rot,motion.vrot,targetRot,stiffness*.8,damping+1.2,dt);
+    const targetRot=motion.x*.035;[motion.rot,motion.vrot]=spring(motion.rot,motion.vrot,targetRot,stiffness*.8,damping+1.2,dt);
 
-    const headTX=motion.x*.12+Number(getComputedStyle(document.documentElement).getPropertyValue('--look-x')||0)*1.4;
-    const headTY=motion.y*.08+Number(getComputedStyle(document.documentElement).getPropertyValue('--look-y')||0)*.8;
+    const cs=getComputedStyle(document.documentElement);
+    const lookX=Number(cs.getPropertyValue('--look-x')||0),lookY=Number(cs.getPropertyValue('--look-y')||0);
+    const headTX=motion.x*.12+lookX*1.4,headTY=motion.y*.08+lookY*.8;
     [motion.headX,motion.headVX]=spring(motion.headX,motion.headVX,headTX,52,9.4,dt);
     [motion.headY,motion.headVY]=spring(motion.headY,motion.headVY,headTY,50,9.2,dt);
     [motion.headRot,motion.headVRot]=spring(motion.headRot,motion.headVRot,motion.rot*.28,44,8.8,dt);
@@ -138,15 +128,15 @@
     root.setProperty('--hair-x',`${motion.hairX.toFixed(2)}px`);root.setProperty('--hair-y',`${motion.hairY.toFixed(2)}px`);root.setProperty('--hair-r',`${motion.hairRot.toFixed(3)}deg`);
     root.setProperty('--chest-x',`${motion.chestX.toFixed(2)}px`);root.setProperty('--chest-y',`${motion.chestY.toFixed(2)}px`);
     root.setProperty('--chest-sx',(1+Math.abs(motion.chestX)*.0008).toFixed(4));root.setProperty('--chest-sy',(1+Math.max(-.004,breath*.0024)).toFixed(4));
-    updateFace(now); requestAnimationFrame(physicsLoop);
+    updateFace(now);requestAnimationFrame(physicsLoop);
   }
 
-  window.LunaAvatar={version:'0.3.0',setState,getState:()=>({...state}),gesture,impulse,speak,onMatrixEvent,emotions:[...VALID_EMOTIONS],gestures:[...VALID_GESTURES],detectRig};
-  window.addEventListener('message',event=>{const data=event.data;if(data&&typeof data==='object'&&String(data.type||'').startsWith('luna.'))onMatrixEvent(data);});
-  toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden;});
-  emotionSelect.addEventListener('change',e=>setState({emotion:e.target.value})); intensityRange.addEventListener('input',e=>setState({intensity:e.target.value})); physicsRange.addEventListener('input',e=>setState({physics:e.target.value})); speakingCheck.addEventListener('change',e=>setState({speaking:e.target.checked}));
+  window.LunaAvatar={version:'0.3.1',setState,getState:()=>({...state}),gesture,impulse,speak,onMatrixEvent,emotions:[...VALID_EMOTIONS],gestures:[...VALID_GESTURES],detectRig};
+  window.addEventListener('message',event=>{const data=event.data;if(data&&typeof data==='object'&&String(data.type||'').startsWith('luna.'))onMatrixEvent(data)});
+  toggle.addEventListener('click',()=>{panel.hidden=!panel.hidden});
+  emotionSelect.addEventListener('change',e=>setState({emotion:e.target.value}));intensityRange.addEventListener('input',e=>setState({intensity:e.target.value}));physicsRange.addEventListener('input',e=>setState({physics:e.target.value}));speakingCheck.addEventListener('change',e=>setState({speaking:e.target.checked}));
   panel.querySelectorAll('[data-gesture]').forEach(button=>button.addEventListener('click',()=>gesture(button.dataset.gesture)));
-  let lastPointer=null; window.addEventListener('pointermove',event=>{const nx=(event.clientX/window.innerWidth-.5)*2,ny=(event.clientY/window.innerHeight-.5)*2;document.documentElement.style.setProperty('--look-x',nx.toFixed(3));document.documentElement.style.setProperty('--look-y',ny.toFixed(3));if(lastPointer){const dx=event.clientX-lastPointer.x,dy=event.clientY-lastPointer.y;impulse(dx*.035,dy*.02,dx*.002)}lastPointer={x:event.clientX,y:event.clientY};},{passive:true});
+  let lastPointer=null;window.addEventListener('pointermove',event=>{const nx=(event.clientX/window.innerWidth-.5)*2,ny=(event.clientY/window.innerHeight-.5)*2;document.documentElement.style.setProperty('--look-x',nx.toFixed(3));document.documentElement.style.setProperty('--look-y',ny.toFixed(3));if(lastPointer){const dx=event.clientX-lastPointer.x,dy=event.clientY-lastPointer.y;impulse(dx*.035,dy*.02,dx*.002)}lastPointer={x:event.clientX,y:event.clientY}},{passive:true});
   window.addEventListener('pointerdown',()=>impulse(0,-4,0));
-  render(); detectRig().then(render); requestAnimationFrame(physicsLoop);
+  render();detectRig().then(render);requestAnimationFrame(physicsLoop);
 })();
