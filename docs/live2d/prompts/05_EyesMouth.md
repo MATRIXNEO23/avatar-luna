@@ -1,7 +1,7 @@
 # Luna Live2D — Prompt 05: Eyes / Mouth / Brows
 
 ## Scopo
-Creare componenti facciali tecnici grandi e separati per blink, gaze, sopracciglia e lip-sync.
+Creare componenti facciali tecnici grandi e separati per blink, gaze, sopracciglia, lip-sync e rotazione testa bilaterale.
 
 ## Prompt
 Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni stile, colore viola delle iridi, eyeliner/ciglia, forma delle labbra, sopracciglia e carnagione identici alla reference.
@@ -46,7 +46,7 @@ Crea componenti grandi e separati per:
 - soft/sensual smile.
 
 ### Rotazione testa
-Per supportare ParamAngleX e impedire drift del volto, aggiungi reference facciali pulite per:
+Per supportare ParamAngleX e ridurre il drift del volto, aggiungi reference facciali pulite per:
 - frontale 0°;
 - INTERMEDIO L ~22.5°;
 - 3/4 L ~45°;
@@ -57,8 +57,10 @@ Per supportare ParamAngleX e impedire drift del volto, aggiungi reference faccia
 
 Gli intermedi devono esistere su entrambi i lati. Non specchiare automaticamente un lato per ottenere l’altro.
 
-### Base pulita
-Niente orecchini, collane, charms o accessori dinamici fusi nei componenti facciali. Gli accessori testa/orecchie sono layer separati e vengono mappati nelle tavole dedicate.
+### CLEAN FACE LOCK
+Niente orecchini, collane, pendenti, charms, catene o accessori dinamici nelle reference facciali o nei componenti. Le orecchie, la pelle e le zone dei capelli visibili devono essere complete sotto i futuri accessori.
+
+Gli accessori testa/orecchie vengono prodotti esclusivamente nel Prompt 09 con varianti dedicate per ogni angolo L/R.
 
 Niente corpo o outfit. Solo componenti facciali tecnici e reference di rotazione testa, ad alta risoluzione e senza contaminazioni.
 
@@ -68,6 +70,6 @@ Niente corpo o outfit. Solo componenti facciali tecnici e reference di rotazione
 - sopracciglia L/R separate;
 - bocche grandi abbastanza per ArtMesh puliti;
 - INTERMEDIO L e INTERMEDIO R presenti nelle reference di rotazione;
-- nessun accessorio dinamico fuso;
+- nessun accessorio dinamico visibile;
 - nessun componente tocca il bordo;
 - nessun testo sovrapposto ai componenti.
