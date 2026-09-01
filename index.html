@@ -56,6 +56,17 @@
       <label>Intensità emotiva<input id="intensityRange" type="range" min="0" max="1" value="0.55" step="0.05" /></label>
       <label>Fisica movimento<input id="physicsRange" type="range" min="0" max="1" value="0.62" step="0.05" /></label>
       <label class="check"><input id="speakingCheck" type="checkbox" /> Parla</label>
+
+      <form id="speechTestForm" class="speech-test-form">
+        <label>Test bocca / frase
+          <textarea id="speechTestInput" rows="3" maxlength="500" placeholder="Scrivi qui quello che Luna deve dire…">Ciao, questa è una prova del movimento della bocca.</textarea>
+        </label>
+        <div class="debug-actions">
+          <button id="speechTestPlay" type="submit">Fai parlare Luna</button>
+          <button id="speechTestStop" type="button">Stop</button>
+        </div>
+      </form>
+
       <div class="debug-actions"><button type="button" data-gesture="nod">Nod</button><button type="button" data-gesture="tilt">Tilt</button><button type="button" data-gesture="bounce">Bounce</button><button type="button" data-gesture="step">Step</button></div>
       <div id="rigStatus" class="rig-status">Rig: verifica asset…</div>
     </aside>
