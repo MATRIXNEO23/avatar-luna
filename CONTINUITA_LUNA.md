@@ -63,7 +63,7 @@ File: `docs/live2d/prompts/00_PROPORTION_LOCK.md`.
 Lock obbligatori per tutti i prompt:
 1. IDENTITY LOCK;
 2. PROPORTION LOCK;
-3. **SCALE LOCK / NORMALIZZAZIONE**;
+3. SCALE LOCK / NORMALIZZAZIONE;
 4. OUTFIT LOCK;
 5. DYNAMIC ACCESSORY LOCK;
 6. ROTATION LOCK;
@@ -85,6 +85,16 @@ Ogni asset appartiene allo stesso sistema metrico globale derivato dalla METRIC 
 - canvas e risoluzione possono cambiare, la scala anatomica no;
 - scaling solo uniforme;
 - overlay/landmark devono combaciare senza stretching X/Y.
+
+### Regola nuova — generatori non affidabili per quote numeriche
+Le quote scritte dentro un'immagine generata NON costituiscono una misura valida.
+Procedura obbligatoria per componenti metrici:
+1. generare il componente visivo senza quote numeriche;
+2. estrarre su trasparenza;
+3. misurare la METRIC MASTER;
+4. normalizzare deterministicamente alla misura/anchor reale;
+5. verificare in overlay;
+6. solo allora APPROVATO.
 
 ## OUTFIT LOCK
 Prompt base 01–07: stesso outfit statico CLEAN MASTER v1, senza reinterpretazioni:
@@ -137,21 +147,20 @@ Tavola B:
 - Tavole C/D/E generate dopo A/B: **SCARTATE / NON USARE**.
 - **NON rifare A/B** a ogni nuovo passaggio; restano reference di rotazione orizzontale.
 
-## FACE OVERLAY / ANCHOR LOCK — NUOVO
-Creato `docs/live2d/prompts/01A_FaceOverlayAnchors.md`.
+## FACE OVERLAY / ANCHOR LOCK
+File: `docs/live2d/prompts/01A_FaceOverlayAnchors.md`.
 Commit: `0abe9d0ed46539e7e640ac0b470ca79b8425c009`.
 
 Decisione tecnica:
 - A/B sono reference geometriche, NON sprite finali runtime;
 - nel PSD/rig finale `FaceBase`, `EyeL`, `EyeR`, `BrowL`, `BrowR` e componenti della bocca sono layer/ArtMesh separati;
-- occhi e bocca vengono **sovrapposti tramite anchor metrici derivati dalla METRIC MASTER**;
-- gli anchor seguono il `Head Deformer`, quindi non restano fissi sul canvas;
+- occhi e bocca vengono sovrapposti tramite anchor metrici derivati dalla METRIC MASTER;
+- gli anchor seguono il `Head Deformer`;
 - su 22.5°/45°/90° L/R posizione, compressione prospettica e occlusione vengono gestite con keyform/deformers/mask/opacity;
-- a 90° l'occhio lontano può essere quasi o totalmente occultato; a 135°/180° gli elementi frontali possono scomparire;
 - L/R restano asset distinti, niente mirroring come sostituto;
-- **A/B non devono essere rigenerate** per aggiungere questa funzione: si estraggono landmark/anchor dalle reference accettate.
+- A/B non devono essere rigenerate per aggiungere questa funzione.
 
-Landmark minimi da registrare sulla frontale e rendere tracciabili sulle rotazioni:
+Landmark minimi:
 - centro/angoli occhi L/R;
 - centro iride/pupilla L/R;
 - pivot palpebre L/R;
@@ -183,13 +192,25 @@ Landmark minimi da registrare sulla frontale e rendere tracciabili sulle rotazio
 18. Validazione finale visuale e prestazionale.
 
 ## Stato asset facciali correnti
-- Pitch generato: **PENDING**, non approvare automaticamente; le misure locali devono essere realmente ricavate dalla METRIC MASTER.
-- Tavola occhi generata: **PENDING/DA VERIFICARE**; valori numerici mostrati dall'immagine non sono validi finché non misurati sulla METRIC MASTER.
-- Regola utente: se serve solo un componente, generare solo quel componente alla sua scala metrica proporzionale; niente corpo/volto completo inutile.
+- Pitch generato: **PENDING**, non approvare automaticamente; misure locali da ricavare realmente dalla METRIC MASTER.
+- Prima tavola occhi con volto/skin: **SCARTATA** come asset finale.
+- Tavola `05A_EYES_ONLY` con quote `78×32`, pupilla `16`, interoculare `86`: **SCARTATA**. Verifica reale sulla CLEAN MASTER corrente: full-body alpha visibile ≈1527 px = 1000 unità; gli occhi canonici occupano visivamente circa 27–32 px di larghezza e ~15–17 px di altezza, cioè circa 18–21 × 10–11 unità master. Questi valori sono solo controllo provvisorio sulla CLEAN MASTER e NON sostituiscono la misura definitiva sulla METRIC MASTER frontale normalizzata.
+- Ulteriore difetto della tavola scartata: include rettangoli di pelle attorno agli occhi, inadatti come layer sovrapposti perché possono creare seam sul `FaceBase`.
+- Prompt corretto: `docs/live2d/prompts/05A_EyesOnly.md`, aggiornato per imporre componenti oculari puri + post-process metrico deterministico.
+- Commit prompt corretto: `7a8ce0efc7c292d7ab8f7b3dc8e1fe51d7e9706b`.
+
+## COMPONENT-ONLY LOCK
+Regola utente permanente: se serve solo un componente, produrre SOLO quel componente alla sua scala metrica proporzionale.
+Esempi:
+- occhi → solo occhi/parti oculari;
+- bocca → solo bocca/parti labiali;
+- sopracciglia → solo sopracciglia;
+- accessorio → solo accessorio;
+- niente corpo/volto completo inutile.
 
 ## OUTPUT LOCK
-- sfondo neutro semplice;
-- niente pannelli/palette/loghi/diagrammi inutili salvo necessità tecnica;
+- sfondo neutro semplice o trasparente per componenti;
+- niente pannelli/palette/loghi/diagrammi inutili;
 - nessun crop per full-body;
 - crop tecnico ammesso per parti/close-up se coerente e metrico;
 - se lo spazio non basta, dividere in più tavole invece di comprimere.
@@ -198,12 +219,13 @@ Landmark minimi da registrare sulla frontale e rendere tracciabili sulle rotazio
 Cartella `docs/live2d/prompts/`:
 - `00_PROPORTION_LOCK.md` — GLOBAL LOCK;
 - `01_Turnaround.md` — turnaround A/B;
-- `01A_FaceOverlayAnchors.md` — anchor per occhi/bocca/sopracciglia sulle rotazioni;
+- `01A_FaceOverlayAnchors.md` — anchor occhi/bocca/sopracciglia;
 - `02_HeadUpperBodyPitch.md` — pitch verticale rig-critical;
 - `02_StandingPoses.md` — standing poses, più avanti;
 - `03_FloorBedPoses.md`;
 - `04_FaceExpressions.md`;
 - `05_EyesMouth.md`;
+- `05A_EyesOnly.md` — occhi puri, component-only;
 - `06_HairPhysics.md`;
 - `07_MainOutfit.md`;
 - `08_AltOutfits.md` — FUTURO;
@@ -215,12 +237,13 @@ Procedere una tavola/sub-tavola alla volta:
 1. partire dalla CLEAN MASTER v1 / METRIC MASTER;
 2. NON rifare asset già accettati se non richiesto;
 3. generare un solo nuovo asset/componente;
-4. normalizzare allo standard metrico pertinente;
-5. controllare identità, proporzioni, scala, anchor, outfit, posa/angolo, assenza accessori dinamici e crop;
-6. overlay dove applicabile;
-7. APPROVATO / SCARTATO / PENDING;
-8. aggiornare questo file di continuità;
-9. solo dopo passare al successivo.
+4. per componenti: generare VISUALMENTE senza quote inventate;
+5. normalizzare deterministicamente allo standard metrico pertinente;
+6. controllare identità, proporzioni, scala, anchor, outfit, posa/angolo, assenza accessori dinamici e crop;
+7. overlay dove applicabile;
+8. APPROVATO / SCARTATO / PENDING;
+9. aggiornare questo file di continuità;
+10. solo dopo passare al successivo.
 
 ## Pipeline Live2D successiva
 Dopo reference set approvato e normalizzato:
@@ -236,4 +259,4 @@ Dopo reference set approvato e normalizzato:
 - L9 validazione finale.
 
 ## Prossimo passo operativo
-Prima di generare altri occhi/bocca, fissare/estrarre gli **anchor metrici facciali** dalla METRIC MASTER/A-B; poi generare i componenti separati alla scala reale corrispondente, senza rigenerare A/B.
+Rigenerare **solo gli occhi/parti oculari senza quote numeriche e senza pelle circostante**, poi normalizzarli deterministicamente sulla METRIC MASTER e verificarli in overlay. Non procedere alla bocca finché EYES-A/B non sono metricamente validi.
