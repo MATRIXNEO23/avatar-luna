@@ -4,29 +4,48 @@
 Creare outfit alternativi modulari senza alterare corpo, volto, capelli o rig base di Luna.
 
 ## Prompt
-Usa ESATTAMENTE Luna dalla reference canonica allegata. Mantieni invariati volto, occhi viola, capelli nero-viola, proporzioni del corpo, carnagione, altezza apparente e silhouette base.
+Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni invariati volto, occhi viola, capelli nero-viola, proporzioni del corpo, carnagione, altezza apparente e silhouette base.
 
-Genera UN SOLO OUTFIT ALTERNATIVO PER TAVOLA. NON mischiare più outfit nello stesso foglio.
+Genera **UN SOLO OUTFIT ALTERNATIVO PER TAVOLA**. NON mischiare più outfit nello stesso foglio.
 
 Per l’outfit scelto crea almeno:
 1. frontale full-body;
-2. 3/4 sinistra full-body;
-3. profilo sinistro full-body;
-4. retro full-body;
-5. un riferimento supino completo se l’outfit verrà usato in scene a terra/letto;
-6. dettagli separati delle parti che devono muoversi o deformarsi.
+2. INTERMEDIO L ~22.5°;
+3. 3/4 sinistra;
+4. profilo sinistro;
+5. retro;
+6. profilo destro;
+7. 3/4 destra;
+8. INTERMEDIO R ~22.5°;
+9. un riferimento supino completo se l’outfit verrà usato in scene a terra/letto.
 
-Tutte le figure devono essere complete dalla punta dei capelli ai piedi, con mani, scarpe e accessori visibili e almeno 12–15% di margine attorno alla sagoma. Nessun crop.
+Se il foglio diventa troppo affollato, dividere le viste in più tavole coordinate. Mai comprimere o tagliare.
 
-L’outfit deve essere progettato per condividere lo stesso body rig del modello principale. Evita cambi di corporatura o anatomia per adattare il vestito. Le parti dell’outfit che coprono il corpo devono essere coerenti tra front/side/back e avere geometria sufficientemente chiara per ricostruire le zone nascoste.
+Tutte le figure devono essere complete dalla punta dei capelli ai piedi, con mani, scarpe e almeno 12–15% di margine.
 
-Esempi di tavole separate: dress elegante; casual; bath/towel; eventuali altri outfit futuri. Ogni outfit deve restare isolato in un proprio file.
+L’outfit deve condividere lo stesso body rig del modello principale. Evita cambi anatomici per adattare il vestito.
+
+### Parti statiche/deformabili
+Le parti tessili o rigide che seguono il corpo possono costituire layer outfit separati dal body ma non richiedono physics indipendente se non previsto.
+
+### Accessori dinamici
+Qualunque elemento che deve oscillare o spostarsi rispetto al corpo — collane, catene, pendenti, orecchini, charms, cordini, fiocchi pendenti, gemme sospese, accessori capelli — deve essere **separato dall'outfit statico**.
+
+Per ogni vista/posa richiesta, inclusi INTERMEDIO L/R e riferimento supino, devono essere previste:
+- **BASE CLEAN** senza accessori dinamici fusi;
+- **ACCESSORY POSITION MAP** della stessa posa.
+
+Gli oggetti devono mantenere identità, dimensione e punto di ancoraggio, ma cambiare orientamento/prospettiva in base alla posa e alla gravità.
+
+La zona del corpo/outfit coperta dall'accessorio deve essere ricostruita completamente.
 
 ## Criteri di accettazione
 - un solo outfit per tavola;
-- corpo e volto identici alla Luna canonica;
-- front/3-4/side/back coerenti;
-- riferimento supino incluso se necessario;
-- nessuna parte del corpo o dell’outfit tagliata;
-- dettagli mobili separati;
+- corpo e volto identici alla METRIC MASTER;
+- INTERMEDIO L/R presenti;
+- front/side/back coerenti;
+- riferimento supino incluso quando necessario;
+- nessun crop;
+- accessori dinamici separati;
+- ACCESSORY POSITION MAP per ogni vista/posa;
 - compatibilità con lo stesso rig base Live2D.
