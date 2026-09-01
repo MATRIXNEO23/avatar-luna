@@ -4,7 +4,7 @@
 Creare componenti facciali tecnici grandi e separati per blink, gaze, sopracciglia e lip-sync.
 
 ## Prompt
-Usa ESATTAMENTE gli occhi, le sopracciglia e la bocca della Luna canonica. Mantieni stile, colore viola delle iridi, eyeliner/ciglia, forma delle labbra e carnagione identici alla reference.
+Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni stile, colore viola delle iridi, eyeliner/ciglia, forma delle labbra, sopracciglia e carnagione identici alla reference.
 
 Questa NON è una tavola di espressioni complete: è una tavola tecnica di componenti separati, grandi, puliti e chiaramente distanziati.
 
@@ -23,7 +23,7 @@ Per ogni lato L/R crea:
 - happy closed;
 - sad/soft eyelid.
 
-Ogni variante deve mantenere la stessa geometria di base e la stessa scala. Nessun occhio deve essere tagliato. Lascia margine trasparente/chiaro attorno a ciascun componente.
+Ogni variante deve mantenere la stessa geometria di base e la stessa scala. Nessun occhio deve essere tagliato.
 
 ### Sopracciglia
 Per L/R crea almeno: neutral, happy, angry, sad, surprised, worried, flirt/sensual.
@@ -45,13 +45,29 @@ Crea componenti grandi e separati per:
 - frown;
 - soft/sensual smile.
 
-Niente testa completa, niente corpo, niente outfit. Solo componenti facciali tecnici, ad alta risoluzione, ben separati, senza contaminazioni o ritagli stretti.
+### Rotazione testa
+Per supportare ParamAngleX e impedire drift del volto, aggiungi reference facciali pulite per:
+- frontale 0°;
+- INTERMEDIO L ~22.5°;
+- 3/4 L ~45°;
+- profilo L ~90°;
+- INTERMEDIO R ~22.5°;
+- 3/4 R ~45°;
+- profilo R ~90°.
+
+Gli intermedi devono esistere su entrambi i lati. Non specchiare automaticamente un lato per ottenere l’altro.
+
+### Base pulita
+Niente orecchini, collane, charms o accessori dinamici fusi nei componenti facciali. Gli accessori testa/orecchie sono layer separati e vengono mappati nelle tavole dedicate.
+
+Niente corpo o outfit. Solo componenti facciali tecnici e reference di rotazione testa, ad alta risoluzione e senza contaminazioni.
 
 ## Criteri di accettazione
-- occhio sinistro e destro entrambi presenti per tutte le direzioni principali;
-- niente singolo occhio riutilizzato per entrambi i lati;
+- occhi L/R entrambi presenti per tutte le direzioni principali;
 - blink L/R completo;
 - sopracciglia L/R separate;
-- bocche abbastanza grandi da ricavarne ArtMesh puliti;
+- bocche grandi abbastanza per ArtMesh puliti;
+- INTERMEDIO L e INTERMEDIO R presenti nelle reference di rotazione;
+- nessun accessorio dinamico fuso;
 - nessun componente tocca il bordo;
-- nessun testo o elemento grafico sovrapposto ai componenti.
+- nessun testo sovrapposto ai componenti.
