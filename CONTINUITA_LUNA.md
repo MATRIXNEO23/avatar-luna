@@ -162,25 +162,71 @@ Regola corrente: **Tavola B non deve contenere un secondo frontale**. Il quinto 
 ## Stato visuale Prompt 01
 - Vecchi turnaround con identità/outfit errati o accessori: SCARTATI.
 - CLEAN MASTER v1: APPROVATA come master operativa.
-- Tavola A clean generata e accettata per proseguire, ma deve ancora essere sottoposta alla normalizzazione tecnica SCALE LOCK prima di diventare reference metrico definitivo.
-- Tavola P separata: superata dalla soluzione attuale che reinserisce il posteriore 180° direttamente nella Tavola B.
-- Ultima Tavola B con posteriore + lato destro: PENDING validazione/normalizzazione metrica.
-- Nessuna tavola diventa METRIC MASTER finché la normalizzazione reale e il confronto overlay non sono completati.
+- Tavola A clean corrente: ACCETTATA per proseguire, da normalizzare/verificare metricamente prima dell'uso tecnico definitivo.
+- Tavola B clean corrente: ACCETTATA per proseguire, da normalizzare/verificare metricamente prima dell'uso tecnico definitivo.
+- Tavola P separata: superata dalla soluzione che inserisce il 180° direttamente nella Tavola B.
+- Tavole C/D/E generate dopo A/B: **SCARTATE / NON NECESSARIE NELLA FORMA GENERATA**. Non usarle come reference e non rigenerarle.
+- Regola operativa definitiva: **NON rifare Tavola A o Tavola B ad ogni nuovo punto.** A/B restano il riferimento di rotazione orizzontale; si rigenerano solo su richiesta esplicita dell'utente o se una validazione tecnica dimostra un errore bloccante.
+
+## Asset necessari per massima fluidità — ORDINE TECNICO
+Obiettivo deciso: movimento molto fluido. Il numero di immagini non è un fine; le reference servono a costruire mesh, deformers, keyform, interpolazioni e physics senza drift.
+
+Procedere UNO ALLA VOLTA, sempre partendo dalla CLEAN MASTER v1 e con gli stessi criteri di A/B:
+1. **Turnaround orizzontale A/B** — FATTO come reference; non rigenerare.
+2. **Head / Upper-Body Pitch** — su/giù + intermedi per `ParamAngleY` — PROSSIMO.
+3. **Diagonali X+Y testa/upper-body** — alto-sx, basso-sx, alto-dx, basso-dx; servono per interpolazione bidimensionale fluida.
+4. **Occhi + sopracciglia** — L/R separati, gaze X/Y, open/half/closed/blink e variazioni emotive.
+5. **Bocca / lip-sync** — rest, apertura continua, form, fonemi principali e chiusure M/B/P/F/V.
+6. **Espressioni facciali** — neutral, happy, shy, angry, surprised, focused, sad, flirty, sensual, provocative/intense; `erotic_explicit` resta slot tecnico Matrix rappresentato visivamente in modo non grafico.
+7. **Hair separation + physics** — back/front/bangs/side locks/rear strands con pivot e reference di inerzia; niente full-sprite frame.
+8. **Torso / breath / chest secondary motion** — keyform leggere per respiro, inclinazione e secondary physics senza dondolio full-body.
+9. **Standing gestures/body deformation** — pose utili a gesture e distribuzione peso, dopo aver chiuso le deformazioni fondamentali.
+10. **Floor/bed/reclined references** — solo se richieste dalle scene; mantengono segmenti anatomici, non bounding-box forzato.
+11. **Main outfit separation/deformation** — geometria canonica clean coerente con il corpo.
+12. **Hands/body parts tecnici** — L/R separati, varianti utili, nessun mirroring come sostituto.
+13. **Dynamic accessories** — SOLO separati, con scale/pivot/anchor e varianti di gravità/angolo.
+14. **Layer map / PSD Live2D-ready** — corpo, volto, occhi, bocca, capelli, outfit, accessori e mask.
+15. **Cubism modeling + ArtMesh/deformers/parameters**.
+16. **Physics + motions + expressions**.
+17. **Android Cubism Native + benchmark RAM/FPS/jank**.
+18. **Validazione finale visuale e prestazionale**.
+
+## Nuovo Prompt 02 rig-critical
+Creato: `docs/live2d/prompts/02_HeadUpperBodyPitch.md`.
+Commit: `07c90c85f844f763ab6b54b6381b5bd70c5422a7`.
+
+Contiene Tavola PITCH-A con 5 viste coordinate:
+- DOWN 30°;
+- DOWN 15°;
+- NEUTRAL 0°;
+- UP 15°;
+- UP 30°.
+
+Regole:
+- yaw 0° e roll 0° in tutte le viste;
+- stessa scala head-to-hips derivata dalla METRIC MASTER;
+- CLEAN MASTER v1 unica sorgente visiva primaria;
+- A/B solo supporto di scala/geometria, NON sorgente identitaria;
+- zero accessori dinamici;
+- stesso outfit se visibile;
+- nessuna rigenerazione di A/B.
 
 ## OUTPUT LOCK
 Per gli asset tecnici:
 - sfondo neutro semplice;
 - niente pannelli/palette/loghi/diagrammi inutili salvo necessità esplicita;
-- nessun crop;
+- nessun crop per i full-body;
 - 12–15% di margine per full-body;
-- testa, capelli, mani, gambe, piedi e scarpe interi;
+- testa, capelli, mani, gambe, piedi e scarpe interi quando il soggetto è full-body;
+- close-up/upper-body possono usare crop tecnico intenzionale purché identico tra le viste coordinate;
 - se lo spazio non basta, dividere in più tavole invece di comprimere.
 
 ## Prompt pack
 Cartella `docs/live2d/prompts/`:
 - `00_PROPORTION_LOCK.md` — GLOBAL LOCK incluso SCALE LOCK;
 - `01_Turnaround.md` — turnaround A/B;
-- `02_StandingPoses.md`;
+- `02_HeadUpperBodyPitch.md` — pitch verticale rig-critical;
+- `02_StandingPoses.md` — standing poses, da usare più avanti;
 - `03_FloorBedPoses.md`;
 - `04_FaceExpressions.md`;
 - `05_EyesMouth.md`;
@@ -195,13 +241,14 @@ Tutti devono ereditare il GLOBAL LOCK e quindi anche SCALE LOCK.
 ## Metodo operativo
 Procedere una tavola/sub-tavola alla volta:
 1. partire dalla CLEAN MASTER v1 / METRIC MASTER;
-2. generare un solo asset;
-3. normalizzare allo standard metrico;
-4. controllare identità, proporzioni, scala, outfit, posa/angolo, assenza accessori dinamici e crop;
-5. overlay dove applicabile;
-6. APPROVATO / SCARTATO / PENDING;
-7. aggiornare questo file di continuità;
-8. solo dopo passare al successivo.
+2. NON rifare asset già accettati se non richiesto;
+3. generare un solo nuovo asset;
+4. normalizzare allo standard metrico pertinente;
+5. controllare identità, proporzioni, scala, outfit, posa/angolo, assenza accessori dinamici e crop;
+6. overlay dove applicabile;
+7. APPROVATO / SCARTATO / PENDING;
+8. aggiornare questo file di continuità;
+9. solo dopo passare al successivo.
 
 ## Pipeline Live2D successiva
 Dopo reference set approvato e normalizzato:
@@ -217,4 +264,4 @@ Dopo reference set approvato e normalizzato:
 - L9 validazione finale.
 
 ## Prossimo passo operativo
-**Prima di Prompt 02:** normalizzare realmente CLEAN MASTER v1, Tavola A e Tavola B allo SCALE LOCK comune, quindi confrontarle per overlay. Solo dopo la validazione metrica il frontale può diventare METRIC MASTER definitiva.
+Generare e validare **SOLO `02_HeadUpperBodyPitch.md` — Tavola PITCH-A**. Non rigenerare Turnaround A/B. Dopo approvazione si passa al set diagonale X+Y.
