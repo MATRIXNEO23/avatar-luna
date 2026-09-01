@@ -24,7 +24,7 @@ Non accettare sprite che cambiano significativamente volto, occhi, forma del vis
 
 ## Stato renderer
 
-Versione runtime attuale: v0.3.1.
+Versione runtime attuale: v0.3.2.
 
 Funzioni presenti:
 - idle continuo;
@@ -37,6 +37,18 @@ Funzioni presenti:
 - API JavaScript `window.LunaAvatar`;
 - eventi Matrix via `window.postMessage`;
 - rilevamento automatico del rig.
+
+### Modifiche v0.3.2
+
+Ottimizzazione mirata Android/mobile del loop di animazione:
+- eliminato `getComputedStyle()` dal loop per-frame;
+- `lookX` / `lookY` mantenuti direttamente nello stato JS;
+- impulsi del puntatore normalizzati rispetto al tempo tra eventi, per evitare salti e saturazioni su device/touch diversi;
+- aggiunto supporto JS a `prefers-reduced-motion`;
+- con reduced-motion attivo gli impulsi vengono ignorati e le variabili dinamiche vengono azzerate;
+- API runtime aggiornata a `window.LunaAvatar.version = '0.3.2'`.
+
+Commit v0.3.2: `7593c203d6e02d23f118d652fd5d3622beffb753`.
 
 ## Modalità rig
 
@@ -95,13 +107,13 @@ Controlli richiesti:
 - tuning delle molle;
 - fluidità generale.
 
-Ottimizzazioni tecniche già identificate:
-- rimuovere `getComputedStyle()` dal loop per-frame e mantenere lo sguardo in stato JS;
-- evitare moltiplicazioni CSS come `var(--look-x) * 3px`, calcolando offset pixel in JS;
-- normalizzare gli impulsi del puntatore rispetto al tempo;
-- supportare `prefers-reduced-motion` anche a livello JS;
-- mantenere trasformazioni compositor-friendly (`transform`, `opacity`);
-- monitorare il costo GPU delle copie multiple della PNG nel pseudo-rig.
+Ottimizzazioni tecniche:
+- [x] rimuovere `getComputedStyle()` dal loop per-frame e mantenere lo sguardo in stato JS;
+- [ ] evitare moltiplicazioni CSS come `var(--look-x) * 3px`, calcolando offset pixel in JS;
+- [x] normalizzare gli impulsi del puntatore rispetto al tempo;
+- [x] supportare `prefers-reduced-motion` anche a livello JS;
+- [x] mantenere trasformazioni compositor-friendly (`transform`, `opacity`);
+- [ ] monitorare il costo GPU delle copie multiple della PNG nel pseudo-rig.
 
 ## Asset mobile
 
@@ -146,9 +158,9 @@ window.postMessage({ type: 'luna.motion', x: 8, y: -4, rotation: 0.3 }, '*');
 
 ## Prossimi passi consigliati
 
-1. Validare visivamente la nuova sprite sheet contro la reference canonica.
-2. Ricavare asset layered reali fedeli a Luna.
-3. Correggere le due criticità Android del loop (`getComputedStyle` e aritmetica CSS).
+1. Eliminare l'aritmetica CSS non affidabile su alcuni WebView Android (`var(...) * px`) spostando gli offset di sguardo completamente in JS.
+2. Validare visivamente la nuova sprite sheet contro la reference canonica.
+3. Ricavare asset layered reali fedeli a Luna.
 4. Eseguire test Android reale.
 5. Misurare FPS/CPU/RAM e artefatti.
 6. Tuning finale di spring, hair lag e chest secondary motion.
