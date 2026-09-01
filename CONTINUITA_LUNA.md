@@ -2,187 +2,170 @@
 
 Ultimo aggiornamento: 2026-09-01
 Repository: `MATRIXNEO23/avatar-luna`
-Branch operativa di lavoro: `rig-assets-working`
+Branch operativa: `rig-assets-working`
 Branch stabile non toccata: `main`
 Branch backup: `rig-recovery-backup-2026-09-01`
 
 ## Scopo
-`avatar-luna` è il laboratorio separato da Neon Tides / Matrix Engine per sviluppare avatar, grafica, rig e test mobile senza regressioni sul progetto principale.
+Laboratorio separato da Neon Tides / Matrix Engine per sviluppare avatar, grafica, rig e test Android senza regressioni sul progetto principale.
 
-## Identità visiva e recupero rig
-La vecchia `luna_08_no_cape.png` NON va considerata il rig definitivo: è soltanto il fallback storico del prototipo.
+## Identità visiva
+La vecchia `luna_08_no_cape.png` è soltanto fallback storico e NON è la sorgente canonica.
 
-Il 2026-09-01 è stata recuperata dall'utente la character sheet corretta di Luna con:
-- pose full-body;
-- espressioni;
-- occhi;
-- bocche;
-- capelli;
-- torso;
-- braccia e guanti;
-- gambe;
-- accessori;
-- riferimenti lip-sync/blink.
-
-Questa sheet è la reference per ricostruire gli asset reali. Gli asset dedicati `assets/rig/*.png` non risultavano mai caricati nel repository: la cartella conteneva soltanto il README. Non risultano cancellazioni di PNG layered dalla cronologia Git.
+Master canonica approvata il 2026-09-01: character sheet 1536x1024 con Luna capelli nero/viola, occhi viola, outfit nero/viola, 8 pose full-body e componenti di riferimento.
 
 Priorità identità: volto > capelli > colori/tratti > outfit > espressione/posa > movimento.
 
-## Master grafica approvata — CP0 APPROVATO
-La master grafica approvata dall'utente il 2026-09-01 è la sheet 1536x1024 con Luna capelli nero/viola, occhi viola e outfit nero/viola, contenente 8 pose full-body e componenti di riferimento.
+Regola: dopo approvazione della master, nessuna reinterpretazione o rigenerazione. Gli asset devono derivare dai pixel della master approvata.
 
-Regola fondamentale: non reinterpretare o rigenerare Luna durante l'estrazione degli asset. Dopo l'approvazione della master, ogni asset deve derivare direttamente dai suoi pixel.
+## Checkpoint grafici
+### CP0 — MASTER CANONICA — APPROVATO
+Master 1536x1024 approvata dall'utente.
 
-Pipeline concordata:
-1. master approvata;
-2. estrazione lossless/trasparente;
-3. controllo visivo di completezza e bordi;
-4. validazione esplicita;
-5. solo dopo, asset considerato utilizzabile dal rig.
+### CP1 — POSE FULL-BODY — APPROVATO
+`Luna_Master_Extract_v1` SCARTATO: ritaglio manuale a colonne, con parti mancanti e contaminazioni da pose vicine.
 
-## Pose full-body — CP1 APPROVATO
-Il primo ritaglio manuale a colonne `Luna_Master_Extract_v1` è stato SCARTATO perché alcune pose perdevano parti del corpo e altre includevano pezzi della posa vicina.
+`Luna_Poses_v2_corrected` APPROVATO: 8 pose ricavate dalla sagoma reale con bounding box per componente e margine di sicurezza:
+- IDLE
+- TALK
+- BLINK
+- SMILE
+- SHY
+- ANGRY
+- SURPRISED
+- SEXY
 
-Il passaggio `Luna_Poses_v2_corrected` ha ricavato le 8 pose dalla sagoma reale rilevata nella master, con bounding box per componente e margine di sicurezza:
-- IDLE;
-- TALK;
-- BLINK;
-- SMILE;
-- SHY;
-- ANGRY;
-- SURPRISED;
-- SEXY.
+Le 8 pose CP1 sono la sorgente canonica del renderer attuale.
 
-L'utente ha dato OK a questo checkpoint. Questa è la prima fase grafica considerata validata.
+## Componenti separati
+`Luna_RigComponents_v3_validated` SCARTATO: zone nere residue estranee agli asset.
 
-## Tentativi componenti separati — SCARTATI
-`Luna_RigComponents_v3_validated` è SCARTATO: l'utente ha rilevato zone nere residue estranee all'asset. La precedente validazione automatica era insufficiente.
+`Luna_Components_v4_transparent` SCARTATO come base del rig finale: la semplice rimozione del nero può lasciare frammenti vicini o bordi inaffidabili.
 
-`Luna_Components_v4_transparent` è SCARTATO come base del rig finale: una semplice rimozione del nero da ritagli rettangolari può lasciare frammenti di elementi vicini o produrre bordi non affidabili.
+Regola permanente: checkerboard obbligatorio; nessun asset con fondo nero, aloni, parti estranee o amputazioni può entrare nel rig.
 
-Regola permanente: un ritaglio con sfondo nero o con parti estranee, anche minime, NON è un asset rig valido. Checkerboard obbligatorio per il QC.
+## Architettura
+Non si usa Live2D Cubism. Obiettivo attuale: custom 2D leggero per WebView/Android, senza dipendenze Live2D.
 
-## Decisione architetturale rig
-Non si sta usando Live2D Cubism. Per Luna si completa un custom 2D leggero per WebView/Android e senza dipendenze Live2D.
+### v0.5.0 — SCARTATO
+Tecnica: duplicati ritagliati della posa full-body per simulare testa/capelli/chest indipendenti.
 
-Le 8 pose CP1 approvate sono la sorgente canonica del renderer. Non usare componenti separati contaminati per ricostruire la figura.
+Test reale: immagini sfasate, ghosting, parti duplicate. Tecnica definitivamente vietata anche per gli altri personaggi.
 
-### Custom rig v0.5.0 — SCARTATO DOPO TEST MOBILE
-Il pacchetto `Luna_CustomRig_v0.5.0` usava duplicati della posa full-body ritagliati via CSS per simulare movimento indipendente di testa, capelli e chest.
+### v0.5.1 — SCARTATO DOPO ANDROID #3
+Correzione: un solo sprite full-body visibile; niente duplicati regionali; 8 pose su canvas comune 240x500 WebP lossless; idle, gesture, mapping emozione->posa; TALK/BLINK come pose complete.
 
-Risultato del test reale dell'utente sul telefono:
-- immagini/layer visibilmente sfasati;
-- parti duplicate percepite come ghosting;
-- movimento complessivo non percepito correttamente.
+Report reale utente `Android #3 stable-rig`:
+- runtime: 0.5.1
+- durata: 15042 ms
+- frames: 588
+- FPS medio: 39.1
+- frame medio: 25.56 ms
+- p95: 33.8 ms
+- jank >33 ms: 235 frame
+- jank: 40%
+- viewport: 443x984
+- DPR: 2.4375
+- rig: stable
+- pose caricate: 8
+- memoria JS: 9.5 MB usati / 9.5 MB totale
+- WebView: Chrome 151 su Android 16 moto g56 5G
+- `prefers-reduced-motion = true`
 
-Conclusione: la tecnica di spostare copie ritagliate dell'intera posa NON è accettabile. v0.5.0 è SCARTATO e non deve essere riproposto sugli altri personaggi.
+Difetti osservati:
+1. da ferma Luna sfarfalla tra due immagini;
+2. movimento percepito troppo scattoso;
+3. `prefers-reduced-motion=true` disabilitava le animazioni CSS tramite la regola globale precedente;
+4. il cambio automatico IDLE/BLINK/TALK usava sprite full-body completi e produceva flicker visibile;
+5. il loop JavaScript continuo aggiornava trasformazioni ad ogni frame senza un beneficio sufficiente sul telefono.
 
-### Custom rig v0.5.1 — PENDING TEST MOBILE
-Correzione preparata dopo il test v0.5.0:
-- un solo sprite full-body approvato visibile alla volta;
-- rimozione completa dei duplicati regionali di testa/capelli/chest;
-- tutte le 8 pose restano su canvas comune 240x500 e WebP lossless;
-- movimento idle continuo applicato all'intera figura;
-- respirazione applicata all'intera figura;
-- risposta touch/pointer con spring/inertia;
-- gesture `nod`, `tilt`, `bounce`, `step` rese più visibili;
-- mapping emozione -> posa;
-- TALK e BLINK usati come stati full-body approvati, non come patch sovrapposte;
-- diagnostica aggiornata ad `Android #3 stable-rig`;
-- runtime `0.5.1`.
+Conclusione: v0.5.1 è SCARTATO come renderer finale. Il risultato e le metriche vanno conservati come benchmark negativo.
 
-APK locale di test preparato: `Luna-Avatar-Test-v0.5.1.apk`.
-Per consentire aggiornamento diretto dalla build compat v0.5.0 mantiene package `com.matrixneo.lunaavatarv050`, usa `versionCode 3` ed è firmato con la stessa chiave test della v0.5.0 compat.
+### v0.5.2 — PENDING TEST MOBILE
+Preparata localmente dopo il report Android #3.
 
-Stato: PENDING test reale utente. Non promuovere a APPROVATO prima della verifica su telefono.
+Obiettivo: eliminare flicker e ridurre jank prima di reintrodurre fisica locale.
 
-## Busto / chest physics
-Il test v0.5.0 ha dimostrato che simulare un busto indipendente duplicando e muovendo una porzione della posa produce disallineamenti/ghosting.
+Modifiche:
+- nessun cambio automatico IDLE/BLINK/TALK quando Luna è ferma o parla;
+- una sola posa completa visibile alla volta;
+- TALK e BLINK restano disponibili come pose manuali/stati, ma non vengono alternati automaticamente;
+- rimosso il loop JavaScript continuo di fisica/idle;
+- idle e gesture spostati su trasformazioni CSS compositor-friendly;
+- movimento non viene più silenziosamente disabilitato dal `prefers-reduced-motion` del sistema durante questo test; il valore viene solo registrato nella diagnostica;
+- ridotti su mobile `backdrop-filter`, grandi blur ambientali e shadow costose;
+- gesture `nod`, `tilt`, `bounce`, `step` restano disponibili;
+- diagnostica: `Android #4 compositor`;
+- runtime: `0.5.2`;
+- package test: `com.matrixneo.lunaavatarv050`;
+- versionCode: 4;
+- stessa chiave test di v0.5.0 compat/v0.5.1 per aggiornamento diretto.
 
-Quindi in v0.5.1 la finta chest physics separata è DISABILITATA. È consentita solo respirazione/deformazione globale molto leggera sull'intera figura.
+APK locale: `Luna-Avatar-Test-v0.5.2.apk`.
 
-Per una vera fisica secondaria indipendente del torace servirà uno di questi due percorsi, da affrontare dopo che il renderer base è stabile:
-- busto/chest realmente separato e perfettamente allineato alla base, con alpha pulito;
-- mesh/deformer dedicato costruito su asset adatto.
+Stato: PENDING test reale. Non promuovere finché non vengono verificati assenza flicker, fluidità e metriche Android #4.
 
-Non fingere mai fisica locale tramite copie sfasate della posa full-body.
+## Busto / capelli / testa indipendenti
+La fisica locale indipendente resta DISABILITATA finché non esistono veri layer puliti e geometricamente allineati o una mesh/deformer adatta.
 
-## Metodo obbligatorio riutilizzabile per TUTTI i personaggi
-Questa pipeline deve diventare il metodo standard per tutti i personaggi preparati successivamente.
+Non simulare mai capelli, testa o busto muovendo copie ritagliate dell'intera posa.
 
-Per ogni personaggio:
-1. scegliere e approvare una master canonica;
-2. non alterare identità, volto, capelli, proporzioni, colori o outfit durante l'estrazione;
-3. se serve più definizione, migliorare/upscalare la master prima del ritaglio e validare la nuova master;
-4. ritagliare le pose dalla sagoma reale, mai da colonne stimate;
-5. verificare sempre testa/capelli, entrambe le mani, entrambe le gambe e piedi, outfit e accessori;
-6. rimuovere completamente lo sfondo con alpha trasparente senza cancellare capelli/vestiti scuri;
-7. verificare su checkerboard chiaro/scuro per individuare zone nere e aloni;
-8. validare ogni gruppo prima di procedere al successivo;
-9. non costruire layer successivi sopra asset non validati;
-10. conservare coordinate, dimensioni, sorgente e stato di validazione in un manifest;
-11. solo gli asset validati possono entrare nel rig e nella build Android;
-12. ogni errore rilevato invalida il relativo checkpoint e va annotato qui;
-13. non usare copie ritagliate della posa full-body come falsi layer indipendenti: il test Luna v0.5.0 ha mostrato ghosting e sfasamento;
-14. finché mancano layer realmente puliti, preferire un singolo sprite canonico con movimento globale e stati/pose;
-15. introdurre mesh/layer indipendenti solo quando gli asset sono realmente separati, allineati e verificati.
+Per una vera chest physics futura serve:
+- busto/chest realmente separato e allineato, oppure mesh dedicata;
+- spring-damping leggero;
+- movimento quasi nullo in quiete;
+- nessun seam/ghosting visibile.
 
-### Checkpoint standard per personaggio
-- CP0: master canonica approvata;
-- CP1: pose full-body complete e trasparenti;
-- CP2: volto/testa/espressioni;
-- CP3: occhi + blink;
-- CP4: bocche + lip-sync;
-- CP5: capelli fisici;
-- CP6: busto/chest;
-- CP7: braccia/mani/guanti;
-- CP8: gambe/piedi;
-- CP9: accessori/outfit;
-- CP10: allineamento rig;
-- CP11: animazioni/fisica;
-- CP12: test mobile/APK.
+## Pipeline obbligatoria per TUTTI i personaggi
+1. CP0 master canonica approvata;
+2. CP1 pose full-body complete/trasparenti;
+3. CP2 volto/testa/espressioni;
+4. CP3 occhi + blink;
+5. CP4 bocche + lip-sync;
+6. CP5 capelli fisici;
+7. CP6 busto/chest;
+8. CP7 braccia/mani/guanti;
+9. CP8 gambe/piedi;
+10. CP9 accessori/outfit;
+11. CP10 allineamento rig;
+12. CP11 animazioni/fisica;
+13. CP12 test mobile/APK.
 
-Dopo OGNI checkpoint approvato bisogna aggiornare questo file indicando: sorgente, metodo, asset prodotti, problemi trovati, correzioni, stato APPROVATO/SCARTATO/PENDING e prossimo passo.
+Regole:
+- validare ogni checkpoint prima del successivo;
+- salvare sorgente, metodo, coordinate/dimensioni, asset, problemi, correzioni e stato APPROVATO/SCARTATO/PENDING;
+- verificare sempre volto/capelli, entrambe le mani, entrambe le gambe/piedi, outfit e accessori;
+- non propagare asset difettosi;
+- non usare copie full-body come falsi layer indipendenti;
+- se un test reale fallisce, invalidare il checkpoint e registrare metriche e motivo;
+- `main` resta intatta finché il rig non supera test visivo e prestazionale sul telefono.
 
-## Stato web precedente — v0.4.2
-La UI v0.4.2 corregge il pannello TEST che copriva Luna sul telefono:
-- pannello TEST massimo circa 40-42% altezza su mobile;
-- avatar ridimensionato/riposizionato sopra il pannello;
-- possibilità di minimizzare il laboratorio;
-- test diagnostico minimizza automaticamente il pannello;
+## UI laboratorio
+v0.4.2 aveva già corretto il pannello TEST che copriva Luna:
+- pannello mobile massimo ~40-42% altezza;
+- avatar riposizionato sopra il pannello;
+- pannello minimizzabile;
+- diagnostica minimizza automaticamente il pannello;
 - desktop con pannello laterale.
 
-Commit v0.4.2 sulla branch `rig-assets-working`:
-- index: `6414be31c5a56678f16286099466a62e472bb79b`;
-- CSS: `1f238394863320890a0cf5775f78022e55b3ddb9`;
-- JS: `ee439a3ec209f6f7afe514dd1739ebd7007e7ea7`.
+Commit storici UI v0.4.2:
+- index `6414be31c5a56678f16286099466a62e472bb79b`
+- CSS `1f238394863320890a0cf5775f78022e55b3ddb9`
+- JS `ee439a3ec209f6f7afe514dd1739ebd7007e7ea7`
 
-## Android wrapper esistente
-È presente un wrapper Android in `android/`:
-- applicationId storico `com.matrixneo.lunaavatartest`;
-- minSdk 26, target/compileSdk 35 nel progetto Gradle;
-- WebView hardware-accelerated;
-- JavaScript e DOM storage abilitati;
-- carica localmente `file:///android_asset/index.html?android=1`;
-- nessuna dipendenza da Matrix Engine / Neon Tides.
+## Android wrapper
+Wrapper WebView in `android/`, minSdk 26, progetto Gradle target/compileSdk 35, hardware acceleration, JavaScript/DOM storage, caricamento locale `file:///android_asset/index.html?android=1`.
 
-La build compat locale v0.5.x usa temporaneamente package separato `com.matrixneo.lunaavatarv050` per evitare conflitti con la vecchia installazione. È una soluzione di test, non la configurazione Android definitiva.
+Le build compat v0.5.x usano temporaneamente package separato `com.matrixneo.lunaavatarv050`. Configurazione di test, non definitiva.
 
-## Build APK
-Workflow repository: `.github/workflows/luna-android-apk.yml`.
-La vecchia build v0.4.1 compilava correttamente ma mostrava il fallback statico. Non usarla come validazione del rig.
-
-La prima APK v0.5.0 ricostruita manualmente era non installabile ed è SCARTATA. La build compat successiva ha corretto il packaging per il test locale.
-
-## Prossimo checkpoint operativo
-1. testare `Luna-Avatar-Test-v0.5.1.apk` sul telefono;
-2. verificare che non esista più sfasamento/ghosting;
-3. verificare movimento idle, touch e 4 gesture;
-4. verificare cambi posa e stati TALK/BLINK;
-5. eseguire `Android #3 stable-rig` e salvare FPS/jank;
-6. se il renderer base è stabile, decidere CP5/CP6: veri layer capelli/chest o mesh dedicata;
-7. solo dopo un test positivo, trasferire runtime e binari nella branch e produrre build Gradle con firma Android v2/v3;
-8. non modificare `main` prima della validazione mobile.
+## Prossimo checkpoint
+1. installare v0.5.2 sopra v0.5.1;
+2. verificare che da ferma non alterni più due sprite;
+3. verificare idle continuo e gesture senza scatti evidenti;
+4. eseguire `Android #4 compositor` per 15 s;
+5. confrontare FPS, p95 e jank con v0.5.1 (39.1 FPS / p95 33.8 ms / 40% jank);
+6. se il renderer base è fluido, affrontare CP5/CP6 con veri layer/mesh;
+7. solo dopo test positivo trasferire runtime + binari nella branch e produrre build Gradle con firma Android v2/v3.
 
 ## Regola di continuità
-Aggiornare questo file dopo ogni checkpoint validato e dopo ogni modifica rilevante a versione, grafica, asset, test, rig, API, build Android o architettura. Registrare anche checkpoint scartati e motivo. Non modificare `main` finché il rig non è verificato visivamente sul telefono.
+Aggiornare questo file dopo ogni checkpoint validato e dopo ogni modifica rilevante a versione, grafica, asset, test, rig, API, build Android o architettura. Registrare anche checkpoint scartati e motivo.
