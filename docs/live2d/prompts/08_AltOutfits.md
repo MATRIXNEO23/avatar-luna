@@ -28,16 +28,12 @@ L’outfit deve condividere lo stesso body rig del modello principale. Evita cam
 ### Parti statiche/deformabili
 Le parti tessili o rigide che seguono il corpo possono costituire layer outfit separati dal body ma non richiedono physics indipendente se non previsto.
 
-### Accessori dinamici
-Qualunque elemento che deve oscillare o spostarsi rispetto al corpo — collane, catene, pendenti, orecchini, charms, cordini, fiocchi pendenti, gemme sospese, accessori capelli — deve essere **separato dall'outfit statico**.
+### CLEAN OUTFIT LOCK
+Questa tavola NON deve mostrare alcun accessorio dinamico sopra Luna o sopra l'outfit: niente collane, catene, pendenti, orecchini, charms, cordini/fiocchi pendenti, gemme sospese o accessori capelli mobili.
 
-Per ogni vista/posa richiesta, inclusi INTERMEDIO L/R e riferimento supino, devono essere previste:
-- **BASE CLEAN** senza accessori dinamici fusi;
-- **ACCESSORY POSITION MAP** della stessa posa.
+La zona di corpo/outfit normalmente coperta dagli accessori deve essere ricostruita completamente. Non creare versioni duplicate con e senza accessori.
 
-Gli oggetti devono mantenere identità, dimensione e punto di ancoraggio, ma cambiare orientamento/prospettiva in base alla posa e alla gravità.
-
-La zona del corpo/outfit coperta dall'accessorio deve essere ricostruita completamente.
+Gli accessori specifici dell'outfit alternativo, se previsti, vengono prodotti esclusivamente nel Prompt 09 come set separato, con varianti per tutti gli angoli e per le pose/gravity state rilevanti.
 
 ## Criteri di accettazione
 - un solo outfit per tavola;
@@ -46,6 +42,6 @@ La zona del corpo/outfit coperta dall'accessorio deve essere ricostruita complet
 - front/side/back coerenti;
 - riferimento supino incluso quando necessario;
 - nessun crop;
-- accessori dinamici separati;
-- ACCESSORY POSITION MAP per ogni vista/posa;
+- nessun accessorio dinamico visibile;
+- base outfit completa sotto i futuri accessori;
 - compatibilità con lo stesso rig base Live2D.
