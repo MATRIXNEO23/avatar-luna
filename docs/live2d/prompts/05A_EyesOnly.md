@@ -5,11 +5,11 @@ Creare ESCLUSIVAMENTE gli occhi di Luna come componenti tecnici separati per bli
 
 ## Reference obbligatorie
 1. CLEAN MASTER v1 = reference visiva primaria per forma, colore, stile e identità degli occhi.
-2. METRIC MASTER = reference metrica per dimensione, posizione, distanza interpupillare e anchor.
+2. METRIC MASTER = reference metrica definitiva per dimensione, posizione, distanza interpupillare e anchor.
 3. `01A_FaceOverlayAnchors.md` = riferimento per anchor L/R e comportamento sulle rotazioni.
 
 ## COMPONENT-ONLY LOCK
-Se il componente richiesto è l'occhio, l'output deve contenere SOLO occhi.
+Se il componente richiesto è l'occhio, l'output deve contenere SOLO componenti oculari.
 È vietato aggiungere:
 - volto completo;
 - capelli;
@@ -20,7 +20,16 @@ Se il componente richiesto è l'occhio, l'output deve contenere SOLO occhi.
 - busto;
 - outfit;
 - accessori;
-- pannelli decorativi.
+- pannelli decorativi;
+- rettangoli di pelle attorno all'occhio che creerebbero seam quando sovrapposti al FaceBase.
+
+Per il rig finale separare quando tecnicamente utile:
+- sclera/bianco dell'occhio;
+- iride+pupilla;
+- palpebra/eyeline superiore + ciglia;
+- palpebra/eyeline inferiore;
+- eventuali highlight.
+La pelle circostante appartiene al `FaceBase`, non all'asset occhio.
 
 ## SCALE LOCK PROPORZIONALE
 Gli occhi NON sono 1000 unità.
@@ -39,6 +48,18 @@ Misurare dalla METRIC MASTER, senza inventare valori:
 
 Il canvas può ingrandire i componenti per leggibilità, ma la trasformazione verso le unità master deve essere uniforme e tracciabile.
 Nessuno stretching X/Y.
+
+## REGOLA DI PRODUZIONE METRICA — OBBLIGATORIA
+Il generatore di immagini NON è considerato affidabile per imporre misure numeriche esatte.
+Quindi:
+1. generare solo il componente visivo, senza quote/testi/righelli numerici;
+2. estrarre il componente su trasparenza;
+3. misurare la METRIC MASTER;
+4. normalizzare deterministicamente il componente alla dimensione/anchor misurati;
+5. verificare per overlay;
+6. solo dopo marcare APPROVATO.
+
+Qualunque numero stampato dal generatore (`78x32`, `16`, ecc.) è da ignorare finché non coincide con una misura realmente ricavata dalla METRIC MASTER.
 
 ## L/R SEPARATI
 Generare occhio sinistro e destro come asset distinti. NON usare un solo occhio specchiato per sostituire l'altro.
@@ -65,18 +86,20 @@ Per L e R creare separatamente:
 
 ## Output
 - solo componenti occhi;
-- sfondo neutro o trasparente;
+- sfondo trasparente preferito;
 - componenti grandi e puliti;
-- stessa scala locale derivata dalla METRIC MASTER;
-- nessun valore numerico inventato stampato nell'immagine;
-- nessun elemento grafico estraneo.
+- nessun volto o pelle circostante non necessaria;
+- nessun valore numerico stampato nell'immagine;
+- nessun elemento grafico estraneo;
+- nessuna dichiarazione di scala valida prima del post-process metrico deterministico.
 
 ## Criteri di accettazione
 - identità visiva degli occhi coerente con CLEAN MASTER v1;
 - L/R distinti;
-- scala metrica proporzionale reale;
+- scala metrica proporzionale realmente misurata e applicata in post-process;
 - anchor compatibili con `01A_FaceOverlayAnchors.md`;
-- nessun volto/corpo aggiunto;
+- nessun volto/corpo/pelle rettangolare aggiunta;
 - nessun accessorio;
 - nessun mirroring come sostituto;
-- nessun drift di forma tra stati non dovuto a palpebra/gaze.
+- nessun drift di forma tra stati non dovuto a palpebra/gaze;
+- overlay sulla METRIC MASTER senza stretching non uniforme.
