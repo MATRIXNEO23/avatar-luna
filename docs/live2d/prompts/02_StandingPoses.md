@@ -1,40 +1,39 @@
 # Luna Live2D — Prompt 02: Standing Poses
 
 ## Scopo
-Creare riferimenti full-body per movimento, gesti, postura e deformazioni del rig mantenendo la METRIC MASTER.
+Creare pose in piedi utili a gesture e deformazioni, senza cambiare identità, proporzioni o outfit.
 
-## Prompt
-Usa `LUNA master.png` e la frontale approvata del Turnaround come reference. Mantieni identici volto, occhi, capelli, proporzioni, carnagione e outfit base statico/deformabile.
+## Regole obbligatorie
+Applica `00_PROPORTION_LOCK.md`.
+Usa `LUNA master.png` + METRIC MASTER approvata.
 
-PROPORTION LOCK: la posa cambia; anatomia, scala relativa e proporzioni no.
+Mantieni ESATTAMENTE lo stesso outfit canonico statico/deformabile del Turnaround approvato.
+NON mostrare accessori dinamici: niente collane, catene, pendenti, orecchini, charms o gemme sospese.
 
-Crea 8 pose full-body:
+## Output
+Solo figure full-body su sfondo neutro. Niente pannelli, palette, loghi, diagrammi o testi decorativi.
+
+Dividere in due tavole da 4 alla stessa scala:
+
+### Tavola A
 1. neutra, braccia rilassate;
 2. mano sul fianco;
 3. una mano tra i capelli;
-4. braccia incrociate senza coprire completamente il torso;
+4. braccia incrociate senza coprire completamente il torso.
+
+### Tavola B
 5. leggero passo in avanti;
 6. leggera inclinazione del torso;
 7. sguardo indietro in 3/4;
 8. gesto aperto con una mano.
 
-Se 8 pose non entrano grandi e leggibili, dividere in due tavole da 4. Ogni posa deve mostrare capelli, testa, entrambe le braccia e mani, busto, bacino, entrambe le gambe e piedi/scarpe con 12–15% di margine.
-
-### CLEAN BASE LOCK
-In questa tavola **NON devono comparire accessori dinamici**. Rimuovi completamente dalle pose collane, catene, pendenti, orecchini, charms, gemme sospese e altri oggetti con movimento indipendente.
-
-Non creare una seconda versione della posa con gli accessori. Le pose devono essere esclusivamente BASE CLEAN.
-
-Le zone normalmente coperte dagli accessori devono essere completamente ricostruite e coerenti con l'outfit/corpo sottostante.
-
-Gli accessori per queste pose verranno creati separatamente nel Prompt 09, etichettati con la posa di destinazione e mantenendo scala/pivot coerenti con la METRIC MASTER.
+Ogni figura deve essere completamente visibile con 12–15% di margine. La posa può cambiare; anatomia, volto, capelli, outfit e proporzioni no.
 
 ## Criteri di accettazione
-- zero crop;
-- proporzioni coerenti con METRIC MASTER;
-- outfit base invariato;
+- stesso personaggio e stesso outfit del Turnaround;
 - nessun accessorio dinamico visibile;
-- base sottostante completa;
-- mani e piedi interi;
+- zero crop;
+- mani e piedi completi;
+- nessun drift di busto, vita, fianchi o lunghezza arti;
 - nessun arto duplicato/fuso/mancante;
-- pose naturali e utili a BodyAngle/gesture/motion.
+- nessun elemento grafico estraneo.
