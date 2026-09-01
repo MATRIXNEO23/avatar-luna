@@ -76,33 +76,15 @@ Non reinterpretare Luna. Volto, occhi, carnagione, capelli, corporatura, silhoue
 ### PROPORTION LOCK
 Mantenere tra file diversi: rapporto testa-corpo, spalle, collo, busto, vita, fianchi, bacino, braccia, femore, tibia, mani, piedi, volume/lunghezza capelli e geometria outfit.
 
-## SCALE LOCK — NUOVO STANDARD DEFINITIVO
-Decisione utente: **ogni immagine deve essere normalizzata a una misura standard comune**.
-
-Standard globale ora scritto nel GLOBAL LOCK e nel Prompt 01:
-- full-body verticale = **1000 unità** dalla punta più alta dei capelli alla suola più bassa;
-- suole sulla baseline `Y=0`;
-- punta capelli a `Y=1000` nelle pose verticali;
-- scaling esclusivamente uniforme; vietato stirare X/Y separatamente;
-- stessa scala relativa di testa, volto, spalle, busto, vita, bacino, arti, mani, piedi, capelli e outfit;
-- landmark anatomici coerenti con la METRIC MASTER;
-- canvas/risoluzione possono cambiare, ma il soggetto deve essere normalizzato nello stesso sistema metrico;
-- Tavola A, Tavola B e posteriore devono essere sovrapponibili per scala dopo normalizzazione;
-- ogni nuovo file riparte da CLEAN MASTER v1 / METRIC MASTER, non dalla generazione precedente;
-- pose supine/prone/inclinate mantengono le stesse lunghezze segmentali anatomiche: non si forza il bounding-box verticale a 1000;
-- close-up/componenti usano scala derivata dalla corrispondente parte della METRIC MASTER;
-- accessori Prompt 09 mantengono dimensioni/pivot/anchor nello stesso sistema metrico.
-
-Validazione SCALE LOCK:
-1. normalizzare;
-2. allineare baseline/asse quando applicabile;
-3. overlay con METRIC MASTER/reference corrispondente;
-4. SCARTARE se serve deformazione non uniforme o compare drift evidente.
-
-**Importante:** scrivere `1000 unità` nel prompt NON rende automaticamente un'immagine già generata matematicamente normalizzata. Le immagini devono essere realmente normalizzate/post-processate e poi ricontrollate prima dell'uso tecnico.
-
-Commit GLOBAL SCALE LOCK: `b92a789b1492f3181bc233d84fed8227ef61103f`.
-Commit Prompt 01 con SCALE LOCK: `4fe6f0908078205823d63e2ccbaf3c4a573c7ad0`.
+## SCALE LOCK — SISTEMA METRICO PROPORZIONALE DEFINITIVO
+Ogni asset appartiene allo stesso sistema metrico globale derivato dalla METRIC MASTER.
+- full-body = **1000 unità** punta capelli → suola;
+- un asset parziale usa solo l'intervallo reale di unità che occupa nella master;
+- nessun close-up/occhio/bocca/mano viene arbitrariamente riscalato a 1000;
+- valori locali esatti devono essere misurati dalla METRIC MASTER, non inventati;
+- canvas e risoluzione possono cambiare, la scala anatomica no;
+- scaling solo uniforme;
+- overlay/landmark devono combaciare senza stretching X/Y.
 
 ## OUTFIT LOCK
 Prompt base 01–07: stesso outfit statico CLEAN MASTER v1, senza reinterpretazioni:
@@ -115,17 +97,7 @@ Prompt base 01–07: stesso outfit statico CLEAN MASTER v1, senza reinterpretazi
 
 ## ACCESSORI DINAMICI
 Gli accessori dinamici NON compaiono nelle pose/base 01–08.
-
-Da produrre solo nel Prompt 09 come asset isolati:
-- collane/choker;
-- catene;
-- pendenti;
-- orecchini;
-- charms;
-- gemme sospese;
-- accessori capelli/guanti/stivali con physics indipendente.
-
-Ogni accessorio deve mantenere scala, lunghezza, forma/materiale, lato L/R, pivot e anchor rispetto alla METRIC MASTER. Possono cambiare solo prospettiva, curva, rotazione e deformazione fisica.
+Da produrre solo nel Prompt 09 come asset isolati, con scala/pivot/anchor derivati dalla METRIC MASTER.
 
 ## ROTATION LOCK / TURNAROUND
 Set di riferimento:
@@ -157,76 +129,78 @@ Tavola B:
 - 45° R;
 - 22.5° R.
 
-Regola corrente: **Tavola B non deve contenere un secondo frontale**. Il quinto slot che prima veniva erroneamente duplicato come frontale deve essere il posteriore 180°.
-
 ## Stato visuale Prompt 01
 - Vecchi turnaround con identità/outfit errati o accessori: SCARTATI.
 - CLEAN MASTER v1: APPROVATA come master operativa.
 - Tavola A clean corrente: ACCETTATA per proseguire, da normalizzare/verificare metricamente prima dell'uso tecnico definitivo.
 - Tavola B clean corrente: ACCETTATA per proseguire, da normalizzare/verificare metricamente prima dell'uso tecnico definitivo.
-- Tavola P separata: superata dalla soluzione che inserisce il 180° direttamente nella Tavola B.
-- Tavole C/D/E generate dopo A/B: **SCARTATE / NON NECESSARIE NELLA FORMA GENERATA**. Non usarle come reference e non rigenerarle.
-- Regola operativa definitiva: **NON rifare Tavola A o Tavola B ad ogni nuovo punto.** A/B restano il riferimento di rotazione orizzontale; si rigenerano solo su richiesta esplicita dell'utente o se una validazione tecnica dimostra un errore bloccante.
+- Tavole C/D/E generate dopo A/B: **SCARTATE / NON USARE**.
+- **NON rifare A/B** a ogni nuovo passaggio; restano reference di rotazione orizzontale.
+
+## FACE OVERLAY / ANCHOR LOCK — NUOVO
+Creato `docs/live2d/prompts/01A_FaceOverlayAnchors.md`.
+Commit: `0abe9d0ed46539e7e640ac0b470ca79b8425c009`.
+
+Decisione tecnica:
+- A/B sono reference geometriche, NON sprite finali runtime;
+- nel PSD/rig finale `FaceBase`, `EyeL`, `EyeR`, `BrowL`, `BrowR` e componenti della bocca sono layer/ArtMesh separati;
+- occhi e bocca vengono **sovrapposti tramite anchor metrici derivati dalla METRIC MASTER**;
+- gli anchor seguono il `Head Deformer`, quindi non restano fissi sul canvas;
+- su 22.5°/45°/90° L/R posizione, compressione prospettica e occlusione vengono gestite con keyform/deformers/mask/opacity;
+- a 90° l'occhio lontano può essere quasi o totalmente occultato; a 135°/180° gli elementi frontali possono scomparire;
+- L/R restano asset distinti, niente mirroring come sostituto;
+- **A/B non devono essere rigenerate** per aggiungere questa funzione: si estraggono landmark/anchor dalle reference accettate.
+
+Landmark minimi da registrare sulla frontale e rendere tracciabili sulle rotazioni:
+- centro/angoli occhi L/R;
+- centro iride/pupilla L/R;
+- pivot palpebre L/R;
+- centro sopracciglia L/R;
+- angoli e centro bocca;
+- linee labbro superiore/inferiore;
+- punta naso;
+- mento;
+- asse verticale volto.
 
 ## Asset necessari per massima fluidità — ORDINE TECNICO
-Obiettivo deciso: movimento molto fluido. Il numero di immagini non è un fine; le reference servono a costruire mesh, deformers, keyform, interpolazioni e physics senza drift.
+1. Turnaround orizzontale A/B — FATTO come reference; non rigenerare.
+2. Head / Upper-Body Pitch — PENDING validazione tecnica.
+3. Diagonali X+Y testa/upper-body.
+4. Occhi + sopracciglia separati con scala/anchor metrici.
+5. Bocca / lip-sync separata con scala/anchor metrici.
+6. Espressioni facciali.
+7. Hair separation + physics.
+8. Torso / breath / chest secondary motion.
+9. Standing gestures/body deformation.
+10. Floor/bed/reclined references se necessarie alle scene.
+11. Main outfit separation/deformation.
+12. Hands/body parts tecnici.
+13. Dynamic accessories separati.
+14. Layer map / PSD Live2D-ready.
+15. Cubism modeling + ArtMesh/deformers/parameters.
+16. Physics + motions + expressions.
+17. Android Cubism Native + benchmark RAM/FPS/jank.
+18. Validazione finale visuale e prestazionale.
 
-Procedere UNO ALLA VOLTA, sempre partendo dalla CLEAN MASTER v1 e con gli stessi criteri di A/B:
-1. **Turnaround orizzontale A/B** — FATTO come reference; non rigenerare.
-2. **Head / Upper-Body Pitch** — su/giù + intermedi per `ParamAngleY` — PROSSIMO.
-3. **Diagonali X+Y testa/upper-body** — alto-sx, basso-sx, alto-dx, basso-dx; servono per interpolazione bidimensionale fluida.
-4. **Occhi + sopracciglia** — L/R separati, gaze X/Y, open/half/closed/blink e variazioni emotive.
-5. **Bocca / lip-sync** — rest, apertura continua, form, fonemi principali e chiusure M/B/P/F/V.
-6. **Espressioni facciali** — neutral, happy, shy, angry, surprised, focused, sad, flirty, sensual, provocative/intense; `erotic_explicit` resta slot tecnico Matrix rappresentato visivamente in modo non grafico.
-7. **Hair separation + physics** — back/front/bangs/side locks/rear strands con pivot e reference di inerzia; niente full-sprite frame.
-8. **Torso / breath / chest secondary motion** — keyform leggere per respiro, inclinazione e secondary physics senza dondolio full-body.
-9. **Standing gestures/body deformation** — pose utili a gesture e distribuzione peso, dopo aver chiuso le deformazioni fondamentali.
-10. **Floor/bed/reclined references** — solo se richieste dalle scene; mantengono segmenti anatomici, non bounding-box forzato.
-11. **Main outfit separation/deformation** — geometria canonica clean coerente con il corpo.
-12. **Hands/body parts tecnici** — L/R separati, varianti utili, nessun mirroring come sostituto.
-13. **Dynamic accessories** — SOLO separati, con scale/pivot/anchor e varianti di gravità/angolo.
-14. **Layer map / PSD Live2D-ready** — corpo, volto, occhi, bocca, capelli, outfit, accessori e mask.
-15. **Cubism modeling + ArtMesh/deformers/parameters**.
-16. **Physics + motions + expressions**.
-17. **Android Cubism Native + benchmark RAM/FPS/jank**.
-18. **Validazione finale visuale e prestazionale**.
-
-## Nuovo Prompt 02 rig-critical
-Creato: `docs/live2d/prompts/02_HeadUpperBodyPitch.md`.
-Commit: `07c90c85f844f763ab6b54b6381b5bd70c5422a7`.
-
-Contiene Tavola PITCH-A con 5 viste coordinate:
-- DOWN 30°;
-- DOWN 15°;
-- NEUTRAL 0°;
-- UP 15°;
-- UP 30°.
-
-Regole:
-- yaw 0° e roll 0° in tutte le viste;
-- stessa scala head-to-hips derivata dalla METRIC MASTER;
-- CLEAN MASTER v1 unica sorgente visiva primaria;
-- A/B solo supporto di scala/geometria, NON sorgente identitaria;
-- zero accessori dinamici;
-- stesso outfit se visibile;
-- nessuna rigenerazione di A/B.
+## Stato asset facciali correnti
+- Pitch generato: **PENDING**, non approvare automaticamente; le misure locali devono essere realmente ricavate dalla METRIC MASTER.
+- Tavola occhi generata: **PENDING/DA VERIFICARE**; valori numerici mostrati dall'immagine non sono validi finché non misurati sulla METRIC MASTER.
+- Regola utente: se serve solo un componente, generare solo quel componente alla sua scala metrica proporzionale; niente corpo/volto completo inutile.
 
 ## OUTPUT LOCK
-Per gli asset tecnici:
 - sfondo neutro semplice;
-- niente pannelli/palette/loghi/diagrammi inutili salvo necessità esplicita;
-- nessun crop per i full-body;
-- 12–15% di margine per full-body;
-- testa, capelli, mani, gambe, piedi e scarpe interi quando il soggetto è full-body;
-- close-up/upper-body possono usare crop tecnico intenzionale purché identico tra le viste coordinate;
+- niente pannelli/palette/loghi/diagrammi inutili salvo necessità tecnica;
+- nessun crop per full-body;
+- crop tecnico ammesso per parti/close-up se coerente e metrico;
 - se lo spazio non basta, dividere in più tavole invece di comprimere.
 
 ## Prompt pack
 Cartella `docs/live2d/prompts/`:
-- `00_PROPORTION_LOCK.md` — GLOBAL LOCK incluso SCALE LOCK;
+- `00_PROPORTION_LOCK.md` — GLOBAL LOCK;
 - `01_Turnaround.md` — turnaround A/B;
+- `01A_FaceOverlayAnchors.md` — anchor per occhi/bocca/sopracciglia sulle rotazioni;
 - `02_HeadUpperBodyPitch.md` — pitch verticale rig-critical;
-- `02_StandingPoses.md` — standing poses, da usare più avanti;
+- `02_StandingPoses.md` — standing poses, più avanti;
 - `03_FloorBedPoses.md`;
 - `04_FaceExpressions.md`;
 - `05_EyesMouth.md`;
@@ -236,15 +210,13 @@ Cartella `docs/live2d/prompts/`:
 - `09_BodyParts_Accessories.md`;
 - `10_LayerMap.md`.
 
-Tutti devono ereditare il GLOBAL LOCK e quindi anche SCALE LOCK.
-
 ## Metodo operativo
 Procedere una tavola/sub-tavola alla volta:
 1. partire dalla CLEAN MASTER v1 / METRIC MASTER;
 2. NON rifare asset già accettati se non richiesto;
-3. generare un solo nuovo asset;
+3. generare un solo nuovo asset/componente;
 4. normalizzare allo standard metrico pertinente;
-5. controllare identità, proporzioni, scala, outfit, posa/angolo, assenza accessori dinamici e crop;
+5. controllare identità, proporzioni, scala, anchor, outfit, posa/angolo, assenza accessori dinamici e crop;
 6. overlay dove applicabile;
 7. APPROVATO / SCARTATO / PENDING;
 8. aggiornare questo file di continuità;
@@ -264,4 +236,4 @@ Dopo reference set approvato e normalizzato:
 - L9 validazione finale.
 
 ## Prossimo passo operativo
-Generare e validare **SOLO `02_HeadUpperBodyPitch.md` — Tavola PITCH-A**. Non rigenerare Turnaround A/B. Dopo approvazione si passa al set diagonale X+Y.
+Prima di generare altri occhi/bocca, fissare/estrarre gli **anchor metrici facciali** dalla METRIC MASTER/A-B; poi generare i componenti separati alla scala reale corrispondente, senza rigenerare A/B.
