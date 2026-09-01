@@ -1,45 +1,41 @@
 # Luna Live2D — Prompt 03: Floor / Bed Poses
 
 ## Scopo
-Creare riferimenti completi per pose supine, prone, laterali e semi-sdraiate, utili a motion speciali, gravità e deformazioni del rig.
+Creare pose a terra/letto utili a deformazioni, gravità e motion speciali mantenendo identità, proporzioni e outfit canonico.
 
-## Prompt
-Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni invariati volto, lineamenti, occhi viola, capelli nero-viola, proporzioni del corpo, carnagione e outfit canonico base statico/deformabile.
+## Regole obbligatorie
+Applica `00_PROPORTION_LOCK.md`.
+Usa `LUNA master.png` + METRIC MASTER approvata.
 
-PROPORTION LOCK: la posa cambia; le lunghezze anatomiche reali no. Evita scorci prospettici estremi che rendano difficile verificare le proporzioni.
+Mantieni ESATTAMENTE lo stesso outfit canonico statico/deformabile del Turnaround.
+NON mostrare accessori dinamici: niente collane, catene, pendenti, orecchini, charms o gemme sospese.
 
-Crea SOLO pose intere, con corpo completamente dentro il frame. Se necessario usa formato orizzontale molto largo. NON tagliare mai capelli, gomiti, mani, dita, ginocchia, gambe, piedi o scarpe.
+## Output
+Solo figure complete su sfondo neutro semplice. Niente pannelli, palette, loghi o diagrammi.
 
-Pose richieste:
+Dividere in due tavole da 4 alla stessa scala anatomica:
+
+### Tavola A
 1. supina rilassata, gambe distese;
 2. supina con entrambe le ginocchia piegate;
 3. supina con una gamba piegata e una distesa;
-4. laterale sinistra, corpo intero;
-5. laterale destra, corpo intero;
+4. laterale sinistra.
+
+### Tavola B
+5. laterale destra;
 6. semi-sdraiata appoggiata su un gomito;
-7. prona rilassata, corpo intero;
-8. prona con testa girata verso camera, corpo intero.
+7. prona rilassata;
+8. prona con testa girata verso camera.
 
-Ogni posa deve avere almeno 12–15% di margine vuoto attorno all’intera sagoma. I capelli devono adattarsi fisicamente a gravità e superficie. Mani e piedi sempre leggibili.
+Ogni posa deve mostrare corpo, capelli, mani, gambe e piedi completi. I capelli possono cambiare distribuzione per gravità/superficie ma NON lunghezza, volume o identità.
 
-### CLEAN BASE LOCK
-In questa tavola **NON devono comparire accessori dinamici**. Niente collane, catene, pendenti, orecchini, charms, gemme sospese o altri oggetti con physics indipendente.
-
-Non creare mappe accessori sopra le pose e non creare doppie versioni con/senza accessori. Ogni posa deve essere soltanto BASE CLEAN.
-
-La geometria di pelle, capelli e outfit sotto i futuri accessori deve essere completa e pulita.
-
-Le varianti degli accessori specifiche per supina, prona, laterale L/R e semi-sdraiata verranno prodotte separatamente nel Prompt 09, mantenendo identica scala e punto di ancoraggio.
-
-Se 8 pose non entrano con qualità, dividere in due tavole da 4. Non comprimere.
+Non forzare il bounding box: mantieni le stesse lunghezze anatomiche reali della METRIC MASTER.
 
 ## Criteri di accettazione
-- 8 pose complete oppure 4+4;
-- zero parti tagliate;
-- entrambe le gambe e tutti i piedi sempre visibili;
-- capelli completi e coerenti con la gravità;
-- outfit base invariato;
-- stessa identità e proporzioni;
+- stesso outfit canonico in tutte le pose;
 - nessun accessorio dinamico visibile;
-- base sottostante completa;
-- nessun arto duplicato, fuso o mancante.
+- zero crop;
+- anatomia coerente con METRIC MASTER;
+- capelli fisicamente plausibili ma identici come design;
+- nessun arto duplicato/fuso/mancante;
+- nessun elemento grafico estraneo.
