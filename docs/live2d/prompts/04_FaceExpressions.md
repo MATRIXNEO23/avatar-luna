@@ -1,16 +1,20 @@
 # Luna Live2D — Prompt 04: Face Expressions
 
 ## Scopo
-Creare una tavola facciale ad alta risoluzione per espressioni, emozioni e registri del rig senza alterare la struttura del volto.
+Creare espressioni facciali coerenti senza cambiare identità del volto.
 
-## Prompt
-Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni invariati struttura del viso, forma degli occhi, iridi viola, sopracciglia, naso, labbra, carnagione, orecchie e attaccatura dei capelli. NON cambiare pettinatura, età apparente o stile grafico.
+## Regole obbligatorie
+Applica `00_PROPORTION_LOCK.md`.
+Usa `LUNA master.png` + METRIC MASTER approvata.
 
-PROPORTION LOCK: le emozioni modificano parametri ed espressione, non anatomia o identità.
+Mantieni invariati cranio, mascella, mento, occhi, naso, labbra, carnagione, attaccatura capelli e scala del volto.
+Se è visibile una parte di outfit sulle spalle/torso alto, deve essere ESATTAMENTE lo stesso outfit canonico statico/deformabile del Turnaround.
+NON mostrare accessori dinamici: niente orecchini, collane, pendenti, charms o gemme sospese.
 
-Questa tavola deve mostrare SOLO close-up grandi testa/spalle, tutti alla stessa scala e perfettamente coerenti. Nessun volto deve essere tagliato su capelli, mento o orecchie.
+## Output
+Solo close-up grandi testa/spalle su sfondo neutro semplice. Niente pannelli, palette, loghi o decorazioni.
 
-Espressioni richieste:
+Espressioni:
 1. neutral;
 2. happy;
 3. smile;
@@ -22,26 +26,16 @@ Espressioni richieste:
 9. focused;
 10. flirty;
 11. sensual;
-12. provocative/intense adult expression.
+12. provocative/intense adult expression;
+13. slot tecnico `erotic_explicit` rappresentato solo come espressione adulta intensa non grafica.
 
-Aggiungi inoltre uno slot tecnico etichettato `erotic_explicit` come stato di mapping per Matrix Engine, rappresentato soltanto come espressione adulta intensa senza atti sessuali o contenuto grafico.
-
-Ogni variante deve differire tramite sopracciglia, apertura palpebre, sguardo, forma bocca, lieve inclinazione della testa e blush. NON modificare la geometria fondamentale del volto.
-
-### CLEAN HEAD LOCK
-Questa tavola deve essere completamente priva di accessori dinamici. NON mostrare orecchini, collane, pendenti, catene, charms o accessori capelli mobili, neppure come overlay o riferimento.
-
-Le orecchie, i capelli e la pelle normalmente coperti dagli accessori devono essere disegnati completi e puliti. Tutti gli accessori dinamici e le loro varianti di posizione vengono prodotti esclusivamente nel Prompt 09.
-
-Mantieni entrambi gli occhi sempre presenti e coerenti. Alta risoluzione del volto, bordi puliti e texture nitide.
+Se troppe espressioni riducono la qualità, dividerle in più tavole mantenendo identica scala e identico volto.
 
 ## Criteri di accettazione
 - volto identico in tutte le espressioni;
-- entrambi gli occhi presenti e coerenti;
-- SAD/tristezza distinta;
-- flirt/sensual/provocative distinti senza cambiare identità;
-- nessun crop;
+- occhi L/R coerenti;
 - nessun accessorio dinamico visibile;
-- zone sottostanti complete;
-- nessuna espressione ottenuta cambiando personaggio o proporzioni;
-- tavola abbastanza grande da usare come reference reale per sopracciglia, occhi e bocca Live2D.
+- stesso outfit canonico se compare nell'inquadratura;
+- nessun crop di capelli, mento o orecchie;
+- nessun drift strutturale del volto;
+- nessun elemento grafico estraneo.
