@@ -154,14 +154,18 @@ Il modello Live2D deve supportare almeno:
 - shy;
 - angry;
 - surprised;
-- flirty;
-- provocative / sexy;
 - focused;
-- **sad / tristezza**.
+- **sad / tristezza**;
+- **flirty / flirt**;
+- **sensual / sensuale**;
+- **provocative / sexy**;
+- **erotic_explicit / erotica esplicita**, esclusivamente per personaggi adulti e solo quando Matrix Engine seleziona questo registro in base a contesto e stato relazionale.
 
-La tristezza è un'emozione obbligatoria, non opzionale. Deve avere una resa visiva coerente tramite parametri/espressioni del rig (occhi, sopracciglia, bocca, postura/testa) senza sostituire l'intero sprite.
+Questi stati NON devono essere semplici filtri o cambi di sprite: devono risultare da combinazioni fluide di occhi, palpebre, sopracciglia, bocca, sguardo, inclinazione testa/corpo, respirazione, postura e parametri locali del rig.
 
-Matrix Engine continuerà a decidere quale emozione/intensità applicare; il modello Live2D deve solo essere capace di rappresentarla in modo fluido.
+La tristezza è un'emozione obbligatoria, non opzionale. Gli stati sensuale ed erotico esplicito sono registri espressivi separati e non devono essere attivati automaticamente.
+
+Matrix Engine continuerà a decidere quale emozione/registro/intensità applicare; il modello Live2D deve solo essere capace di rappresentarli in modo fluido e coerente.
 
 ## Nuova pipeline Live2D obbligatoria
 ### L0 — SORGENTE CANONICA
@@ -213,10 +217,10 @@ Blink indipendente, sguardo indipendente, bocca deformata localmente. Vietato ca
 Physics leggere per capelli, accessori e chest/bust. Spring/damping naturali, niente oscillazione globale artificiale.
 
 ### L6 — MOTION / EXPRESSIONS
-Idle, talk e set emozioni completo, inclusa **tristezza**, come motion/espressioni del modello, non sprite completi.
+Idle, talk e set emozioni completo, inclusi **sad/tristezza, sensual/sensuale ed erotic_explicit/erotica esplicita per adulti**, come motion/espressioni del modello, non sprite completi.
 
 ### L7 — ANDROID NATIVE INTEGRATION
-Integrare Cubism SDK for Native/OpenGL nel laboratorio Android separato. Mantenere API Matrix ad alto livello: emotion, intensity, speaking, gaze, gesture, motion.
+Integrare Cubism SDK for Native/OpenGL nel laboratorio Android separato. Mantenere API Matrix ad alto livello: emotion, register, intensity, speaking, gaze, gesture, motion.
 
 ### L8 — BENCHMARK MOBILE
 Misurare sul telefono reale:
@@ -235,7 +239,7 @@ Il modello non entra in `main` finché non supera:
 - identità visiva;
 - fluidità;
 - blink/gaze/lip-sync;
-- emozioni complete inclusa tristezza;
+- emozioni/registri completi inclusi tristezza, sensuale ed erotico esplicito per adulti;
 - physics capelli/chest;
 - RAM <300 MB per avatar;
 - assenza di seam/ghosting;
@@ -249,7 +253,8 @@ Il modello non entra in `main` finché non supera:
 - asset grafici e rig separati dalla bio/persona Matrix;
 - nessuna funzione dichiarata risolta se è solo disabilitata;
 - ogni checkpoint deve avere stato APPROVATO/SCARTATO/PENDING;
-- il set emozioni deve includere anche tristezza quando il personaggio la può esprimere.
+- il set emozioni deve includere tristezza quando il personaggio la può esprimere;
+- per personaggi esclusivamente adulti il rig deve poter rappresentare anche registri sensuale ed erotico esplicito, mantenendoli separati dagli stati emotivi di base e sotto controllo di Matrix Engine.
 
 ## Prossimo passo operativo
 1. non produrre altre build del custom sprite rig come percorso finale;
@@ -257,7 +262,7 @@ Il modello non entra in `main` finché non supera:
 3. validare prima il volto completo e la ricostruzione neutrale;
 4. poi occhi/blink/gaze;
 5. poi bocca/lip-sync;
-6. poi espressioni/emozioni incluso sad/tristezza;
+6. poi espressioni/emozioni e registri incluso sad/tristezza, sensuale ed erotico esplicito;
 7. poi capelli/chest physics;
 8. solo dopo creare il modello Cubism e il runtime Android Native;
 9. benchmark memoria/FPS prima dell'integrazione con Matrix.
