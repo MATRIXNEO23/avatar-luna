@@ -28,12 +28,10 @@ Aggiungi inoltre uno slot tecnico etichettato `erotic_explicit` come stato di ma
 
 Ogni variante deve differire tramite sopracciglia, apertura palpebre, sguardo, forma bocca, lieve inclinazione della testa e blush. NON modificare la geometria fondamentale del volto.
 
-### Accessori dinamici del volto/testa
-Orecchini, pendenti, charms per capelli e qualunque accessorio mobile vicino alla testa NON devono essere fusi nel volto, nelle orecchie o nei capelli base.
+### CLEAN HEAD LOCK
+Questa tavola deve essere completamente priva di accessori dinamici. NON mostrare orecchini, collane, pendenti, catene, charms o accessori capelli mobili, neppure come overlay o riferimento.
 
-Per la tavola espressioni usa preferibilmente una **HEAD BASE CLEAN** senza accessori dinamici. Se gli accessori vengono mostrati come riferimento, devono essere chiaramente considerati overlay separati e mantenere identica posizione di ancoraggio; non devono cambiare forma per simulare l'espressione.
-
-Per le future rotazioni testa, i riferimenti degli accessori devono essere prodotti separatamente anche per lato sinistro e destro e per gli intermedi L/R definiti nel `00_PROPORTION_LOCK.md`.
+Le orecchie, i capelli e la pelle normalmente coperti dagli accessori devono essere disegnati completi e puliti. Tutti gli accessori dinamici e le loro varianti di posizione vengono prodotti esclusivamente nel Prompt 09.
 
 Mantieni entrambi gli occhi sempre presenti e coerenti. Alta risoluzione del volto, bordi puliti e texture nitide.
 
@@ -43,6 +41,7 @@ Mantieni entrambi gli occhi sempre presenti e coerenti. Alta risoluzione del vol
 - SAD/tristezza distinta;
 - flirt/sensual/provocative distinti senza cambiare identità;
 - nessun crop;
-- nessun accessorio dinamico fuso nel volto/testa base;
+- nessun accessorio dinamico visibile;
+- zone sottostanti complete;
 - nessuna espressione ottenuta cambiando personaggio o proporzioni;
 - tavola abbastanza grande da usare come reference reale per sopracciglia, occhi e bocca Live2D.
