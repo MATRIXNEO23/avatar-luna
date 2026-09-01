@@ -8,7 +8,7 @@
   const intensityRange = document.getElementById('intensityRange');
   const speakingCheck = document.getElementById('speakingCheck');
 
-  const VALID_EMOTIONS = ['neutral', 'happy', 'shy', 'sad', 'angry', 'flirty', 'focused'];
+  const VALID_EMOTIONS = ['neutral', 'happy', 'shy', 'sad', 'angry', 'flirty', 'provocative', 'focused'];
   const VALID_GESTURES = ['nod', 'tilt', 'bounce'];
 
   const state = {
@@ -36,7 +36,9 @@
     speechBubble.textContent = state.text || '';
     speechBubble.style.visibility = state.text ? 'visible' : 'hidden';
 
-    emotionSelect.value = state.emotion;
+    if ([...emotionSelect.options].some(option => option.value === state.emotion)) {
+      emotionSelect.value = state.emotion;
+    }
     intensityRange.value = String(state.intensity);
     speakingCheck.checked = state.speaking;
   }
@@ -61,13 +63,7 @@
   }
 
   function speak(text, options = {}) {
-    setState({
-      text,
-      speaking: true,
-      emotion: options.emotion || state.emotion,
-      intensity: options.intensity ?? state.intensity
-    });
-
+    setState({ text, speaking: true, emotion: options.emotion || state.emotion, intensity: options.intensity ?? state.intensity });
     if (options.autoStopMs !== 0) {
       const duration = options.autoStopMs || Math.max(1300, Math.min(8000, String(text).length * 48));
       window.setTimeout(() => setState({ speaking: false }), duration);
@@ -76,58 +72,32 @@
 
   function onMatrixEvent(payload) {
     if (!payload || typeof payload !== 'object') return;
-
-    if (payload.type === 'luna.state') {
-      setState(payload);
-      return;
-    }
-
-    if (payload.type === 'luna.speak') {
-      speak(payload.text || '', payload);
-      return;
-    }
-
-    if (payload.type === 'luna.gesture') {
-      gesture(payload.gesture);
-    }
+    if (payload.type === 'luna.state') return void setState(payload);
+    if (payload.type === 'luna.speak') return void speak(payload.text || '', payload);
+    if (payload.type === 'luna.gesture') gesture(payload.gesture);
   }
 
   window.LunaAvatar = {
-    version: '0.1.0',
-    setState,
-    getState: () => ({ ...state }),
-    gesture,
-    speak,
-    onMatrixEvent,
-    emotions: [...VALID_EMOTIONS],
-    gestures: [...VALID_GESTURES]
+    version: '0.1.1', setState, getState: () => ({ ...state }), gesture, speak, onMatrixEvent,
+    emotions: [...VALID_EMOTIONS], gestures: [...VALID_GESTURES]
   };
 
   window.addEventListener('message', (event) => {
     const data = event.data;
-    if (data && typeof data === 'object' && String(data.type || '').startsWith('luna.')) {
-      onMatrixEvent(data);
-    }
+    if (data && typeof data === 'object' && String(data.type || '').startsWith('luna.')) onMatrixEvent(data);
   });
 
-  toggle.addEventListener('click', () => {
-    panel.hidden = !panel.hidden;
-  });
-
+  toggle.addEventListener('click', () => { panel.hidden = !panel.hidden; });
   emotionSelect.addEventListener('change', (event) => setState({ emotion: event.target.value }));
   intensityRange.addEventListener('input', (event) => setState({ intensity: event.target.value }));
   speakingCheck.addEventListener('change', (event) => setState({ speaking: event.target.checked }));
-
-  panel.querySelectorAll('[data-gesture]').forEach((button) => {
-    button.addEventListener('click', () => gesture(button.dataset.gesture));
-  });
+  panel.querySelectorAll('[data-gesture]').forEach((button) => button.addEventListener('click', () => gesture(button.dataset.gesture)));
 
   let lastMove = 0;
   window.addEventListener('pointermove', (event) => {
     const now = performance.now();
     if (now - lastMove < 34) return;
     lastMove = now;
-
     const x = (event.clientX / window.innerWidth - 0.5) * 2;
     const y = (event.clientY / window.innerHeight - 0.5) * 2;
     const wrap = avatar.querySelector('.sprite-wrap');
