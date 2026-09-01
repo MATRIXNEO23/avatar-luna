@@ -55,68 +55,60 @@ Il passaggio `Luna_Poses_v2_corrected` ha ricavato le 8 pose dalla sagoma reale 
 
 L'utente ha dato OK a questo checkpoint. Questa è la prima fase grafica considerata validata.
 
-## Tentativi componenti separati — SCARTATI/PENDING
+## Tentativi componenti separati — SCARTATI
 `Luna_RigComponents_v3_validated` è SCARTATO: l'utente ha rilevato zone nere residue estranee all'asset. La precedente validazione automatica era insufficiente.
 
-`Luna_Components_v4_transparent` non viene promosso a rig: il controllo successivo ha mostrato che una semplice rimozione del nero su ritagli rettangolari può lasciare frammenti di elementi vicini o produrre bordi non affidabili. Stato: SCARTATO come base del rig finale.
+`Luna_Components_v4_transparent` è SCARTATO come base del rig finale: una semplice rimozione del nero da ritagli rettangolari può lasciare frammenti di elementi vicini o produrre bordi non affidabili.
 
 Regola permanente: un ritaglio con sfondo nero o con parti estranee, anche minime, NON è un asset rig valido. Checkerboard obbligatorio per il QC.
 
 ## Decisione architetturale rig
-Non si sta usando Live2D Cubism. Per Luna si completa un **custom master-sprite rig 2D** leggero, adatto a WebView/Android e senza dipendenze Live2D.
+Non si sta usando Live2D Cubism. Per Luna si completa un custom 2D leggero per WebView/Android e senza dipendenze Live2D.
 
-Motivazione: usare direttamente le pose CP1 già approvate evita di ricostruire Luna da componenti separati difettosi e preserva meglio identità e qualità grafica. Le deformazioni secondarie vengono applicate a regioni duplicate/ritagliate della stessa posa approvata.
+Le 8 pose CP1 approvate sono la sorgente canonica del renderer. Non usare componenti separati contaminati per ricostruire la figura.
 
-### Custom rig v0.5.0 — PENDING VALIDAZIONE VISIVA/MOBILE
-Preparato localmente il pacchetto `Luna_CustomRig_v0.5.0`.
+### Custom rig v0.5.0 — SCARTATO DOPO TEST MOBILE
+Il pacchetto `Luna_CustomRig_v0.5.0` usava duplicati della posa full-body ritagliati via CSS per simulare movimento indipendente di testa, capelli e chest.
 
-Sorgente: esclusivamente `Luna_Poses_v2_corrected` già approvato.
+Risultato del test reale dell'utente sul telefono:
+- immagini/layer visibilmente sfasati;
+- parti duplicate percepite come ghosting;
+- movimento complessivo non percepito correttamente.
 
-Asset preparati:
-- 8 pose su canvas comune trasparente 240x500;
-- formato WebP lossless RGBA;
-- nessun ridimensionamento delle pose;
-- allineamento center/bottom su canvas comune;
-- verifica automatica: i pixel visibili originali risultano lossless dopo codifica/decodifica WebP;
-- nessun pixel non trasparente tocca il bordo del canvas.
+Conclusione: la tecnica di spostare copie ritagliate dell'intera posa NON è accettabile. v0.5.0 è SCARTATO e non deve essere riproposto sugli altri personaggi.
 
-Pose: `idle`, `talk`, `blink`, `smile`, `shy`, `angry`, `surprised`, `sexy`.
-
-Runtime v0.5.0 preparato localmente:
-- rimosso concettualmente il vecchio fallback `luna_08_no_cape.png` dal nuovo rig;
+### Custom rig v0.5.1 — PENDING TEST MOBILE
+Correzione preparata dopo il test v0.5.0:
+- un solo sprite full-body approvato visibile alla volta;
+- rimozione completa dei duplicati regionali di testa/capelli/chest;
+- tutte le 8 pose restano su canvas comune 240x500 e WebP lossless;
+- movimento idle continuo applicato all'intera figura;
+- respirazione applicata all'intera figura;
+- risposta touch/pointer con spring/inertia;
+- gesture `nod`, `tilt`, `bounce`, `step` rese più visibili;
 - mapping emozione -> posa;
-- selezione manuale posa nel laboratorio;
-- head motion con regione duplicata della posa attiva;
-- hair inertia sinistra/destra con regioni duplicate della posa attiva;
-- chest physics con regione torso/chest della stessa posa, spring-damping e respirazione;
-- blink sperimentale usando la posa BLINK approvata come patch facciale;
-- mouth/speaking sperimentale usando la posa TALK approvata come patch facciale;
-- gesture, touch/pointer, spring/inertia e API Matrix mantenute;
-- diagnostica aggiornata a `Android #2 master-rig` e runtime `0.5.0`.
+- TALK e BLINK usati come stati full-body approvati, non come patch sovrapposte;
+- diagnostica aggiornata ad `Android #3 stable-rig`;
+- runtime `0.5.1`.
 
-Importante: questo checkpoint NON è ancora APPROVATO. Prima di promuoverlo occorre controllare visivamente sul telefono soprattutto:
-- eventuali seam/ghosting delle regioni testa, capelli e chest;
-- allineamento patch blink/talk;
-- naturalezza chest physics;
-- cambi posa;
-- FPS/jank.
+APK locale di test preparato: `Luna-Avatar-Test-v0.5.1.apk`.
+Per consentire aggiornamento diretto dalla build compat v0.5.0 mantiene package `com.matrixneo.lunaavatarv050`, usa `versionCode 3` ed è firmato con la stessa chiave test della v0.5.0 compat.
 
-Il pacchetto locale non è ancora stato caricato integralmente nel repository perché gli asset binari della master rig non sono ancora stati trasferiti sulla branch. Non lasciare la branch in uno stato che referenzia asset mancanti.
+Stato: PENDING test reale utente. Non promuovere a APPROVATO prima della verifica su telefono.
 
 ## Busto / chest physics
-Nel custom rig il busto non viene ricostruito da un ritaglio separato contaminato. La zona chest viene derivata dalla stessa posa full-body approvata e resta geometricamente allineata alla base.
+Il test v0.5.0 ha dimostrato che simulare un busto indipendente duplicando e muovendo una porzione della posa produce disallineamenti/ghosting.
 
-Principio:
-- base full-body sempre presente;
-- overlay regionale chest con bordi sfumati;
-- trasformazione minima locale;
-- spring-damping e ritardo rispetto all'accelerazione del corpo;
-- movimento quasi nullo in quiete, respirazione leggera, maggiore inerzia solo durante movimenti/gesture.
+Quindi in v0.5.1 la finta chest physics separata è DISABILITATA. È consentita solo respirazione/deformazione globale molto leggera sull'intera figura.
 
-Se questa soluzione mostra seam visibili sul telefono, CP6 verrà riaperto e si passerà a un busto/mesh dedicato pulito. Non mascherare il difetto.
+Per una vera fisica secondaria indipendente del torace servirà uno di questi due percorsi, da affrontare dopo che il renderer base è stabile:
+- busto/chest realmente separato e perfettamente allineato alla base, con alpha pulito;
+- mesh/deformer dedicato costruito su asset adatto.
+
+Non fingere mai fisica locale tramite copie sfasate della posa full-body.
 
 ## Metodo obbligatorio riutilizzabile per TUTTI i personaggi
-Questa pipeline non è specifica di Luna. Deve diventare il metodo standard per tutti i personaggi preparati successivamente.
+Questa pipeline deve diventare il metodo standard per tutti i personaggi preparati successivamente.
 
 Per ogni personaggio:
 1. scegliere e approvare una master canonica;
@@ -130,9 +122,10 @@ Per ogni personaggio:
 9. non costruire layer successivi sopra asset non validati;
 10. conservare coordinate, dimensioni, sorgente e stato di validazione in un manifest;
 11. solo gli asset validati possono entrare nel rig e nella build Android;
-12. ogni errore rilevato invalida il relativo checkpoint e va annotato qui, senza nasconderlo o propagare il difetto;
-13. quando un custom master-sprite rig è sufficiente, preferire deformazioni regionali della posa canonica a componenti separati di qualità inferiore;
-14. passare a layer/mesh dedicati solo quando il vantaggio visivo è verificato e gli asset sono realmente puliti.
+12. ogni errore rilevato invalida il relativo checkpoint e va annotato qui;
+13. non usare copie ritagliate della posa full-body come falsi layer indipendenti: il test Luna v0.5.0 ha mostrato ghosting e sfasamento;
+14. finché mancano layer realmente puliti, preferire un singolo sprite canonico con movimento globale e stati/pose;
+15. introdurre mesh/layer indipendenti solo quando gli asset sono realmente separati, allineati e verificati.
 
 ### Checkpoint standard per personaggio
 - CP0: master canonica approvata;
@@ -166,27 +159,30 @@ Commit v0.4.2 sulla branch `rig-assets-working`:
 
 ## Android wrapper esistente
 È presente un wrapper Android in `android/`:
-- applicationId `com.matrixneo.lunaavatartest`;
-- minSdk 26, target/compileSdk 35;
+- applicationId storico `com.matrixneo.lunaavatartest`;
+- minSdk 26, target/compileSdk 35 nel progetto Gradle;
 - WebView hardware-accelerated;
 - JavaScript e DOM storage abilitati;
 - carica localmente `file:///android_asset/index.html?android=1`;
 - nessuna dipendenza da Matrix Engine / Neon Tides.
 
-Gli asset web vengono sincronizzati automaticamente dalla root durante la build.
+La build compat locale v0.5.x usa temporaneamente package separato `com.matrixneo.lunaavatarv050` per evitare conflitti con la vecchia installazione. È una soluzione di test, non la configurazione Android definitiva.
 
-## Build APK precedente
-Workflow: `.github/workflows/luna-android-apk.yml`.
-La precedente build v0.4.1 compilava correttamente, ma mostrava il fallback statico perché mancavano gli asset reali. Non usarla come validazione del rig.
+## Build APK
+Workflow repository: `.github/workflows/luna-android-apk.yml`.
+La vecchia build v0.4.1 compilava correttamente ma mostrava il fallback statico. Non usarla come validazione del rig.
+
+La prima APK v0.5.0 ricostruita manualmente era non installabile ed è SCARTATA. La build compat successiva ha corretto il packaging per il test locale.
 
 ## Prossimo checkpoint operativo
-1. trasferire sulla branch di lavoro gli 8 asset binari del custom master rig senza alterarne i pixel visibili;
-2. sostituire nel runtime branch il vecchio fallback con v0.5.0 soltanto quando gli asset sono presenti;
-3. verificare `detectRig()` -> `master` con 8/8 pose;
-4. aggiornare workflow/nome APK a v0.5.0;
-5. build APK dalla branch di lavoro o branch test dedicata;
-6. test Android #2 reale;
-7. registrare risultati CP3-CP6/CP10-CP12 e correggere eventuali seam prima del merge in `main`.
+1. testare `Luna-Avatar-Test-v0.5.1.apk` sul telefono;
+2. verificare che non esista più sfasamento/ghosting;
+3. verificare movimento idle, touch e 4 gesture;
+4. verificare cambi posa e stati TALK/BLINK;
+5. eseguire `Android #3 stable-rig` e salvare FPS/jank;
+6. se il renderer base è stabile, decidere CP5/CP6: veri layer capelli/chest o mesh dedicata;
+7. solo dopo un test positivo, trasferire runtime e binari nella branch e produrre build Gradle con firma Android v2/v3;
+8. non modificare `main` prima della validazione mobile.
 
 ## Regola di continuità
 Aggiornare questo file dopo ogni checkpoint validato e dopo ogni modifica rilevante a versione, grafica, asset, test, rig, API, build Android o architettura. Registrare anche checkpoint scartati e motivo. Non modificare `main` finché il rig non è verificato visivamente sul telefono.
