@@ -1,36 +1,49 @@
 # Luna Live2D — Prompt 02: Standing Poses
 
 ## Scopo
-Creare riferimenti dinamici full-body per movimento, gesti, postura e deformazioni del rig mantenendo l’outfit canonico.
+Creare riferimenti full-body per movimento, gesti, postura e deformazioni del rig mantenendo la METRIC MASTER.
 
 ## Prompt
-Usa ESATTAMENTE Luna dalla reference canonica allegata. Mantieni identici volto, occhi viola, capelli nero-viola, proporzioni del corpo, carnagione, gioielli e outfit canonico nero/viola. NON introdurre outfit alternativi o accessori nuovi.
+Usa `LUNA master.png` e la frontale approvata del Turnaround come reference. Mantieni identici volto, occhi, capelli, proporzioni, carnagione e outfit base.
 
-Questa è una tavola tecnica Live2D. Crea 8 pose full-body grandi, tutte complete e chiaramente separate. Se 8 non entrano con margine sufficiente, genera 4 pose per tavola invece di comprimere o tagliare.
+PROPORTION LOCK: la posa cambia; anatomia, scala relativa e proporzioni no.
 
-Pose richieste:
-1. neutra in piedi, braccia rilassate;
+Crea 8 pose full-body:
+1. neutra, braccia rilassate;
 2. mano sul fianco;
 3. una mano tra i capelli;
-4. braccia incrociate senza coprire completamente il busto;
+4. braccia incrociate senza coprire completamente il torso;
 5. leggero passo in avanti;
 6. leggera inclinazione del torso;
 7. sguardo indietro in 3/4;
 8. gesto aperto con una mano.
 
-Ogni posa deve mostrare TUTTO il corpo: capelli completi, testa, entrambe le braccia e mani, bacino, entrambe le gambe e piedi/scarpe. Lascia 12–15% di margine vuoto intorno alla sagoma. Nessuna parte deve essere tagliata o uscire dal frame.
+Se 8 pose non entrano grandi e leggibili, dividere in due tavole da 4. Ogni posa deve mostrare capelli, testa, entrambe le braccia e mani, busto, bacino, entrambe le gambe e piedi/scarpe con 12–15% di margine.
 
-Mantieni la stessa altezza apparente e le stesse proporzioni in tutte le pose. Nessuna variazione casuale di seno, vita, fianchi, lunghezza gambe, volto, capelli o outfit. Anatomia corretta: due braccia, due mani, due gambe, due piedi; niente arti duplicati o deformati.
+### Accessori dinamici
+Collana/choker, catene, pendenti, orecchini, charms, gemme sospese e altri elementi mobili NON devono essere fusi nell'outfit/base.
 
-Movimento naturale e leggibile, non pose esasperate. Le pose devono essere utili per costruire parametri BodyAngle, inclinazioni, gesti e motion clips Live2D.
+Per **ognuna delle 8 pose** deve esistere:
+- **BASE CLEAN**: corpo+outfit senza accessori dinamici fusi;
+- **ACCESSORY POSITION MAP**: posizione specifica degli accessori per quella stessa posa.
 
-Sfondo uniforme neutro, alta definizione, dettagli puliti di mani, viso, capelli, catene e gemme.
+Gli accessori devono reagire correttamente a:
+- inclinazione del torso;
+- gravità;
+- passo/movimento;
+- orientamento 3/4;
+- braccia che possono passare davanti/dietro;
+- capelli che possono coprire o scoprire parti dell'accessorio.
+
+Non copiare la stessa forma/posizione degli oggetti in tutte le pose. Mantieni però costanti lunghezza, dimensione, punti di ancoraggio e identità degli oggetti.
 
 ## Criteri di accettazione
-- nessuna posa tagliata;
-- outfit standard identico in tutte;
-- coerenza assoluta di volto e proporzioni;
+- zero crop;
+- proporzioni coerenti con METRIC MASTER;
+- outfit base invariato;
+- base sottostante completa;
+- accessori dinamici separati;
+- mappa accessori presente per ogni posa;
 - mani e piedi interi;
-- silhouette leggibile;
-- nessuna sovrapposizione tra figure;
-- se lo spazio è insufficiente, dividere in due tavole invece di ridurre troppo i soggetti.
+- nessun arto duplicato/fuso/mancante;
+- pose naturali e utili a BodyAngle/gesture/motion.
