@@ -22,7 +22,7 @@ Regola: dopo approvazione della master, nessuna reinterpretazione o rigenerazion
 Luna deve muoversi in modo **fluido, continuo e naturale**. Un renderer che funziona tecnicamente ma appare scattoso, oscilla come un cartonato, sfarfalla o cambia bruscamente pose NON è accettabile.
 
 Criteri di accettazione sul telefono di test:
-- obiettivo: ~60 FPS quando il dispositivo/WebView lo consente;
+- obiettivo: ~60 FPS quando il dispositivo/runtime lo consente;
 - frame time medio idealmente vicino o sotto 16.7 ms;
 - p95 indicativamente <= 20 ms come target di qualità;
 - jank >33 ms idealmente <5%;
@@ -30,15 +30,15 @@ Criteri di accettazione sul telefono di test:
 - nessun dondolio periodico artificiale dell'intero corpo;
 - movimenti con easing/spring coerenti e senza salti di posizione;
 - idle quasi impercettibile: respirazione e micro-movimenti, non oscillazione laterale evidente;
-- occhi, bocca, capelli e chest devono muoversi tramite layer/mesh dedicati quando implementati, non tramite copie sfasate del full-body.
+- occhi, bocca, capelli e chest devono muoversi tramite layer/mesh dedicati, non tramite copie sfasate del full-body.
 
 Le soglie numeriche sono target pratici, non una scusa per dichiarare riuscito un movimento visivamente brutto: la validazione finale resta visiva + diagnostica reale sul telefono.
 
-## Checkpoint grafici
+## Checkpoint grafici storici
 ### CP0 — MASTER CANONICA — APPROVATO
 Master 1536x1024 approvata dall'utente.
 
-### CP1 — POSE FULL-BODY — APPROVATO
+### CP1 — POSE FULL-BODY — APPROVATO COME RIFERIMENTO
 `Luna_Master_Extract_v1` SCARTATO: ritaglio manuale a colonne, con parti mancanti e contaminazioni da pose vicine.
 
 `Luna_Poses_v2_corrected` APPROVATO: 8 pose ricavate dalla sagoma reale con bounding box per componente e margine di sicurezza:
@@ -51,7 +51,7 @@ Master 1536x1024 approvata dall'utente.
 - SURPRISED
 - SEXY
 
-Le 8 pose CP1 sono valide come pose complete. NON implicano che blink o lip-sync siano funzionanti.
+Le 8 pose CP1 restano valide come riferimento visivo e materiale sorgente. NON implicano che blink o lip-sync siano funzionanti.
 
 ### CP2 — VOLTO/TESTA/ESPRESSIONI — PENDING
 Non esiste ancora un set di layer facciali puliti e perfettamente allineati alla IDLE canonica.
@@ -65,8 +65,6 @@ Tentativi precedenti:
 - v0.5.1: alternanza full-body IDLE/BLINK -> sfarfallio;
 - v0.5.2: alternanza rimossa -> difetto nascosto, non risolto; occhi fermi.
 
-Per considerare CP3 APPROVATO servono veri asset occhi aperti/chiusi, trasparenti, ritagliati e allineati sullo stesso volto base, senza cambiare l'intero sprite.
-
 ### CP4 — BOCCA + LIP-SYNC — NON IMPLEMENTATO / PENDING
 Il lip-sync NON ha mai funzionato correttamente in nessuna build finora.
 
@@ -76,26 +74,21 @@ Tentativi precedenti:
 - v0.5.1: alternanza full-body IDLE/TALK -> sfarfallio;
 - v0.5.2: alternanza rimossa -> difetto nascosto, non risolto; bocca ferma.
 
-Per considerare CP4 APPROVATO servono almeno bocca chiusa + 2/3 aperture realmente separate e allineate al volto base. La voce audio/TTS è un sottosistema separato e non è ancora implementato nel laboratorio avatar.
+La voce audio/TTS è un sottosistema separato e non è ancora implementato nel laboratorio avatar.
 
-## Componenti separati
+## Componenti separati storici
 `Luna_RigComponents_v3_validated` SCARTATO: zone nere residue estranee agli asset.
 
 `Luna_Components_v4_transparent` SCARTATO come base del rig finale: la semplice rimozione del nero può lasciare frammenti vicini o bordi inaffidabili.
 
 Regola permanente: checkerboard obbligatorio; nessun asset con fondo nero, aloni, parti estranee o amputazioni può entrare nel rig.
 
-## Architettura
-Non si usa Live2D Cubism. Obiettivo: custom 2D leggero per WebView/Android, senza dipendenze Live2D.
-
+## Architettura custom sprite — ABBANDONATA COME SOLUZIONE FINALE
 ### v0.5.0 — SCARTATO
-Tecnica: duplicati ritagliati della posa full-body per simulare testa/capelli/chest indipendenti.
-
-Test reale: immagini sfasate, ghosting, parti duplicate. Tecnica definitivamente vietata anche per gli altri personaggi.
+Duplicati ritagliati della posa full-body per simulare testa/capelli/chest indipendenti. Risultato: immagini sfasate, ghosting, parti duplicate.
 
 ### v0.5.1 — SCARTATO
-Tecnica: un solo sprite full-body visibile, 8 pose su canvas comune, TALK/BLINK come pose complete alternate automaticamente.
-
+Sprite full-body + alternanza pose TALK/BLINK.
 Report Android #3 reale:
 - FPS medio: 39.1
 - frame medio: 25.56 ms
@@ -107,90 +100,167 @@ Report Android #3 reale:
 - Android 16 / moto g56 5G / WebView Chrome 151
 - `prefers-reduced-motion = true`
 
-Difetti:
-1. sfarfallio da ferma tra sprite completi;
-2. movimento troppo scattoso;
-3. blink/lip-sync non reali: erano cambi di full-body;
-4. loop JS continuo troppo costoso rispetto al risultato.
+Difetti: sfarfallio, movimento scattoso, blink/lip-sync falsi, loop JS costoso.
 
 ### v0.5.2 — SCARTATO COME SOLUZIONE FUNZIONALE
-La v0.5.2 NON ha corretto blink/lip-sync/head/hair/chest. Ha soltanto disattivato o nascosto i meccanismi difettosi per stabilizzare il renderer.
+Ha soltanto nascosto/disabilitato parti difettose. Il movimento idle dell'intera figura produce un dondolio artificiale. Occhi, bocca, capelli e chest non sono risolti.
 
-Correzione concettuale importante richiesta dall'utente: **disabilitare un difetto non equivale a risolverlo**.
+Regola acquisita: **disabilitare un difetto non equivale a risolverlo**.
 
-Cosa faceva v0.5.2:
-- niente alternanza automatica IDLE/BLINK/TALK -> elimina lo sfarfallio, ma lascia occhi e bocca fermi;
-- niente loop JS continuo -> riduce carico, ma elimina la fisica locale;
-- una sola posa full-body -> evita ghosting, ma non crea un vero rig;
-- movimento idle dell'intera figura -> produce un dondolio artificiale e non è considerato valido.
+## DECISIONE ARCHITETTURALE — LIVE2D
+Decisione utente 2026-09-01: **abbandonare il custom sprite rig come soluzione finale e puntare a un vero modello Live2D/Cubism per Luna**, con pipeline riusabile per gli altri personaggi.
 
-Stato: v0.5.2 è utile solo come diagnosi/isolamento dei problemi. NON è un checkpoint approvato del rig.
+Motivo: l'obiettivo reale è movimento fluido, blink vero, lip-sync vero, occhi mobili, capelli e busto con fisica locale, senza scambio di sprite completi.
 
-## CP5 — CAPELLI FISICI — PENDING
-Nessun vero layer capelli allineato è ancora approvato. Vietato simulare capelli indipendenti con copie dell'intera figura.
+### Runtime mobile consigliato
+Per Android il target preferito è **Cubism SDK for Native + OpenGL**, non il vecchio WebView renderer, per ridurre overhead e avere controllo diretto su memoria, frame pacing e caricamento risorse.
 
-## CP6 — BUSTO/CHEST — PENDING
-Nessun vero busto/chest layer o mesh allineata è ancora approvato. Il movimento del seno/torace non è stato risolto; è stato solo disabilitato dopo i problemi di ghosting.
+### Budget memoria mobile
+Tetto assoluto avatar: **300 MB RAM**.
+Target operativo: **150–220 MB** per un singolo personaggio attivo.
 
-Per una vera chest physics servono:
-- busto/chest realmente separato e allineato, oppure mesh/deformer dedicata;
-- spring-damping leggero;
-- movimento quasi nullo in quiete;
-- nessun seam/ghosting.
+Budget indicativo da validare sul telefono:
+- Core/Framework/native app + strutture modello: 20–50 MB;
+- texture decode/GPU: 40–90 MB;
+- render target/mask/buffer: 20–50 MB;
+- motion/physics/JSON/espressioni: 10–25 MB;
+- margine runtime/driver: 40–70 MB.
 
-## Pipeline obbligatoria per TUTTI i personaggi
-1. CP0 master canonica approvata;
-2. CP1 pose full-body complete/trasparenti;
-3. CP2 volto/testa/espressioni;
-4. CP3 occhi + blink;
-5. CP4 bocche + lip-sync;
-6. CP5 capelli fisici;
-7. CP6 busto/chest;
-8. CP7 braccia/mani/guanti;
-9. CP8 gambe/piedi;
-10. CP9 accessori/outfit;
-11. CP10 allineamento rig;
-12. CP11 animazioni/fisica;
-13. CP12 test mobile/APK.
+Il budget è un obiettivo tecnico, NON una misura ancora validata.
 
-Regole:
-- validare ogni checkpoint prima del successivo;
-- salvare sorgente, metodo, coordinate/dimensioni, asset, problemi, correzioni e stato APPROVATO/SCARTATO/PENDING;
-- verificare sempre volto/capelli, entrambe le mani, entrambe le gambe/piedi, outfit e accessori;
-- non propagare asset difettosi;
-- non usare copie full-body come falsi layer indipendenti;
-- non dichiarare risolto un problema solo perché il comportamento difettoso è stato disattivato;
-- se una funzione richiesta (blink, lip-sync, hair/chest physics) non è realmente attiva e verificata, deve risultare PENDING/NON IMPLEMENTATA;
-- se un test reale fallisce, invalidare il checkpoint e registrare metriche e motivo;
-- fluidità percepita e stabilità visiva sono requisiti bloccanti, non miglioramenti opzionali;
-- `main` resta intatta finché il rig non supera test visivo e prestazionale sul telefono.
+### Strategia texture mobile
+Non usare 4096x4096 come default.
 
-## UI laboratorio
-v0.4.2 ha corretto il pannello TEST che copriva Luna:
-- pannello mobile massimo ~40-42% altezza;
-- avatar riposizionato sopra il pannello;
-- pannello minimizzabile;
-- diagnostica minimizza automaticamente il pannello;
-- desktop con pannello laterale.
+Profilo Luna Mobile iniziale:
+- atlas principale volto/capelli frontali: massimo 2048x2048;
+- atlas corpo/outfit: 1024x1024;
+- atlas secondario capelli/accessori: 1024x1024 solo se necessario;
+- preferire 1024 quando la qualità visiva sul telefono resta sufficiente;
+- un solo modello Live2D attivo alla volta;
+- scaricare risorse del personaggio non più attivo;
+- minimizzare cambi texture, blend mode e clipping;
+- evitare maschere inutili;
+- misurare la memoria reale sul dispositivo, non dedurla solo dal peso dei PNG.
 
-## Android wrapper
-Wrapper WebView in `android/`, minSdk 26, progetto Gradle target/compileSdk 35, hardware acceleration, JavaScript/DOM storage, caricamento locale `file:///android_asset/index.html?android=1`.
+### FPS
+Target: **60 FPS percepiti** quando Luna è in primo piano se il telefono lo consente; fallback controllato a 30 FPS solo se necessario per termiche/carico, senza movimento scattoso.
 
-Le build compat v0.5.x usano temporaneamente package separato `com.matrixneo.lunaavatarv050`. Configurazione di test, non definitiva.
+Nessun dondolio dell'intera figura come falso idle. L'idle deve derivare da respirazione, micro-movimenti di testa/occhi, capelli e deformazioni locali.
 
-## Prossimo passo corretto
-NON produrre un'altra build basata su trucchi full-body.
+## Emozioni / espressioni obbligatorie
+Il modello Live2D deve supportare almeno:
+- neutral;
+- happy / smile;
+- shy;
+- angry;
+- surprised;
+- flirty;
+- provocative / sexy;
+- focused;
+- **sad / tristezza**.
 
-Sequenza:
-1. partire dalla IDLE CP1 approvata come base geometrica;
-2. ricavare e allineare sullo stesso canvas il volto/base necessario;
-3. costruire CP3 con occhi aperti/chiusi reali e testare blink isolato;
-4. solo dopo CP3 approvato, costruire CP4 con bocca chiusa + aperture e testare lip-sync isolato;
-5. eliminare il dondolio dell'intero corpo;
-6. implementare il movimento con trasformazioni leggere/compositor e interpolazione continua, non con salti di sprite;
-7. solo dopo occhi/bocca stabili affrontare capelli e busto con veri layer/mesh;
-8. ogni funzione va testata singolarmente sul telefono prima di aggiungere la successiva;
-9. non considerare CP11/CP12 approvati finché il movimento non è visivamente fluido e la diagnostica non mostra un netto miglioramento rispetto al benchmark negativo v0.5.1.
+La tristezza è un'emozione obbligatoria, non opzionale. Deve avere una resa visiva coerente tramite parametri/espressioni del rig (occhi, sopracciglia, bocca, postura/testa) senza sostituire l'intero sprite.
+
+Matrix Engine continuerà a decidere quale emozione/intensità applicare; il modello Live2D deve solo essere capace di rappresentarla in modo fluido.
+
+## Nuova pipeline Live2D obbligatoria
+### L0 — SORGENTE CANONICA
+Usare la master Luna approvata. Nessuna reinterpretazione.
+
+### L1 — ART SEPARATION / PSD LIVE2D-READY
+Creare un PSD/layer set pulito e coerente. Minimo:
+- hair_back;
+- ciocche posteriori separate dove serve fisica;
+- torso/body base;
+- neck;
+- head/face base;
+- ears se visibili;
+- eyebrows L/R;
+- eye white L/R;
+- iris/pupil L/R;
+- upper/lower eyelid L/R;
+- lash/eye-line L/R;
+- mouth base;
+- mouth interior;
+- upper/lower lip;
+- eventuale tongue/teeth se realmente necessari;
+- hair_front;
+- ciocche frontali fisiche;
+- arms/hands dove devono muoversi;
+- chest/bust deformable region;
+- accessori con movimento indipendente.
+
+Tutti i layer devono essere trasparenti, puliti e ricostruire Luna senza buchi/contaminazioni.
+
+### L2 — MODELING CUBISM
+Creare ArtMesh e deformers con densità controllata. Priorità qualità: volto/capelli > busto > mani/accessori > parti inferiori.
+
+### L3 — PARAMETRI MINIMI
+- ParamAngleX/Y/Z;
+- BodyAngleX/Y/Z dove necessario;
+- EyeBallX/Y;
+- EyeLOpen / EyeROpen;
+- MouthOpenY;
+- MouthForm;
+- Breath;
+- brow parameters;
+- eventuali parametri chest/hair/accessori.
+
+### L4 — BLINK / GAZE / LIP-SYNC
+Blink indipendente, sguardo indipendente, bocca deformata localmente. Vietato cambiare full-body per queste funzioni.
+
+### L5 — PHYSICS
+Physics leggere per capelli, accessori e chest/bust. Spring/damping naturali, niente oscillazione globale artificiale.
+
+### L6 — MOTION / EXPRESSIONS
+Idle, talk e set emozioni completo, inclusa **tristezza**, come motion/espressioni del modello, non sprite completi.
+
+### L7 — ANDROID NATIVE INTEGRATION
+Integrare Cubism SDK for Native/OpenGL nel laboratorio Android separato. Mantenere API Matrix ad alto livello: emotion, intensity, speaking, gaze, gesture, motion.
+
+### L8 — BENCHMARK MOBILE
+Misurare sul telefono reale:
+- PSS/RSS app;
+- memoria nativa;
+- memoria GPU se ottenibile;
+- FPS medio;
+- p95 frame time;
+- jank;
+- temperatura/carico prolungato;
+- tempo caricamento modello;
+- stabilità dopo cambio personaggio.
+
+### L9 — VALIDAZIONE
+Il modello non entra in `main` finché non supera:
+- identità visiva;
+- fluidità;
+- blink/gaze/lip-sync;
+- emozioni complete inclusa tristezza;
+- physics capelli/chest;
+- RAM <300 MB per avatar;
+- assenza di seam/ghosting;
+- test mobile prolungato.
+
+## Regole per tutti i personaggi futuri
+- stessa pipeline Live2D-ready;
+- stesso naming standard;
+- budget texture per profilo mobile;
+- un solo personaggio attivo salvo scene che dimostrino di reggere più modelli;
+- asset grafici e rig separati dalla bio/persona Matrix;
+- nessuna funzione dichiarata risolta se è solo disabilitata;
+- ogni checkpoint deve avere stato APPROVATO/SCARTATO/PENDING;
+- il set emozioni deve includere anche tristezza quando il personaggio la può esprimere.
+
+## Prossimo passo operativo
+1. non produrre altre build del custom sprite rig come percorso finale;
+2. preparare la separazione grafica Live2D-ready di Luna dalla master approvata;
+3. validare prima il volto completo e la ricostruzione neutrale;
+4. poi occhi/blink/gaze;
+5. poi bocca/lip-sync;
+6. poi espressioni/emozioni incluso sad/tristezza;
+7. poi capelli/chest physics;
+8. solo dopo creare il modello Cubism e il runtime Android Native;
+9. benchmark memoria/FPS prima dell'integrazione con Matrix.
 
 ## Regola di continuità
 Aggiornare questo file dopo ogni checkpoint validato e dopo ogni modifica rilevante a versione, grafica, asset, test, rig, API, build Android o architettura. Registrare anche checkpoint scartati e motivo.
