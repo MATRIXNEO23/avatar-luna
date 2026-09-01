@@ -7,29 +7,16 @@ Branch stabile non toccata: `main`
 Branch backup: `rig-recovery-backup-2026-09-01`
 
 ## Scopo
-Laboratorio separato da Neon Tides / Matrix Engine per sviluppare avatar, grafica, rig e test Android senza regressioni sul progetto principale.
+Laboratorio separato da Neon Tides / Matrix Engine per sviluppare avatar, grafica, rig, Cubism e test Android senza regressioni sul progetto principale.
 
-## Identità visiva canonica
-- `LUNA master.png` è presente nella root della branch `rig-assets-working` ed è la reference identitaria corrente da usare per tutte le nuove tavole.
-- Priorità identità: volto > capelli > colori/tratti > proporzioni > outfit > espressione/posa > movimento.
-- La vecchia `luna_08_no_cape.png` è solo fallback storico e NON va usata come base finale.
-- Le vecchie character sheet/pose restano materiale di riferimento, ma NON sono automaticamente idonee come sorgente tecnica Live2D.
-- Nessuna nuova immagine generata può diventare reference della successiva finché non viene approvata esplicitamente.
+## Identità canonica
+- `LUNA master.png` nella root di `rig-assets-working` è la reference identitaria corrente.
+- Priorità: volto > capelli > colori/tratti > proporzioni > outfit > espressione/posa > movimento.
+- `luna_08_no_cape.png` è solo fallback storico e NON va usata come base finale.
+- Le vecchie pose/character sheet restano reference visive, non sorgenti tecniche automatiche.
+- Nessuna nuova immagine generata diventa reference della successiva finché non viene approvata esplicitamente.
 
-## Requisito prestazionale e movimento
-Luna deve muoversi in modo fluido, continuo e naturale.
-
-Target mobile:
-- circa 60 FPS quando dispositivo/runtime lo consentono;
-- frame medio idealmente vicino o sotto 16.7 ms;
-- p95 indicativamente <=20 ms;
-- jank >33 ms idealmente <5%;
-- nessun cambio full-body per blink/lip-sync;
-- nessun dondolio periodico artificiale dell'intero corpo;
-- occhi, bocca, capelli, busto e accessori dinamici tramite layer/mesh/physics dedicati;
-- qualità visiva reale sul telefono prevale sui soli numeri diagnostici.
-
-## Storico rig custom — SCARTATO COME SOLUZIONE FINALE
+## Storico custom rig — SCARTATO COME SOLUZIONE FINALE
 ### v0.5.0 — SCARTATO
 Duplicati/ritagli regionali del full-body: ghosting, duplicazioni e disallineamenti.
 
@@ -39,87 +26,110 @@ Switch full-body TALK/BLINK e idle automatico: 39.1 FPS medi, p95 33.8 ms, jank 
 ### v0.5.2 — SCARTATO
 Ha nascosto/disabilitato funzioni difettose senza risolverle. Regola permanente: disabilitare un difetto non equivale a correggerlo.
 
-## Decisione architetturale — LIVE2D / CUBISM
-La soluzione finale deve essere un vero modello Live2D/Cubism con pipeline riutilizzabile per tutti i personaggi.
+## Decisione finale architetturale — LIVE2D / CUBISM
+La soluzione finale deve essere un vero modello Live2D/Cubism, con pipeline riutilizzabile per tutti i personaggi.
 
 Runtime Android preferito: Cubism SDK for Native + OpenGL.
 
-Budget avatar:
-- tetto assoluto: <300 MB RAM;
+### Target movimento
+- movimento fluido e naturale;
+- ~60 FPS quando il dispositivo lo consente;
+- frame medio idealmente <=16.7 ms;
+- p95 indicativamente <=20 ms;
+- jank >33 ms idealmente <5%;
+- nessun cambio full-body per blink/lip-sync;
+- nessun dondolio artificiale dell'intero corpo;
+- occhi, bocca, capelli, chest e accessori tramite layer/mesh/physics dedicati.
+
+### Budget mobile
+- tetto assoluto avatar: <300 MB RAM;
 - target operativo: 150–220 MB per un personaggio attivo;
-- volto/capelli: fino a 2048x2048 quando necessario;
-- corpo/outfit: 1024x1024 come target iniziale;
-- secondari/accessori: 1024x1024 solo se necessario;
+- volto/capelli fino a 2048x2048 quando necessario;
+- corpo/outfit 1024x1024 come target iniziale;
+- secondari/accessori 1024x1024 solo se necessario;
 - un solo modello attivo alla volta di default.
 
 ## Capacità Live2D obbligatorie
-- rotazione testa/corpo fluida destra e sinistra;
+- rotazione testa/corpo fluida a sinistra e destra;
 - blink vero;
 - gaze indipendente;
 - lip-sync vero;
 - hair physics;
 - chest/bust physics leggera;
 - accessori dinamici indipendenti;
-- espressioni ed emozioni tramite parametri/deformazioni, non tramite cambio sprite completo.
+- espressioni/emozioni tramite deformazioni/parametri, non sprite completi.
 
 ## Emozioni / registri richiesti
-Almeno:
-- neutral;
-- happy/smile;
-- shy;
-- angry;
-- surprised;
-- focused;
-- sad/tristezza;
-- flirty/flirt;
-- sensual/sensuale;
-- provocative/sexy;
-- `erotic_explicit` come stato tecnico per personaggi adulti, rappresentato nel rig attraverso parametri/espressioni e selezionato da Matrix Engine in base al contesto.
+neutral, happy/smile, shy, angry, surprised, focused, sad/tristezza, flirty/flirt, sensual/sensuale, provocative/sexy, `erotic_explicit` come stato tecnico per adulti selezionato da Matrix Engine secondo contesto.
 
-## PROPORTION LOCK — OBBLIGATORIO TRA FILE DIVERSI
-File globale: `docs/live2d/prompts/00_PROPORTION_LOCK.md`.
+## File globale lock
+`docs/live2d/prompts/00_PROPORTION_LOCK.md`
 
-Dopo approvazione di `01_Turnaround.md`, il frontale neutro approvato diventa la **METRIC MASTER**.
+Il file è stato aggiornato e ora contiene quattro lock permanenti:
+1. IDENTITY LOCK;
+2. PROPORTION LOCK;
+3. OUTFIT LOCK;
+4. OUTPUT LOCK;
+oltre a ROTATION LOCK e DYNAMIC ACCESSORY LOCK.
 
-Da quel momento tutte le tavole successive devono mantenere:
+## IDENTITY LOCK
+Usare sempre `LUNA master.png` come identità primaria. Dopo approvazione del Prompt 01, la frontale approvata diventa `METRIC MASTER`.
+
+Non reinterpretare Luna: volto, occhi viola, carnagione, capelli nero-viola, corporatura, silhouette e stile devono restare coerenti.
+
+## PROPORTION LOCK — TRA FILE DIVERSI
+Tutte le tavole devono mantenere:
 - rapporto testa/corpo;
-- testa, mascella, mento;
-- distanza/dimensione occhi;
-- collo e spalle;
-- busto, vita, fianchi;
+- testa/mascella/mento;
+- distanza e dimensione occhi;
+- collo/spalle;
+- busto/vita/fianchi/bacino;
 - lunghezza braccia;
-- femore, tibia, ginocchia;
-- dimensione mani/piedi;
+- femore/tibia/ginocchia;
+- mani/piedi;
 - lunghezza totale gambe;
 - lunghezza/volume/attaccatura capelli;
 - geometria dell'outfit statico.
 
-Per pose supine/prone/laterali non si forza la stessa altezza nel bounding box: si mantengono le stesse lunghezze anatomiche reali evitando scorci estremi.
+Per pose supine/prone/laterali si mantengono le lunghezze anatomiche reali senza forzare lo stesso bounding box.
 
-Una tavola con drift evidente viene SCARTATA e non può diventare reference per la successiva.
+Una tavola con drift evidente viene SCARTATA.
 
-## ROTATION LOCK — INTERMEDI SINISTRA E DESTRA
-Per tutte le tavole che richiedono rotazione orizzontale usare il set completo:
+## OUTFIT LOCK — NUOVA REGOLA DEFINITIVA
+Per tutti i prompt della base canonica usare ESATTAMENTE lo stesso outfit statico/deformabile di `LUNA master.png` e del Turnaround approvato:
+- stessa forma;
+- stessa copertura;
+- stessi tagli;
+- stessi materiali;
+- stessa palette;
+- stessi guanti/armwear;
+- stesse calzature;
+- stessi punti di attacco.
+
+Vietato semplificare, aggiungere, togliere o reinterpretare l'outfit statico tra una tavola e l'altra.
+
+`08_AltOutfits.md` è l'unica eccezione concettuale, ma è stato marcato **FUTURO / NON USARE NELLA BASE**. Quando verrà usato, un solo outfit alternativo per ciclo e identico in tutte le sue viste.
+
+## ROTATION LOCK — L/R + FRAME INTERMEDI
+Set completo di riferimento:
 1. 0° frontale;
-2. 22.5° sinistra — INTERMEDIO L;
-3. 45° sinistra — 3/4 L;
-4. 90° sinistra — profilo L;
-5. 135° sinistra — 3/4 posteriore L;
+2. 22.5° L — INTERMEDIO L;
+3. 45° L;
+4. 90° L;
+5. 135° L;
 6. 180° retro;
-7. 135° destra — 3/4 posteriore R;
-8. 90° destra — profilo R;
-9. 45° destra — 3/4 R;
-10. 22.5° destra — INTERMEDIO R.
+7. 135° R;
+8. 90° R;
+9. 45° R;
+10. 22.5° R — INTERMEDIO R.
 
-INTERMEDIO L e INTERMEDIO R si aggiungono alle viste principali e devono esistere entrambi.
-Non ottenere automaticamente il lato destro specchiando il sinistro.
-I deformatori Cubism interpolano tra keyform, ma non devono inventare prospettive mancanti.
+INTERMEDIO L e INTERMEDIO R si aggiungono alle viste principali. Destra e sinistra devono essere realmente disegnate; niente mirroring automatico come sostituto.
 
-## ACCESSORI DINAMICI — NUOVA REGOLA DEFINITIVA
-Decisione utente: se un oggetto deve essere dinamico, **NON deve comparire nelle immagini/pose base di Luna**.
+## ACCESSORI DINAMICI — REGOLA DEFINITIVA
+Se un oggetto deve muoversi indipendentemente dal corpo, NON deve comparire nelle pose/base dei Prompt 01–08.
 
-Quindi le tavole 01–08 devono essere BASE CLEAN e prive di:
-- collane/choker mobili;
+Quindi 01–08 devono essere BASE CLEAN e privi di:
+- collane/choker dinamici;
 - catene;
 - pendenti;
 - gemme sospese;
@@ -130,155 +140,150 @@ Quindi le tavole 01–08 devono essere BASE CLEAN e prive di:
 - accessori stivali mobili;
 - qualunque oggetto con physics indipendente.
 
-La pelle, i capelli e l'outfit sotto tali oggetti devono essere disegnati completi e senza buchi/residui.
+La pelle, i capelli e l'outfit sotto tali oggetti devono essere completamente disegnati.
 
-Gli accessori dinamici vengono creati **solo nel Prompt 09** come asset isolati.
+Gli accessori dinamici vengono prodotti SOLO nel Prompt 09 come asset isolati.
 
 ### Accessory scale lock
 Ogni accessorio deve mantenere tra tutte le varianti:
 - stessa dimensione relativa alla METRIC MASTER;
-- stessa lunghezza reale;
+- stessa lunghezza;
 - stessa forma/materiale;
 - stesso punto di ancoraggio/pivot;
 - stesso lato L/R.
 
-Possono cambiare soltanto prospettiva, curva, rotazione e deformazione fisica dovute a posa, movimento e gravità.
+Possono cambiare solo prospettiva, curva, rotazione e deformazione fisica dovute a posa/movimento/gravità.
 
-### Varianti accessori obbligatorie
-Prompt 09 deve creare per ogni accessorio rilevante:
-- tutte le 10 varianti di rotazione del turnaround, inclusi INTERMEDIO L/R;
-- varianti per le 8 Standing Poses quando il movimento modifica l'oggetto;
-- varianti per le 8 Floor/Bed Poses quando gravità/posa modificano l'oggetto;
-- L/R separati per componenti asimmetrici.
+### Varianti obbligatorie Prompt 09
+Per ogni accessorio rilevante:
+- tutte le 10 varianti angolari del turnaround, inclusi INTERMEDIO L/R;
+- varianti supina, prona, laterale L/R, semi-sdraiata per oggetti sensibili alla gravità;
+- ulteriori pose solo quando necessarie;
+- componenti L/R separati quando asimmetrici.
 
-Gli accessori devono essere mostrati isolati, etichettati per angolo/posa, con pivot/anchor e direzione di gravità quando utile. NON vanno disegnati sopra Luna nelle pose base.
+Gli accessori devono essere mostrati isolati, NON montati sopra Luna.
 
-## Prompt pack Live2D
+## OUTPUT LOCK — NUOVA REGOLA DEFINITIVA
+I prompt devono produrre SOLO ciò che serve alla funzione tecnica richiesta.
+
+Vietati salvo richiesta specifica:
+- pannelli informativi decorativi;
+- palette colori;
+- loghi;
+- layout da concept sheet;
+- diagrammi extra;
+- testi e label artistiche;
+- elementi inventati per riempire spazio.
+
+Usare sfondo neutro semplice e dedicare massimo spazio alle figure/componenti.
+
+Per full-body:
+- nessun crop;
+- 12–15% di margine;
+- testa, capelli, mani, gambe, piedi e scarpe completamente visibili;
+- se troppe figure non entrano, dividere in più tavole coordinate alla stessa scala.
+
+## Prompt pack corrente
 Cartella: `docs/live2d/prompts/`
 
-File:
-- `00_PROPORTION_LOCK.md`
-- `01_Turnaround.md`
-- `02_StandingPoses.md`
-- `03_FloorBedPoses.md`
-- `04_FaceExpressions.md`
-- `05_EyesMouth.md`
-- `06_HairPhysics.md`
-- `07_MainOutfit.md`
-- `08_AltOutfits.md`
-- `09_BodyParts_Accessories.md`
-- `10_LayerMap.md`
+- `00_PROPORTION_LOCK.md` — global lock aggiornato;
+- `01_Turnaround.md` — turnaround 360° pulito;
+- `02_StandingPoses.md` — standing poses;
+- `03_FloorBedPoses.md` — floor/bed poses;
+- `04_FaceExpressions.md` — espressioni facciali;
+- `05_EyesMouth.md` — occhi/bocca/sopracciglia + rotazione testa;
+- `06_HairPhysics.md` — capelli/physics;
+- `07_MainOutfit.md` — outfit canonico;
+- `08_AltOutfits.md` — FUTURO / NON USARE NELLA BASE;
+- `09_BodyParts_Accessories.md` — body parts + accessori dinamici isolati;
+- `10_LayerMap.md` — mappa tecnica finale.
 
-Stato: **PENDING VALIDAZIONE GRAFICA**.
+## Aggiornamento prompt dopo errore Turnaround
+Tutti i prompt sono stati corretti per evitare gli errori osservati nella generazione precedente:
+- identità più rigida;
+- proporzioni bloccate tra file;
+- stesso outfit canonico statico tra tutte le tavole della base;
+- nessun accessorio dinamico nelle pose/base;
+- output privo di pannelli/palette/loghi inutili;
+- divisione in più tavole quando troppe figure ridurrebbero leggibilità;
+- L/R e intermedi espliciti.
 
-## Contenuto attuale dei prompt
-### 01 — Turnaround
-- 10 viste complete a 360°;
-- INTERMEDIO L + INTERMEDIO R;
-- zero crop;
-- BASE CLEAN senza accessori dinamici;
-- frontale approvato diventa METRIC MASTER.
+### Prompt 01 aggiornato
+Il Turnaround viene ora diviso obbligatoriamente in due tavole coordinate alla stessa scala:
 
-### 02 — Standing Poses
-- 8 pose full-body;
-- se troppo affollato dividere 4+4;
-- zero crop;
-- BASE CLEAN senza accessori dinamici.
+Tavola A:
+- 0°;
+- 22.5° L;
+- 45° L;
+- 90° L;
+- 135° L.
 
-### 03 — Floor / Bed Poses
-- supina rilassata;
-- supina ginocchia piegate;
-- supina una gamba piegata;
-- laterale L;
-- laterale R;
-- semi-sdraiata;
-- prona rilassata;
-- prona testa verso camera;
-- corpo intero sempre nel frame;
-- BASE CLEAN senza accessori dinamici.
+Tavola B:
+- 180°;
+- 135° R;
+- 90° R;
+- 45° R;
+- 22.5° R.
 
-### 04 — Face Expressions
-- close-up grandi e coerenti;
-- espressioni principali + sad + flirt/sensual/provocative;
-- nessun accessorio dinamico visibile;
-- volto strutturalmente invariato.
+Solo figure, stesso outfit canonico, nessun accessorio dinamico, nessun pannello extra.
 
-### 05 — Eyes / Mouth / Brows
-- occhio L e R separati;
-- blink/gaze L/R;
-- sopracciglia L/R;
-- fonemi e aperture bocca;
-- rotation references con INTERMEDIO L/R;
-- nessun accessorio dinamico.
+### Prompt 02 aggiornato
+8 standing poses divise in 4+4, stesso outfit canonico, nessun accessorio dinamico.
 
-### 06 — Hair Physics
-- hair_back/front;
-- ciocche principali L/R;
-- gruppi posteriori per physics;
-- riferimenti rotazione L/R + intermedi;
-- nessun accessorio dinamico sui capelli.
+### Prompt 03 aggiornato
+8 floor/bed poses divise in 4+4, stesso outfit canonico, nessun accessorio dinamico.
 
-### 07 — Main Outfit
-- outfit statico/deformabile;
-- 10 viste coerenti con turnaround;
-- zero accessori dinamici visibili;
-- base completa sotto i futuri accessori.
+### Prompt 04 aggiornato
+Close-up facciali; se l'outfit entra nell'inquadratura deve essere esattamente quello canonico; nessun accessorio dinamico.
 
-### 08 — Alternate Outfits
-- un solo outfit per tavola;
-- stesso body rig e METRIC MASTER;
-- viste L/R + intermedi;
-- eventuale supina se necessaria;
-- zero accessori dinamici visibili.
+### Prompt 05 aggiornato
+Componenti facciali L/R + rotazione testa; se l'outfit è visibile deve restare quello canonico; nessun accessorio dinamico.
 
-### 09 — Body Parts / Dynamic Accessories
-- componenti anatomici L/R;
-- unica tavola autorizzata a produrre gli accessori dinamici;
-- accessori isolati, non indossati;
-- varianti per tutti gli angoli/pose richiesti;
-- scala, lunghezza e pivot bloccati.
+### Prompt 06 aggiornato
+Capelli e reference angolari; stesso outfit canonico se visibile; nessun accessorio capelli dinamico.
 
-### 10 — Layer Map
-- mappa tecnica finale;
-- BASE CLEAN;
-- body/face/hair/outfit separati;
-- accessori dinamici provenienti esclusivamente da Prompt 09;
-- anchor, draw order, physics e scale lock documentati.
+### Prompt 07 aggiornato
+Outfit canonico bloccato esattamente alla reference; accessori dinamici esclusi.
 
-## Regola immagini / crop
-Per tutte le figure full-body:
-- testa, capelli, mani, dita visibili, gambe, piedi e scarpe devono essere completamente nel frame;
-- almeno 12–15% di margine attorno alla sagoma;
-- se lo spazio non basta, dividere la tavola invece di comprimere;
-- nessuna posa può essere approvata se una parte del corpo è tagliata.
+### Prompt 08 aggiornato
+Marcato FUTURO / NON USARE NELLA BASE. Non deve interrompere la coerenza dell'outfit canonico durante la costruzione base.
 
-## Stato delle generazioni recenti
-Le generazioni di turnaround effettuate durante la preparazione dei prompt **NON sono approvate come METRIC MASTER**. Sono state prodotte prima di chiudere tutte le regole definitive e non vanno usate come riferimento finale.
+### Prompt 09 aggiornato
+Unico prompt che produce accessori dinamici; oggetti isolati con scale/forme/pivot bloccati e varianti angolari/gravità.
 
-Il prossimo `01_Turnaround` deve quindi essere rigenerato usando:
-- `LUNA master.png`;
-- `00_PROPORTION_LOCK.md` aggiornato;
-- `01_Turnaround.md` aggiornato;
-- BASE CLEAN senza accessori dinamici;
-- 10 viste incluse INTERMEDIO L/R;
-- nessun crop.
+### Prompt 10 aggiornato
+Layer map basata su BASE CLEAN con stesso outfit canonico e accessori provenienti esclusivamente dal Prompt 09.
 
-## Metodo operativo da ora — UNA TAVOLA ALLA VOLTA
-Decisione utente: **non generare più una sequenza automatica di tavole senza controllo intermedio**.
+## Stato generazioni Prompt 01
+### Tentativi precedenti — NON APPROVATI
+Le generazioni precedenti non sono METRIC MASTER.
 
-Procedura:
-1. generare SOLO il Prompt 01;
-2. mostrare il risultato;
-3. controllare identità, proporzioni, 10 angoli, L/R, intermedi, outfit, assenza accessori dinamici e zero crop;
-4. l'utente APPROVA o SCARTA;
-5. solo dopo approvazione passare al Prompt 02;
-6. ripetere lo stesso processo fino al Prompt 10.
+### Ultimo Turnaround generato — SCARTATO
+Motivi:
+- solo 7 viste invece delle 10 richieste;
+- sequenza angolare L/R incompleta/errata;
+- INTERMEDIO L/R non corretti;
+- reinterpretazione di Luna rispetto a `LUNA master.png`;
+- drift di proporzioni tra viste;
+- outfit reinterpretato;
+- presenza di elementi pendenti/decorativi incompatibili con BASE CLEAN;
+- troppo spazio sprecato in pannelli, palette, diagrammi e testo invece delle figure.
 
-Nessuna tavola successiva viene generata automaticamente senza approvazione della precedente.
+Questo risultato NON deve essere usato come METRIC MASTER o reference successiva.
+
+## Metodo operativo — UNA TAVOLA ALLA VOLTA
+Decisione utente definitiva:
+1. generare una sola tavola/sub-tavola;
+2. mostrarla;
+3. controllare identità, proporzioni, outfit, angolo/posa, assenza accessori dinamici, zero crop e assenza elementi extra;
+4. utente APPROVA o SCARTA;
+5. solo dopo approvazione procedere alla tavola successiva.
+
+Per Prompt 01 si parte quindi dalla **Tavola A** soltanto. La Tavola B viene generata solo dopo approvazione della Tavola A.
 
 ## Pipeline Live2D successiva
-Dopo approvazione delle tavole:
-- L0 master/reference set approvato;
+Dopo approvazione del reference set:
+- L0 master/reference set;
 - L1 art separation / PSD Live2D-ready;
 - L2 modeling Cubism / ArtMesh / deformers;
 - L3 parameters;
@@ -291,13 +296,13 @@ Dopo approvazione delle tavole:
 
 ## Regole per tutti i personaggi futuri
 - stessa pipeline Live2D-ready;
-- stesso naming standard;
-- PROPORTION LOCK tra file;
+- stesso naming;
+- identity/proportion/outfit lock;
 - intermedi L/R per rotazioni;
 - accessori dinamici separati dalle pose/base;
-- nessuna funzione dichiarata risolta se è solo disabilitata;
+- output tecnico minimale senza mega-sheet decorate;
 - checkpoint APPROVATO / SCARTATO / PENDING;
 - aggiornamento continuità dopo ogni checkpoint rilevante.
 
 ## Prossimo passo operativo
-**Fermo qui.** Prima di generare altro, il file di continuità è stato aggiornato. Quando si riparte, si ricomincia dal `01_Turnaround.md` aggiornato e si procede **una tavola alla volta**, con approvazione prima della successiva.
+Generare SOLO `01_Turnaround` — **Tavola A** con 5 viste: 0°, 22.5° L, 45° L, 90° L, 135° L. Usare `LUNA master.png`, stesso outfit canonico statico, nessun accessorio dinamico, nessun pannello extra, zero crop. Attendere validazione prima della Tavola B.
