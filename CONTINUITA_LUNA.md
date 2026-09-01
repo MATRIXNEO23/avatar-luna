@@ -180,6 +180,34 @@ Misurare sul telefono reale PSS/RSS, memoria nativa/GPU se ottenibile, FPS, p95,
 ### L9 — VALIDAZIONE
 Il modello non entra in `main` finché non supera identità visiva, fluidità, blink/gaze/lip-sync, emozioni/registri richiesti, physics capelli/chest, RAM <300 MB per avatar, assenza seam/ghosting e test mobile prolungato.
 
+## Prompt pack Live2D — CREATO / PENDING USO E VALIDAZIONE
+Il 2026-09-01 sono stati aggiunti nella branch `rig-assets-working` dieci prompt tecnici separati in `docs/live2d/prompts/` per evitare mega-sheet sovraccariche e ridurre errori di crop, incoerenza anatomica e perdita di dettaglio.
+
+File creati:
+1. `01_Turnaround.md`
+2. `02_StandingPoses.md`
+3. `03_FloorBedPoses.md`
+4. `04_FaceExpressions.md`
+5. `05_EyesMouth.md`
+6. `06_HairPhysics.md`
+7. `07_MainOutfit.md`
+8. `08_AltOutfits.md`
+9. `09_BodyParts_Accessories.md`
+10. `10_LayerMap.md`
+
+Regole comuni fissate nei prompt:
+- usare sempre la reference canonica di Luna;
+- nessuna reinterpretazione di volto, capelli o proporzioni;
+- nessun crop di testa/capelli/mani/gambe/piedi/accessori;
+- margine 12–15% attorno alle figure full-body;
+- se lo spazio non basta, dividere in più tavole invece di comprimere;
+- outfit standard per le pose principali; outfit alternativi in tavole separate;
+- occhi sinistro e destro generati separatamente, non un solo occhio specchiato;
+- componenti tecnici grandi e separati;
+- risoluzione master alta, con target mobile indicativo 2048 per volto/capelli e 1024 per corpo/secondari quando sufficiente.
+
+Stato: **PENDING**. I prompt sono il nuovo standard operativo, ma le immagini generate con essi vanno validate una per una prima di dichiarare L0 APPROVATO.
+
 ## Regole per tutti i personaggi futuri
 - stessa pipeline Live2D-ready;
 - stesso naming standard;
@@ -191,8 +219,8 @@ Il modello non entra in `main` finché non supera identità visiva, fluidità, b
 - se una master non nasce già pensando alla separazione Live2D, rifarla prima di perdere tempo in ritagli fragili.
 
 ## Prossimo passo operativo
-1. SCARTARE definitivamente `Luna_Live2D_L1A_face_candidates`;
-2. creare nuova master Luna **Live2D-ready** usando la master storica come reference di identità;
+1. usare i 10 prompt separati, iniziando da `01_Turnaround.md`;
+2. validare ogni tavola singolarmente prima di generare la successiva;
 3. validare la nuova master L0 prima di estrarre qualunque layer;
 4. solo dopo L0 approvata fare L1 art separation;
 5. volto/occhi/blink/gaze;
