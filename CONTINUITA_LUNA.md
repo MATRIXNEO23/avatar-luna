@@ -35,7 +35,32 @@ Master 1536x1024 approvata dall'utente.
 - SURPRISED
 - SEXY
 
-Le 8 pose CP1 sono la sorgente canonica del renderer attuale.
+Le 8 pose CP1 sono valide come pose complete. NON implicano che blink o lip-sync siano funzionanti.
+
+### CP2 — VOLTO/TESTA/ESPRESSIONI — PENDING
+Non esiste ancora un set di layer facciali puliti e perfettamente allineati alla IDLE canonica.
+
+### CP3 — OCCHI + BLINK — NON IMPLEMENTATO / PENDING
+Il blink NON ha mai funzionato correttamente in nessuna build finora.
+
+Tentativi precedenti:
+- v0.4.x: mancavano veri layer occhi;
+- v0.5.0: copie/sovrapposizioni della figura -> sfasamento/ghosting;
+- v0.5.1: alternanza full-body IDLE/BLINK -> sfarfallio;
+- v0.5.2: alternanza rimossa -> difetto nascosto, non risolto; occhi fermi.
+
+Per considerare CP3 APPROVATO servono veri asset occhi aperti/chiusi, trasparenti, ritagliati e allineati sullo stesso volto base, senza cambiare l'intero sprite.
+
+### CP4 — BOCCA + LIP-SYNC — NON IMPLEMENTATO / PENDING
+Il lip-sync NON ha mai funzionato correttamente in nessuna build finora.
+
+Tentativi precedenti:
+- v0.4.x: mancavano veri layer bocca;
+- v0.5.0: patch/copie sovrapposte -> sfasamento;
+- v0.5.1: alternanza full-body IDLE/TALK -> sfarfallio;
+- v0.5.2: alternanza rimossa -> difetto nascosto, non risolto; bocca ferma.
+
+Per considerare CP4 APPROVATO servono almeno bocca chiusa + 2/3 aperture realmente separate e allineate al volto base. La voce audio/TTS è un sottosistema separato e non è ancora implementato nel laboratorio avatar.
 
 ## Componenti separati
 `Luna_RigComponents_v3_validated` SCARTATO: zone nere residue estranee agli asset.
@@ -45,76 +70,57 @@ Le 8 pose CP1 sono la sorgente canonica del renderer attuale.
 Regola permanente: checkerboard obbligatorio; nessun asset con fondo nero, aloni, parti estranee o amputazioni può entrare nel rig.
 
 ## Architettura
-Non si usa Live2D Cubism. Obiettivo attuale: custom 2D leggero per WebView/Android, senza dipendenze Live2D.
+Non si usa Live2D Cubism. Obiettivo: custom 2D leggero per WebView/Android, senza dipendenze Live2D.
 
 ### v0.5.0 — SCARTATO
 Tecnica: duplicati ritagliati della posa full-body per simulare testa/capelli/chest indipendenti.
 
 Test reale: immagini sfasate, ghosting, parti duplicate. Tecnica definitivamente vietata anche per gli altri personaggi.
 
-### v0.5.1 — SCARTATO DOPO ANDROID #3
-Correzione: un solo sprite full-body visibile; niente duplicati regionali; 8 pose su canvas comune 240x500 WebP lossless; idle, gesture, mapping emozione->posa; TALK/BLINK come pose complete.
+### v0.5.1 — SCARTATO
+Tecnica: un solo sprite full-body visibile, 8 pose su canvas comune, TALK/BLINK come pose complete alternate automaticamente.
 
-Report reale utente `Android #3 stable-rig`:
-- runtime: 0.5.1
-- durata: 15042 ms
-- frames: 588
+Report Android #3 reale:
 - FPS medio: 39.1
 - frame medio: 25.56 ms
 - p95: 33.8 ms
-- jank >33 ms: 235 frame
-- jank: 40%
+- jank >33 ms: 40%
 - viewport: 443x984
 - DPR: 2.4375
-- rig: stable
-- pose caricate: 8
-- memoria JS: 9.5 MB usati / 9.5 MB totale
-- WebView: Chrome 151 su Android 16 moto g56 5G
+- memoria JS: 9.5 MB
+- Android 16 / moto g56 5G / WebView Chrome 151
 - `prefers-reduced-motion = true`
 
-Difetti osservati:
-1. da ferma Luna sfarfalla tra due immagini;
-2. movimento percepito troppo scattoso;
-3. `prefers-reduced-motion=true` disabilitava le animazioni CSS tramite la regola globale precedente;
-4. il cambio automatico IDLE/BLINK/TALK usava sprite full-body completi e produceva flicker visibile;
-5. il loop JavaScript continuo aggiornava trasformazioni ad ogni frame senza un beneficio sufficiente sul telefono.
+Difetti:
+1. sfarfallio da ferma tra sprite completi;
+2. movimento troppo scattoso;
+3. blink/lip-sync non reali: erano cambi di full-body;
+4. loop JS continuo troppo costoso rispetto al risultato.
 
-Conclusione: v0.5.1 è SCARTATO come renderer finale. Il risultato e le metriche vanno conservati come benchmark negativo.
+### v0.5.2 — SCARTATO COME SOLUZIONE FUNZIONALE
+La v0.5.2 NON ha corretto blink/lip-sync/head/hair/chest. Ha soltanto disattivato o nascosto i meccanismi difettosi per stabilizzare il renderer.
 
-### v0.5.2 — PENDING TEST MOBILE
-Preparata localmente dopo il report Android #3.
+Correzione concettuale importante richiesta dall'utente: **disabilitare un difetto non equivale a risolverlo**.
 
-Obiettivo: eliminare flicker e ridurre jank prima di reintrodurre fisica locale.
+Cosa faceva v0.5.2:
+- niente alternanza automatica IDLE/BLINK/TALK -> elimina lo sfarfallio, ma lascia occhi e bocca fermi;
+- niente loop JS continuo -> riduce carico, ma elimina la fisica locale;
+- una sola posa full-body -> evita ghosting, ma non crea un vero rig;
+- movimento idle dell'intera figura -> produce un dondolio artificiale e non è considerato valido.
 
-Modifiche:
-- nessun cambio automatico IDLE/BLINK/TALK quando Luna è ferma o parla;
-- una sola posa completa visibile alla volta;
-- TALK e BLINK restano disponibili come pose manuali/stati, ma non vengono alternati automaticamente;
-- rimosso il loop JavaScript continuo di fisica/idle;
-- idle e gesture spostati su trasformazioni CSS compositor-friendly;
-- movimento non viene più silenziosamente disabilitato dal `prefers-reduced-motion` del sistema durante questo test; il valore viene solo registrato nella diagnostica;
-- ridotti su mobile `backdrop-filter`, grandi blur ambientali e shadow costose;
-- gesture `nod`, `tilt`, `bounce`, `step` restano disponibili;
-- diagnostica: `Android #4 compositor`;
-- runtime: `0.5.2`;
-- package test: `com.matrixneo.lunaavatarv050`;
-- versionCode: 4;
-- stessa chiave test di v0.5.0 compat/v0.5.1 per aggiornamento diretto.
+Stato: v0.5.2 è utile solo come diagnosi/isolamento dei problemi. NON è un checkpoint approvato del rig.
 
-APK locale: `Luna-Avatar-Test-v0.5.2.apk`.
+## CP5 — CAPELLI FISICI — PENDING
+Nessun vero layer capelli allineato è ancora approvato. Vietato simulare capelli indipendenti con copie dell'intera figura.
 
-Stato: PENDING test reale. Non promuovere finché non vengono verificati assenza flicker, fluidità e metriche Android #4.
+## CP6 — BUSTO/CHEST — PENDING
+Nessun vero busto/chest layer o mesh allineata è ancora approvato. Il movimento del seno/torace non è stato risolto; è stato solo disabilitato dopo i problemi di ghosting.
 
-## Busto / capelli / testa indipendenti
-La fisica locale indipendente resta DISABILITATA finché non esistono veri layer puliti e geometricamente allineati o una mesh/deformer adatta.
-
-Non simulare mai capelli, testa o busto muovendo copie ritagliate dell'intera posa.
-
-Per una vera chest physics futura serve:
-- busto/chest realmente separato e allineato, oppure mesh dedicata;
+Per una vera chest physics servono:
+- busto/chest realmente separato e allineato, oppure mesh/deformer dedicata;
 - spring-damping leggero;
 - movimento quasi nullo in quiete;
-- nessun seam/ghosting visibile.
+- nessun seam/ghosting.
 
 ## Pipeline obbligatoria per TUTTI i personaggi
 1. CP0 master canonica approvata;
@@ -137,35 +143,35 @@ Regole:
 - verificare sempre volto/capelli, entrambe le mani, entrambe le gambe/piedi, outfit e accessori;
 - non propagare asset difettosi;
 - non usare copie full-body come falsi layer indipendenti;
+- non dichiarare risolto un problema solo perché il comportamento difettoso è stato disattivato;
+- se una funzione richiesta (blink, lip-sync, hair/chest physics) non è realmente attiva e verificata, deve risultare PENDING/NON IMPLEMENTATA;
 - se un test reale fallisce, invalidare il checkpoint e registrare metriche e motivo;
 - `main` resta intatta finché il rig non supera test visivo e prestazionale sul telefono.
 
 ## UI laboratorio
-v0.4.2 aveva già corretto il pannello TEST che copriva Luna:
+v0.4.2 ha corretto il pannello TEST che copriva Luna:
 - pannello mobile massimo ~40-42% altezza;
 - avatar riposizionato sopra il pannello;
 - pannello minimizzabile;
 - diagnostica minimizza automaticamente il pannello;
 - desktop con pannello laterale.
 
-Commit storici UI v0.4.2:
-- index `6414be31c5a56678f16286099466a62e472bb79b`
-- CSS `1f238394863320890a0cf5775f78022e55b3ddb9`
-- JS `ee439a3ec209f6f7afe514dd1739ebd7007e7ea7`
-
 ## Android wrapper
 Wrapper WebView in `android/`, minSdk 26, progetto Gradle target/compileSdk 35, hardware acceleration, JavaScript/DOM storage, caricamento locale `file:///android_asset/index.html?android=1`.
 
 Le build compat v0.5.x usano temporaneamente package separato `com.matrixneo.lunaavatarv050`. Configurazione di test, non definitiva.
 
-## Prossimo checkpoint
-1. installare v0.5.2 sopra v0.5.1;
-2. verificare che da ferma non alterni più due sprite;
-3. verificare idle continuo e gesture senza scatti evidenti;
-4. eseguire `Android #4 compositor` per 15 s;
-5. confrontare FPS, p95 e jank con v0.5.1 (39.1 FPS / p95 33.8 ms / 40% jank);
-6. se il renderer base è fluido, affrontare CP5/CP6 con veri layer/mesh;
-7. solo dopo test positivo trasferire runtime + binari nella branch e produrre build Gradle con firma Android v2/v3.
+## Prossimo passo corretto
+NON produrre un'altra build basata su trucchi full-body.
+
+Sequenza:
+1. partire dalla IDLE CP1 approvata come base geometrica;
+2. ricavare e allineare sullo stesso canvas il volto/base necessario;
+3. costruire CP3 con occhi aperti/chiusi reali e testare blink isolato;
+4. solo dopo CP3 approvato, costruire CP4 con bocca chiusa + aperture e testare lip-sync isolato;
+5. eliminare il dondolio dell'intero corpo;
+6. solo dopo occhi/bocca stabili affrontare capelli e busto con veri layer/mesh;
+7. ogni funzione va testata singolarmente sul telefono prima di aggiungere la successiva.
 
 ## Regola di continuità
 Aggiornare questo file dopo ogni checkpoint validato e dopo ogni modifica rilevante a versione, grafica, asset, test, rig, API, build Android o architettura. Registrare anche checkpoint scartati e motivo.
