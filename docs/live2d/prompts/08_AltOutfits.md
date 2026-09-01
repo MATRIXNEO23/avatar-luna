@@ -1,47 +1,36 @@
-# Luna Live2D — Prompt 08: Alternate Outfits
+# Luna Live2D — Prompt 08: Alternate Outfit — FUTURO / NON USARE NELLA BASE
 
 ## Scopo
-Creare outfit alternativi modulari senza alterare corpo, volto, capelli o rig base di Luna.
+Preparare in futuro un outfit alternativo senza alterare Luna o il rig base.
 
-## Prompt
-Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni invariati volto, occhi viola, capelli nero-viola, proporzioni del corpo, carnagione, altezza apparente e silhouette base.
+## Stato operativo
+NON usare questo prompt durante la costruzione della base canonica. Finché il modello principale non è approvato, tutti gli altri prompt devono usare ESATTAMENTE l'outfit canonico statico del Turnaround.
 
-Genera **UN SOLO OUTFIT ALTERNATIVO PER TAVOLA**. NON mischiare più outfit nello stesso foglio.
+## Quando verrà usato
+Applica `00_PROPORTION_LOCK.md`.
+Usa `LUNA master.png` + METRIC MASTER approvata.
 
-Per l’outfit scelto crea almeno:
-1. frontale full-body;
-2. INTERMEDIO L ~22.5°;
-3. 3/4 sinistra;
-4. profilo sinistro;
-5. retro;
-6. profilo destro;
-7. 3/4 destra;
-8. INTERMEDIO R ~22.5°;
-9. un riferimento supino completo se l’outfit verrà usato in scene a terra/letto.
+Genera UN SOLO outfit alternativo per ciclo. Quell'outfit deve restare ESATTAMENTE identico in tutte le viste della sua tavola: stessa forma, materiali, copertura e dettagli statici.
 
-Se il foglio diventa troppo affollato, dividere le viste in più tavole coordinate. Mai comprimere o tagliare.
+NON mostrare accessori dinamici; saranno prodotti separatamente nel Prompt 09 dedicato all'outfit specifico.
 
-Tutte le figure devono essere complete dalla punta dei capelli ai piedi, con mani, scarpe e almeno 12–15% di margine.
+## Reference minime
+- frontale;
+- INTERMEDIO L 22.5°;
+- 3/4 L;
+- profilo L;
+- retro;
+- profilo R;
+- 3/4 R;
+- INTERMEDIO R 22.5°;
+- supina se l'outfit sarà usato in scene a terra/letto.
 
-L’outfit deve condividere lo stesso body rig del modello principale. Evita cambi anatomici per adattare il vestito.
-
-### Parti statiche/deformabili
-Le parti tessili o rigide che seguono il corpo possono costituire layer outfit separati dal body ma non richiedono physics indipendente se non previsto.
-
-### CLEAN OUTFIT LOCK
-Questa tavola NON deve mostrare alcun accessorio dinamico sopra Luna o sopra l'outfit: niente collane, catene, pendenti, orecchini, charms, cordini/fiocchi pendenti, gemme sospese o accessori capelli mobili.
-
-La zona di corpo/outfit normalmente coperta dagli accessori deve essere ricostruita completamente. Non creare versioni duplicate con e senza accessori.
-
-Gli accessori specifici dell'outfit alternativo, se previsti, vengono prodotti esclusivamente nel Prompt 09 come set separato, con varianti per tutti gli angoli e per le pose/gravity state rilevanti.
+## Output
+Solo figure necessarie su sfondo neutro, senza pannelli, palette, loghi o decorazioni. Dividere in più tavole se necessario.
 
 ## Criteri di accettazione
-- un solo outfit per tavola;
-- corpo e volto identici alla METRIC MASTER;
-- INTERMEDIO L/R presenti;
-- front/side/back coerenti;
-- riferimento supino incluso quando necessario;
-- nessun crop;
+- un solo outfit alternativo per ciclo;
+- stesso identico outfit tra tutte le sue viste;
+- corpo/volto/proporzioni identici alla METRIC MASTER;
 - nessun accessorio dinamico visibile;
-- base outfit completa sotto i futuri accessori;
-- compatibilità con lo stesso rig base Live2D.
+- nessun crop o drift.
