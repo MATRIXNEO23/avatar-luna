@@ -12,7 +12,7 @@ Creare le reference verticali indispensabili per una deformazione fluida di test
 Applicare integralmente `00_PROPORTION_LOCK.md`:
 - IDENTITY LOCK;
 - PROPORTION LOCK;
-- SCALE LOCK;
+- SCALE LOCK proporzionale;
 - OUTFIT LOCK;
 - DYNAMIC ACCESSORY LOCK;
 - anti-drift.
@@ -20,18 +20,28 @@ Applicare integralmente `00_PROPORTION_LOCK.md`:
 ZERO accessori dinamici visibili.
 Se l'outfit entra nell'inquadratura deve essere esattamente quello della CLEAN MASTER v1.
 
-## Scala tecnica
+## Scala tecnica proporzionale
 Questo è un set **head-to-hips / upper-body**, non full-body.
-La scala deriva dalla METRIC MASTER:
-- stessa altezza e larghezza testa;
-- stessa distanza occhi/naso/bocca;
-- stesso collo;
-- stessa larghezza spalle;
-- stesso volume busto/torso;
-- stessa attaccatura, volume e silhouette dei capelli;
-- stessa linea di crop per tutte le viste;
+
+Regola fondamentale:
+- NON assegnare 1000 unità a questo crop;
+- la METRIC MASTER full-body resta 1000 unità punta capelli → suola;
+- questo asset deve occupare **esattamente il numero di unità master corrispondente alla porzione punta capelli → landmark bacino**;
+- quel valore deve essere misurato dalla METRIC MASTER, non inventato;
+- tutte le 5 viste usano lo stesso intervallo metrico, stesso crop tecnico e stessi landmark;
 - scaling solo uniforme;
-- nessuna deformazione non uniforme per far combaciare le immagini.
+- nessuna deformazione X/Y separata per far combaciare le viste.
+
+Devono restare invariati rispetto alla METRIC MASTER:
+- altezza e larghezza testa;
+- distanza occhi/naso/bocca;
+- collo;
+- larghezza spalle;
+- volume busto/torso;
+- posizione relativa di clavicole, seno, vita e bacino;
+- attaccatura, volume e silhouette dei capelli.
+
+Il canvas può essere più grande per mostrare meglio il volto, ma la trasformazione verso le unità master deve restare nota e uniforme.
 
 ## Tavola PITCH-A — 5 viste
 Generare SOLO queste 5 viste, tutte frontali in yaw e senza roll:
@@ -45,12 +55,14 @@ La variazione deve essere solo sul pitch verticale. NON introdurre rotazione sin
 
 ## Output
 - 5 pannelli tecnici coordinati;
-- stessa scala e stesso crop head-to-hips;
+- stesso crop metrico head-to-hips;
+- stessa scala tecnica derivata dalla METRIC MASTER;
 - sfondo neutro semplice;
 - nessun pannello decorativo, palette, logo o elemento extra;
 - volto sufficientemente grande e definito per leggere occhi, naso, bocca, mandibola e deformazione del collo;
 - capelli fedeli alla CLEAN MASTER v1 e coerenti con la gravità, senza cambiare taglio/stile;
-- qualità reference alta, ma senza dettagli ornamentali inutili che aumentino il costo del futuro texture atlas mobile.
+- qualità reference alta, ma senza dettagli ornamentali inutili che aumentino il costo del futuro texture atlas mobile;
+- NON scrivere `1000 units` sulla tavola: mostrare invece `MASTER SCALE DERIVED — HEAD TO HIPS` finché il valore locale non è stato misurato.
 
 ## Criteri di accettazione
 - stessa Luna della CLEAN MASTER v1;
@@ -59,9 +71,10 @@ La variazione deve essere solo sul pitch verticale. NON introdurre rotazione sin
 - tutte e 5 le inclinazioni corrette;
 - nessun yaw/roll accidentale;
 - nessun drift del volto, cranio, collo, spalle o busto;
-- stessa scala/crop in tutte le viste;
+- stesso crop metrico e stessi landmark in tutte le viste;
 - nessun arto o dettaglio anatomico duplicato/fuso;
-- nessuna reinterpretazione di capelli o outfit.
+- nessuna reinterpretazione di capelli o outfit;
+- nessun falso `1000 units` su un asset parziale.
 
 ## Uso nel rig
 Queste reference servono per `ParamAngleY` / pitch verticale e per costruire keyform/interpolazione fluida. Dopo approvazione di PITCH-A verrà creato un set diagonale separato con combinazioni X+Y, senza rifare A/B.
