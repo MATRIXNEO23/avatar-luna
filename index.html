@@ -14,8 +14,10 @@
     <section id="avatar" class="avatar state-idle emotion-neutral" data-speaking="false">
       <div class="shadow"></div>
       <div class="sprite-wrap">
-        <img id="lunaSprite" class="sprite" src="luna_08_no_cape.png" alt="Luna" draggable="false" />
-        <div class="light-sheen" aria-hidden="true"></div>
+        <div class="body-rig">
+          <img id="lunaSprite" class="sprite" src="luna_08_no_cape.png" alt="Luna" draggable="false" />
+          <div class="light-sheen" aria-hidden="true"></div>
+        </div>
       </div>
     </section>
 
@@ -38,17 +40,22 @@
           <option value="sad">sad</option>
           <option value="angry">angry</option>
           <option value="flirty">flirty</option>
+          <option value="provocative">provocative</option>
           <option value="focused">focused</option>
         </select>
       </label>
-      <label>Intensità
+      <label>Intensità emotiva
         <input id="intensityRange" type="range" min="0" max="1" value="0.55" step="0.05" />
+      </label>
+      <label>Fisica movimento
+        <input id="physicsRange" type="range" min="0" max="1" value="0.62" step="0.05" />
       </label>
       <label class="check"><input id="speakingCheck" type="checkbox" /> Parla</label>
       <div class="debug-actions">
         <button type="button" data-gesture="nod">Nod</button>
         <button type="button" data-gesture="tilt">Tilt</button>
         <button type="button" data-gesture="bounce">Bounce</button>
+        <button type="button" data-gesture="step">Step</button>
       </div>
     </aside>
   </main>
