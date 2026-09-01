@@ -4,7 +4,7 @@
 Creare il turnaround geometrico da cui approvare la METRIC MASTER.
 
 ## Regole obbligatorie
-Applica integralmente `00_PROPORTION_LOCK.md`.
+Applica integralmente `00_PROPORTION_LOCK.md`, incluso **SCALE LOCK — NORMALIZZAZIONE OBBLIGATORIA**.
 Usa come reference primaria la **CLEAN MASTER v1 approvata il 2026-09-01** (immagine senza accessori dinamici), non la vecchia `LUNA master.png` accessoriata.
 
 Luna deve mantenere ESATTAMENTE:
@@ -12,6 +12,17 @@ Luna deve mantenere ESATTAMENTE:
 - proporzioni corporee;
 - capelli lunghissimi, voluminosi e ondulati nero-viola;
 - stesso outfit statico CLEAN MASTER in ogni vista: top nero aderente, bottom nero aderente, guanti lunghi neri, stivali neri con tacco.
+
+## SCALE LOCK — QUESTO FILE
+Per tutte le viste verticali:
+- altezza normalizzata **1000 unità** punta capelli → suola;
+- suole sulla stessa baseline `Y=0`;
+- stessa scala uniforme in ogni pannello;
+- niente stretching X/Y;
+- stessi landmark anatomici relativi della CLEAN MASTER v1 / METRIC MASTER;
+- Tavola A, Tavola B e posteriore devono essere normalizzabili allo stesso identico standard.
+
+Il canvas può cambiare, la scala anatomica no.
 
 ## CLEAN BASE LOCK — OBBLIGATORIO
 ZERO accessori dinamici visibili.
@@ -67,6 +78,8 @@ Non specchiare il lato sinistro per creare il destro. Disegnare realmente entram
 - frontale idonea a METRIC MASTER;
 - volto e capelli fedeli alla CLEAN MASTER v1;
 - stesso outfit statico CLEAN MASTER in tutte le viste;
+- tutte le viste normalizzate allo stesso SCALE LOCK 1000 unità;
+- baseline coerente;
 - ZERO accessori dinamici;
 - zero crop;
 - zero drift evidente;
