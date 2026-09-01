@@ -1,12 +1,12 @@
-# Luna Live2D — Prompt 09: Body Parts / Accessories
+# Luna Live2D — Prompt 09: Body Parts / Dynamic Accessories
 
 ## Scopo
-Creare componenti anatomici e accessori tecnici separati per completare il rig senza ricostruzioni da pose compresse.
+Creare componenti anatomici e, soprattutto, TUTTI gli accessori dinamici come asset separati. Gli accessori non devono comparire nelle tavole di pose 01–08.
 
 ## Prompt
 Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni carnagione, proporzioni, stile delle mani, lunghezza degli arti, guanti, stivali, gioielli e palette coerenti.
 
-Questa tavola deve contenere SOLO componenti tecnici grandi e separati, non scene complete.
+Questa tavola deve contenere SOLO componenti tecnici grandi e separati, non scene complete e non accessori disegnati sopra Luna.
 
 ### Mani
 Crea mano sinistra e destra separate, mai una sola mano specchiata, nelle varianti:
@@ -26,53 +26,74 @@ Crea braccio sinistro e destro completi, con e senza guanto dove tecnicamente ut
 ### Gambe / piedi
 Crea gamba sinistra e destra complete come riferimento anatomico, più piede sinistro e destro separati: frontale, laterale e pianta quando utile. Aggiungi stivale L/R separato come componente outfit senza cambiare la forma del piede base.
 
-### Accessori dinamici — componenti canonici separati
-Crea separatamente e in grande:
-- orecchino L;
-- orecchino R;
-- collana/choker;
-- catena centrale;
-- gemma/pendente centrale;
-- catene torso;
-- catene vita/fianchi;
-- pendente laterale L;
-- pendente laterale R;
-- accessori polso/braccio L/R;
-- accessori stivali L/R se mobili;
-- charms/gemme/accessori capelli mobili;
-- altri elementi realmente presenti nella reference canonica.
+## ACCESSORI DINAMICI — UNICA TAVOLA AUTORIZZATA
+Crea separatamente e in grande, senza parti di pelle/capelli/outfit fuse:
+- earring_L;
+- earring_R;
+- choker/necklace_dynamic;
+- center_chain;
+- pendant_center;
+- torso_chain_L/R o gruppi necessari;
+- waist_chain_L/R;
+- side_pendant_L/R;
+- wrist_charm_L/R;
+- hair_accessory_L/R se mobile;
+- boot_charm_L/R se mobile;
+- altri charms, pendenti o gemme sospese realmente presenti nella reference canonica.
 
-Nessun accessorio dinamico deve contenere pezzi di pelle, capelli o outfit attaccati al raster.
+Ogni oggetto deve mantenere SEMPRE la stessa scala relativa, lunghezza, forma, materiale e punto di ancoraggio rispetto alla METRIC MASTER. Possono cambiare solo prospettiva, curva, rotazione e deformazione dovute a movimento/gravità.
 
-### Varianti di posizione obbligatorie
-Per ogni accessorio dinamico crea reference di posizione coerenti almeno per il set di rotazione approvato:
-- frontale 0°;
-- INTERMEDIO L ~22.5°;
-- 3/4 L ~45°;
-- profilo L ~90°;
-- 3/4 posteriore L ~135°;
-- retro 180°;
-- 3/4 posteriore R ~135°;
-- profilo R ~90°;
-- 3/4 R ~45°;
-- INTERMEDIO R ~22.5°.
+### Varianti per ROTAZIONE — obbligatorie per ogni accessorio
+Per ogni accessorio dinamico crea una variante separata ed etichettata per:
+1. frontale 0°;
+2. INTERMEDIO L ~22.5°;
+3. 3/4 L ~45°;
+4. profilo L ~90°;
+5. 3/4 posteriore L ~135°;
+6. retro 180°;
+7. 3/4 posteriore R ~135°;
+8. profilo R ~90°;
+9. 3/4 R ~45°;
+10. INTERMEDIO R ~22.5°.
 
-Per gli accessori sensibili alla gravità aggiungi inoltre position reference per le pose speciali già approvate in `03_FloorBedPoses.md`: supina, prona, laterale L, laterale R e semi-sdraiata.
+Non specchiare automaticamente L/R. Ogni variante deve rispettare lato, prospettiva e occlusione previsti.
 
-Queste non sono copie deformate casualmente: devono mantenere stessa geometria di base, lunghezza, scala e punto di ancoraggio, cambiando prospettiva, curva e orientamento in modo coerente.
+### Varianti per STANDING POSES — obbligatorie per gli oggetti sensibili al movimento
+Per gli accessori che oscillano con torso, braccia o passo crea varianti dedicate corrispondenti alle 8 pose del Prompt 02:
+- neutral standing;
+- hand on hip;
+- hand in hair;
+- arms crossed;
+- step forward;
+- torso lean;
+- looking back 3/4;
+- open hand gesture.
 
-### Regola base pulita
-Il corpo/outfit sotto ogni oggetto deve essere completo. Gli accessori sono overlay indipendenti e non devono lasciare doppioni quando si muovono.
+### Varianti per FLOOR / BED POSES — obbligatorie per gli oggetti sensibili alla gravità
+Crea varianti dedicate corrispondenti alle pose del Prompt 03:
+- supina rilassata;
+- supina ginocchia piegate;
+- supina una gamba piegata;
+- laterale L;
+- laterale R;
+- semi-sdraiata;
+- prona rilassata;
+- prona testa verso camera.
 
-Ogni componente deve avere margine pulito, non toccare il bordo e non sovrapporsi ad altri elementi.
+### Regola di presentazione
+Gli accessori devono essere mostrati come **asset isolati**, non indossati dal personaggio. Ogni variante deve avere etichetta chiara dell'angolo/posa di destinazione, pivot/anchor indicato e freccia di gravità o direzione di movimento quando utile.
+
+Se una singola tavola diventa troppo affollata, dividere Prompt 09 in più fogli coordinati, per esempio `09A_Earrings`, `09B_NecklaceChains`, `09C_WaistCharms`, mantenendo identica scala relativa tra tutti i fogli. NON rimpicciolire gli oggetti fino a perdere dettaglio.
 
 ## Criteri di accettazione
 - L/R separati per arti e accessori asimmetrici;
 - INTERMEDIO L/R presenti;
+- tutte le 10 varianti angolari disponibili per ogni accessorio rilevante;
+- varianti standing disponibili quando il movimento le richiede;
+- varianti supine/prone/laterali disponibili quando la gravità le richiede;
 - niente componenti tagliati;
-- anatomia corretta;
 - niente elementi inventati;
 - accessori dinamici puri, senza pezzi della base;
-- position variants per tutti gli angoli del turnaround e per le pose speciali rilevanti;
+- scala/lunghezza/pivot coerenti con METRIC MASTER;
 - dimensioni sufficienti per ArtMesh e physics;
-- coerenza perfetta con METRIC MASTER e outfit canonico.
+- nessun accessorio deve essere recuperato dalle pose 01–08.
