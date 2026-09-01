@@ -3,72 +3,42 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a0711" />
+  <meta name="theme-color" content="#09060f" />
   <title>Luna Virtual Assistant</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="stage" aria-label="Luna Virtual Assistant">
-    <div id="aura" class="aura"></div>
+  <main class="stage" aria-label="Luna Virtual Assistant" data-ui-mode="presentation">
+    <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div><div id="aura" class="aura"></div>
+    <header class="topbar">
+      <div class="identity"><span class="presence-dot"></span><div><strong>Luna</strong><small id="statusText">pronta · neutral</small></div></div>
+      <button id="modeToggle" class="icon-button mode-toggle" type="button" aria-label="Apri modalità test" aria-pressed="false">TEST</button>
+    </header>
 
     <section id="avatar" class="avatar state-idle emotion-neutral" data-speaking="false" data-rig="pseudo">
-      <div class="shadow"></div>
-      <div class="sprite-wrap">
-        <div class="body-rig">
-          <img id="lunaSprite" class="sprite fallback-sprite" src="luna_08_no_cape.png" alt="Luna" draggable="false" />
-
-          <div id="pseudoRig" class="pseudo-rig" aria-hidden="true">
-            <img class="pseudo-layer pseudo-hair-left" src="luna_08_no_cape.png" alt="" draggable="false" />
-            <img class="pseudo-layer pseudo-hair-right" src="luna_08_no_cape.png" alt="" draggable="false" />
-            <img class="pseudo-layer pseudo-chest" src="luna_08_no_cape.png" alt="" draggable="false" />
-            <img class="pseudo-layer pseudo-head" src="luna_08_no_cape.png" alt="" draggable="false" />
-          </div>
-
-          <div id="layerRig" class="layer-rig" aria-hidden="true">
-            <img class="rig-layer layer-hair-back" data-layer="hairBack" src="assets/rig/hair_back.png" alt="" draggable="false" />
-            <img class="rig-layer layer-body" data-layer="body" src="assets/rig/body.png" alt="" draggable="false" />
-            <img class="rig-layer layer-chest" data-layer="chest" src="assets/rig/chest.png" alt="" draggable="false" />
-            <img class="rig-layer layer-head" data-layer="head" src="assets/rig/head.png" alt="" draggable="false" />
-            <img class="rig-layer layer-eyes" data-layer="eyesOpen" src="assets/rig/eyes_open.png" alt="" draggable="false" />
-            <img class="rig-layer layer-eyes layer-eyes-closed" data-layer="eyesClosed" src="assets/rig/eyes_closed.png" alt="" draggable="false" />
-            <img class="rig-layer layer-mouth" data-layer="mouthClosed" src="assets/rig/mouth_closed.png" alt="" draggable="false" />
-            <img class="rig-layer layer-mouth layer-mouth-open" data-layer="mouthOpen" src="assets/rig/mouth_open.png" alt="" draggable="false" />
-            <img class="rig-layer layer-hair-front" data-layer="hairFront" src="assets/rig/hair_front.png" alt="" draggable="false" />
-          </div>
-
-          <div class="light-sheen" aria-hidden="true"></div>
+      <div class="shadow"></div><div class="sprite-wrap"><div class="body-rig">
+        <img id="lunaSprite" class="sprite fallback-sprite" src="luna_08_no_cape.png" alt="Luna" draggable="false" />
+        <div id="pseudoRig" class="pseudo-rig" aria-hidden="true">
+          <img class="pseudo-layer pseudo-hair-left" src="luna_08_no_cape.png" alt="" draggable="false" /><img class="pseudo-layer pseudo-hair-right" src="luna_08_no_cape.png" alt="" draggable="false" /><img class="pseudo-layer pseudo-chest" src="luna_08_no_cape.png" alt="" draggable="false" /><img class="pseudo-layer pseudo-head" src="luna_08_no_cape.png" alt="" draggable="false" />
         </div>
+        <div id="layerRig" class="layer-rig" aria-hidden="true">
+          <img class="rig-layer layer-hair-back" data-layer="hairBack" src="assets/rig/hair_back.png" alt="" draggable="false" /><img class="rig-layer layer-body" data-layer="body" src="assets/rig/body.png" alt="" draggable="false" /><img class="rig-layer layer-chest" data-layer="chest" src="assets/rig/chest.png" alt="" draggable="false" /><img class="rig-layer layer-head" data-layer="head" src="assets/rig/head.png" alt="" draggable="false" /><img class="rig-layer layer-eyes" data-layer="eyesOpen" src="assets/rig/eyes_open.png" alt="" draggable="false" /><img class="rig-layer layer-eyes layer-eyes-closed" data-layer="eyesClosed" src="assets/rig/eyes_closed.png" alt="" draggable="false" /><img class="rig-layer layer-mouth" data-layer="mouthClosed" src="assets/rig/mouth_closed.png" alt="" draggable="false" /><img class="rig-layer layer-mouth layer-mouth-open" data-layer="mouthOpen" src="assets/rig/mouth_open.png" alt="" draggable="false" /><img class="rig-layer layer-hair-front" data-layer="hairFront" src="assets/rig/hair_front.png" alt="" draggable="false" />
+        </div><div class="light-sheen" aria-hidden="true"></div>
+      </div></div>
+    </section>
+
+    <section class="conversation"><div id="speechBubble" class="speech-bubble" aria-live="polite">Ciao. Sono qui.</div></section>
+
+    <aside id="testPanel" class="test-panel" aria-label="Controlli test" hidden>
+      <div class="panel-head"><div><strong>Laboratorio Luna</strong><small id="rigStatus">Rig: verifica asset…</small></div><button id="closeTest" class="icon-button" type="button" aria-label="Chiudi test">×</button></div>
+      <div class="control-grid">
+        <label>Emozione<select id="emotionSelect"><option value="neutral">Neutrale</option><option value="happy">Felice</option><option value="shy">Timida</option><option value="sad">Triste</option><option value="angry">Arrabbiata</option><option value="flirty">Flirt</option><option value="provocative">Provocante</option><option value="focused">Concentrata</option></select></label>
+        <label>Intensità <output id="intensityValue">55%</output><input id="intensityRange" type="range" min="0" max="1" value="0.55" step="0.05" /></label>
+        <label>Fisica <output id="physicsValue">62%</output><input id="physicsRange" type="range" min="0" max="1" value="0.62" step="0.05" /></label>
       </div>
-    </section>
-
-    <section class="hud">
-      <div class="status-row"><span id="presenceDot" class="presence-dot"></span><span id="statusText">Luna · pronta</span></div>
-      <div id="speechBubble" class="speech-bubble" aria-live="polite">Ciao. Sono qui.</div>
-    </section>
-
-    <button id="debugToggle" class="debug-toggle" type="button" aria-label="Apri controlli test">⋯</button>
-    <aside id="debugPanel" class="debug-panel" hidden>
-      <label>Emozione
-        <select id="emotionSelect">
-          <option value="neutral">neutral</option><option value="happy">happy</option><option value="shy">shy</option><option value="sad">sad</option><option value="angry">angry</option><option value="flirty">flirty</option><option value="provocative">provocative</option><option value="focused">focused</option>
-        </select>
-      </label>
-      <label>Intensità emotiva<input id="intensityRange" type="range" min="0" max="1" value="0.55" step="0.05" /></label>
-      <label>Fisica movimento<input id="physicsRange" type="range" min="0" max="1" value="0.62" step="0.05" /></label>
-      <label class="check"><input id="speakingCheck" type="checkbox" /> Parla</label>
-
-      <form id="speechTestForm" class="speech-test-form">
-        <label>Test bocca / frase
-          <textarea id="speechTestInput" rows="3" maxlength="500" placeholder="Scrivi qui quello che Luna deve dire…">Ciao, questa è una prova del movimento della bocca.</textarea>
-        </label>
-        <div class="debug-actions">
-          <button id="speechTestPlay" type="submit">Fai parlare Luna</button>
-          <button id="speechTestStop" type="button">Stop</button>
-        </div>
-      </form>
-
-      <div class="debug-actions"><button type="button" data-gesture="nod">Nod</button><button type="button" data-gesture="tilt">Tilt</button><button type="button" data-gesture="bounce">Bounce</button><button type="button" data-gesture="step">Step</button></div>
-      <div id="rigStatus" class="rig-status">Rig: verifica asset…</div>
+      <form id="speechTestForm" class="speech-test-form"><label>Fai parlare Luna<textarea id="speechTestInput" rows="3" maxlength="500" placeholder="Scrivi quello che Luna deve dire…">Ciao, questa è una prova del movimento della bocca.</textarea></label><div class="primary-actions"><button id="speechTestPlay" class="primary" type="submit">Parla</button><button id="speechTestStop" type="button">Stop</button></div></form>
+      <div class="gesture-group"><span>Movimento</span><div class="gesture-actions"><button type="button" data-gesture="nod">Annuisci</button><button type="button" data-gesture="tilt">Inclina</button><button type="button" data-gesture="bounce">Rimbalzo</button><button type="button" data-gesture="step">Passo</button></div></div>
+      <label class="speaking-switch"><input id="speakingCheck" type="checkbox" /> <span>Speaking continuo</span></label>
     </aside>
   </main>
   <script src="app.js"></script>
