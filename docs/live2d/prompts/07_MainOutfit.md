@@ -1,50 +1,46 @@
 # Luna Live2D — Prompt 07: Main Outfit
 
 ## Scopo
-Creare il foglio tecnico completo dell’outfit canonico di Luna, separando chiaramente componenti statici/deformabili dagli accessori dinamici.
+Creare il foglio tecnico dell'outfit canonico statico/deformabile di Luna.
 
-## Prompt
-Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni lo stesso corpo e le stesse proporzioni. L'outfit canonico nero/viola deve conservare forma, materiali, copertura e punti di ancoraggio.
+## Regole obbligatorie
+Applica `00_PROPORTION_LOCK.md`.
+Usa `LUNA master.png` + METRIC MASTER approvata.
 
-PROPORTION LOCK: l'abbigliamento deve aderire alla stessa anatomia in ogni vista.
+Mantieni ESATTAMENTE lo stesso outfit canonico del Turnaround: stessa forma, copertura, materiali, colore, guanti/armwear, calzature e punti di attacco.
+NON aggiungere, togliere o reinterpretare parti dell'outfit statico.
+NON mostrare accessori dinamici: niente collane, catene, pendenti, orecchini, charms o gemme sospese.
 
-Per coerenza con il turnaround, crea reference dell'outfit su:
+## Reference angolari
 1. frontale 0°;
-2. INTERMEDIO L ~22.5°;
-3. 3/4 L ~45°;
-4. profilo L ~90°;
-5. 3/4 posteriore L ~135°;
+2. INTERMEDIO L 22.5°;
+3. 3/4 L 45°;
+4. profilo L 90°;
+5. 3/4 posteriore L 135°;
 6. retro 180°;
-7. 3/4 posteriore R ~135°;
-8. profilo R ~90°;
-9. 3/4 R ~45°;
-10. INTERMEDIO R ~22.5°.
+7. 3/4 posteriore R 135°;
+8. profilo R 90°;
+9. 3/4 R 45°;
+10. INTERMEDIO R 22.5°.
 
-Se 10 viste non entrano grandi, dividere in 5+5. Nessun crop.
+Dividere in due tavole da 5 alla stessa scala se necessario.
 
-### Outfit statico/deformabile
-Mostra come componenti separati, grandi e puliti:
+## Componenti statici/deformabili separati
 - top/chest piece;
 - bottom/waist piece;
-- guanto/armwear L;
-- guanto/armwear R;
-- stivale L;
-- stivale R;
-- eventuali pannelli o parti tessili deformabili realmente presenti.
+- glove/armwear L;
+- glove/armwear R;
+- boot/shoe L;
+- boot/shoe R;
+- pannelli tessili/deformabili realmente presenti.
 
-### CLEAN OUTFIT LOCK
-Questa tavola NON deve mostrare accessori dinamici su Luna né sopra i componenti outfit. Rimuovi completamente collana/choker mobile, catene, pendenti, gemme sospese, orecchini, charms e qualsiasi decorazione con physics indipendente.
-
-La geometria dell'outfit sotto questi oggetti deve essere completa e pulita. È ammesso documentare solo piccoli punti di ancoraggio tecnici senza disegnare l'oggetto.
-
-Tutti gli accessori dinamici e tutte le relative varianti angolari/di posa vengono prodotti esclusivamente nel Prompt 09.
+## Output
+Solo figure/reference outfit e componenti necessari su sfondo neutro. Niente pannelli informativi, palette, loghi o decorazioni.
 
 ## Criteri di accettazione
-- outfit base identico in tutte le viste;
-- INTERMEDIO L/R presenti;
-- nessun crop;
-- dettagli statici/deformabili separati;
+- stesso outfit canonico in tutte le viste;
 - nessun accessorio dinamico visibile;
-- geometria sottostante ricostruita;
+- L/R e intermedi presenti;
+- nessun crop;
 - nessun elemento inventato;
-- compatibilità con body rig canonico e target mobile.
+- proporzioni perfettamente coerenti con METRIC MASTER.
