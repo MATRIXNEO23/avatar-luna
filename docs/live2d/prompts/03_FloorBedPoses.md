@@ -1,14 +1,14 @@
 # Luna Live2D — Prompt 03: Floor / Bed Poses
 
 ## Scopo
-Creare riferimenti completi per pose supine, prone, laterali e semi-sdraiate, utili a motion speciali, gravità, capelli e accessori dinamici.
+Creare riferimenti completi per pose supine, prone, laterali e semi-sdraiate, utili a motion speciali, gravità e deformazioni del rig.
 
 ## Prompt
-Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni invariati volto, lineamenti, occhi viola, capelli nero-viola, proporzioni del corpo, carnagione e outfit canonico base.
+Usa `LUNA master.png` e la METRIC MASTER approvata. Mantieni invariati volto, lineamenti, occhi viola, capelli nero-viola, proporzioni del corpo, carnagione e outfit canonico base statico/deformabile.
 
 PROPORTION LOCK: la posa cambia; le lunghezze anatomiche reali no. Evita scorci prospettici estremi che rendano difficile verificare le proporzioni.
 
-Crea SOLO pose intere, con corpo completamente dentro il frame. Se necessario usa formato orizzontale molto largo. NON tagliare mai capelli, gomiti, mani, dita, ginocchia, gambe, piedi, scarpe o accessori.
+Crea SOLO pose intere, con corpo completamente dentro il frame. Se necessario usa formato orizzontale molto largo. NON tagliare mai capelli, gomiti, mani, dita, ginocchia, gambe, piedi o scarpe.
 
 Pose richieste:
 1. supina rilassata, gambe distese;
@@ -22,23 +22,14 @@ Pose richieste:
 
 Ogni posa deve avere almeno 12–15% di margine vuoto attorno all’intera sagoma. I capelli devono adattarsi fisicamente a gravità e superficie. Mani e piedi sempre leggibili.
 
-### Base statica pulita
-Collana/choker, catene, pendenti, orecchini, charms e altri oggetti con movimento indipendente NON devono essere fusi nel corpo/outfit. La geometria sotto ogni accessorio deve essere completa.
+### CLEAN BASE LOCK
+In questa tavola **NON devono comparire accessori dinamici**. Niente collane, catene, pendenti, orecchini, charms, gemme sospese o altri oggetti con physics indipendente.
 
-### Accessori per OGNI posa
-Per ciascuna delle 8 pose devono esistere due riferimenti coerenti:
-- **BASE CLEAN** della posa;
-- **ACCESSORY POSITION MAP** della stessa identica posa.
+Non creare mappe accessori sopra le pose e non creare doppie versioni con/senza accessori. Ogni posa deve essere soltanto BASE CLEAN.
 
-Gli accessori devono assumere una posizione specifica coerente con la gravità e la superficie:
-- in supina devono cadere verso torace/collo e superficie in modo credibile;
-- in prona devono cambiare orientamento e possibili occlusioni;
-- in laterale sinistra/destra devono spostarsi verso il lato basso corretto;
-- nella semi-sdraiata devono seguire inclinazione e punti di ancoraggio;
-- orecchini L/R devono avere orientamento individuale;
-- catene e pendenti non possono mantenere la stessa curva della posa eretta.
+La geometria di pelle, capelli e outfit sotto i futuri accessori deve essere completa e pulita.
 
-Mantieni però costanti lunghezza, scala, forma base e punto di ancoraggio di ogni accessorio.
+Le varianti degli accessori specifiche per supina, prona, laterale L/R e semi-sdraiata verranno prodotte separatamente nel Prompt 09, mantenendo identica scala e punto di ancoraggio.
 
 Se 8 pose non entrano con qualità, dividere in due tavole da 4. Non comprimere.
 
@@ -49,7 +40,6 @@ Se 8 pose non entrano con qualità, dividere in due tavole da 4. Non comprimere.
 - capelli completi e coerenti con la gravità;
 - outfit base invariato;
 - stessa identità e proporzioni;
-- BASE CLEAN presente/ricostruibile per ogni posa;
-- ACCESSORY POSITION MAP specifica per ogni posa;
-- nessun accessorio fuso nella base;
+- nessun accessorio dinamico visibile;
+- base sottostante completa;
 - nessun arto duplicato, fuso o mancante.
