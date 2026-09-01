@@ -1,72 +1,90 @@
-# Luna Live2D — PROPORTION LOCK GLOBALE
+# Luna Live2D — PROPORTION + ACCESSORY LOCK GLOBALE
 
 ## Regola obbligatoria
-Questo blocco va applicato a **TUTTE** le generazioni Live2D di Luna, indipendentemente dalla tavola. La coerenza non va controllata solo all'interno della singola immagine: deve essere mantenuta **tra una tavola e l'altra**.
+Questo blocco va applicato a **TUTTE** le generazioni Live2D di Luna. La coerenza deve essere mantenuta tra una tavola e l'altra, non solo dentro la singola immagine.
 
 ## Reference primaria
-Usa sempre la stessa immagine canonica approvata di Luna come reference principale. Dopo approvazione della prima tavola `01_Turnaround`, la vista **frontale neutra** diventa anche la `METRIC MASTER` per tutte le tavole successive.
+Usa sempre `LUNA master.png` come reference identitaria canonica. Dopo approvazione della tavola `01_Turnaround`, la vista frontale neutra approvata diventa anche la **METRIC MASTER**.
 
-Non usare una nuova generazione come unica reference se non è stata approvata. Ogni tavola successiva deve essere confrontata con la METRIC MASTER.
+Non usare una nuova generazione come unica reference se non è stata approvata.
 
 ## Proporzioni da bloccare
-Mantieni invariati tra tutte le immagini:
+Mantieni invariati:
 - rapporto altezza testa / altezza corpo;
 - larghezza testa e mascella;
 - distanza e dimensione relativa degli occhi;
-- lunghezza collo;
-- larghezza spalle;
+- collo e spalle;
 - posizione e volume relativo del busto;
 - distanza spalle-vita;
-- larghezza vita;
-- larghezza bacino/fianchi;
-- posizione inguine;
-- lunghezza femore;
+- vita e bacino/fianchi;
+- lunghezza femore e tibia;
 - posizione ginocchia;
-- lunghezza tibia;
-- dimensione relativa di mani e piedi;
-- lunghezza totale delle gambe;
+- dimensione relativa mani e piedi;
+- lunghezza totale gambe;
 - lunghezza e volume dei capelli;
-- posizione dei gioielli e dei punti principali dell'outfit canonico.
+- punti di ancoraggio dell'outfit canonico.
 
-Non rendere Luna più alta, più bassa, più magra, più larga, più muscolosa o con proporzioni diverse tra una tavola e l'altra.
+La posa può cambiare; le proporzioni no.
 
 ## Scala tecnica
-Per tutte le pose **in piedi**:
-- stessa altezza apparente del corpo rispetto alla METRIC MASTER;
-- stessa scala testa-corpo;
-- linea occhi, spalle, busto, vita, bacino, ginocchia e caviglie devono risultare coerenti quando la figura viene riportata alla stessa altezza;
-- mantenere 12–15% di margine attorno alla sagoma senza deformare il corpo per farlo entrare.
-
-Per pose sedute, supine, prone o laterali:
-- NON forzare la stessa altezza del bounding box;
-- mantenere invece le **stesse lunghezze anatomiche reali** della METRIC MASTER;
-- la prospettiva può cambiare, le proporzioni corporee no;
-- evitare accorciamenti prospettici estremi che rendano difficile verificare le misure.
+Per pose in piedi, usa la stessa scala anatomica della METRIC MASTER. Per pose sedute, supine, prone o laterali non forzare lo stesso bounding box: mantieni le stesse lunghezze anatomiche reali e limita scorci prospettici estremi.
 
 ## Volto
-Per tutte le tavole facciali:
-- stessa larghezza e altezza del volto;
-- stessa distanza interpupillare;
-- stessa posizione relativa di sopracciglia, occhi, naso e bocca;
-- stessa forma mascella/mento;
-- le emozioni devono deformare l'espressione, NON cambiare la struttura del volto.
+Le emozioni devono cambiare l'espressione, non la struttura del viso. Mantieni forma del cranio, mascella, mento, distanza interpupillare e posizione relativa di sopracciglia, occhi, naso e bocca.
 
-## Outfit
-L'outfit canonico deve aderire allo stesso corpo. Un outfit alternativo non può modificare anatomia o silhouette corporea di base. Le varianti di abbigliamento vanno costruite sopra la stessa METRIC MASTER.
+## ACCESSORY LOCK — REGOLA PERMANENTE
+Qualunque elemento che deve muoversi indipendentemente dal corpo deve essere trattato come **layer dinamico separato** e NON deve essere fuso nel corpo, nella pelle, nei capelli o nell'outfit statico.
+
+Elementi dinamici previsti per Luna, quando presenti:
+- choker/collana;
+- catena centrale;
+- pendente/gemma;
+- catene laterali o sui fianchi;
+- orecchino sinistro;
+- orecchino destro;
+- bracciali/charms mobili;
+- pendenti o gemme sospese;
+- accessori capelli mobili;
+- altri elementi sospesi o oscillanti.
+
+### Base statica pulita
+Per ogni vista/posa la base corpo+outfit deve esistere **anche senza gli oggetti dinamici fusi sopra**. Le zone sottostanti devono essere ricostruite completamente, così il movimento dell'accessorio non scopre buchi, doppioni o residui.
+
+### Oggetti per ogni posizione
+Per **ogni singola vista, angolo o posa** richiesta dalla tavola, devono esistere riferimenti coerenti della posizione degli accessori dinamici. Non riutilizzare automaticamente l'oggetto frontale per il profilo, il retro, una posa supina o una posa inclinata.
+
+Ogni accessorio deve rispettare:
+- punto di ancoraggio corretto al corpo/outfit;
+- prospettiva coerente con la posa;
+- orientamento coerente con gravità e movimento;
+- lunghezza e dimensioni costanti;
+- lato L/R corretto;
+- occlusioni corrette davanti/dietro a corpo, capelli e outfit.
+
+### Coppia obbligatoria per ogni posizione
+Ogni posa tecnica deve essere pensata come:
+1. **BASE CLEAN** — Luna completa senza accessori dinamici fusi;
+2. **ACCESSORY POSITION MAP** — riferimento degli accessori dinamici nella stessa identica posa/angolo.
+
+Il riferimento può mostrare gli accessori sul personaggio per leggibilità, ma deve essere chiaro che in PSD/Cubism saranno layer separati e che la base sottostante è completa.
 
 ## Occhi L/R e parti separate
-Gli elementi tecnici separati devono conservare le dimensioni relative della METRIC MASTER. Occhio sinistro e destro NON devono essere generati come copie casuali di dimensione diversa. Ogni coppia deve poter essere riallineata al volto base senza ridimensionamento non uniforme.
+Occhio sinistro e destro devono essere completi e separati. Ogni coppia deve riallinearsi al volto base senza ridimensionamento non uniforme.
 
 ## Regola anti-drift
-Se una nuova tavola mostra anche una sola variazione evidente di volto, rapporto testa-corpo, busto, vita, fianchi o lunghezza gambe rispetto alla METRIC MASTER, la tavola è **SCARTATA** e non deve diventare reference per quella successiva.
+Se una tavola modifica volto, rapporto testa-corpo, busto, vita, fianchi, lunghezza arti oppure scala/posizione degli accessori rispetto alla METRIC MASTER, è **SCARTATA**.
 
 ## Criterio di validazione
 Prima di approvare ogni tavola:
-1. confrontare con la METRIC MASTER;
-2. normalizzare visivamente alla stessa scala quando applicabile;
-3. controllare landmark: sommità testa, occhi, mento, spalle, busto, vita, bacino, ginocchia, caviglie e piedi;
-4. verificare volto e lunghezza/volume capelli;
-5. approvare solo se non c'è drift evidente.
+1. confrontare con METRIC MASTER;
+2. controllare landmark anatomici;
+3. controllare identità volto/capelli;
+4. verificare BASE CLEAN senza accessori dinamici fusi;
+5. verificare ACCESSORY POSITION MAP per ogni posa/angolo;
+6. controllare L/R, gravità, prospettiva e punti di ancoraggio degli accessori;
+7. approvare solo se non esistono amputazioni, drift o doppioni.
 
-## Frase da includere in ogni prompt di generazione
-> PROPORTION LOCK: questa tavola deve usare la stessa anatomia e le stesse proporzioni della METRIC MASTER approvata. Non reinterpretare o ricalibrare il corpo. Mantieni invariati rapporto testa-corpo, spalle, busto, vita, fianchi, lunghezze degli arti, dimensione mani/piedi e struttura del volto. La posa può cambiare; le proporzioni no.
+## Frasi da includere in ogni prompt
+> PROPORTION LOCK: usa la stessa anatomia e le stesse proporzioni della METRIC MASTER approvata. La posa può cambiare; le proporzioni no.
+
+> ACCESSORY LOCK: collane, catene, pendenti, orecchini e ogni oggetto con movimento indipendente NON devono essere fusi nella base statica. Per ogni posa/angolo prevedi la base pulita e la posizione specifica di ogni accessorio dinamico, con geometria sottostante completamente ricostruita.
