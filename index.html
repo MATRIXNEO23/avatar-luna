@@ -11,11 +11,24 @@
   <main class="stage" aria-label="Luna Virtual Assistant">
     <div id="aura" class="aura"></div>
 
-    <section id="avatar" class="avatar state-idle emotion-neutral" data-speaking="false">
+    <section id="avatar" class="avatar state-idle emotion-neutral" data-speaking="false" data-rig="fallback">
       <div class="shadow"></div>
       <div class="sprite-wrap">
         <div class="body-rig">
-          <img id="lunaSprite" class="sprite" src="luna_08_no_cape.png" alt="Luna" draggable="false" />
+          <img id="lunaSprite" class="sprite fallback-sprite" src="luna_08_no_cape.png" alt="Luna" draggable="false" />
+
+          <div id="layerRig" class="layer-rig" aria-hidden="true">
+            <img class="rig-layer layer-hair-back" data-layer="hairBack" src="assets/rig/hair_back.png" alt="" draggable="false" />
+            <img class="rig-layer layer-body" data-layer="body" src="assets/rig/body.png" alt="" draggable="false" />
+            <img class="rig-layer layer-chest" data-layer="chest" src="assets/rig/chest.png" alt="" draggable="false" />
+            <img class="rig-layer layer-head" data-layer="head" src="assets/rig/head.png" alt="" draggable="false" />
+            <img class="rig-layer layer-eyes" data-layer="eyesOpen" src="assets/rig/eyes_open.png" alt="" draggable="false" />
+            <img class="rig-layer layer-eyes layer-eyes-closed" data-layer="eyesClosed" src="assets/rig/eyes_closed.png" alt="" draggable="false" />
+            <img class="rig-layer layer-mouth" data-layer="mouthClosed" src="assets/rig/mouth_closed.png" alt="" draggable="false" />
+            <img class="rig-layer layer-mouth layer-mouth-open" data-layer="mouthOpen" src="assets/rig/mouth_open.png" alt="" draggable="false" />
+            <img class="rig-layer layer-hair-front" data-layer="hairFront" src="assets/rig/hair_front.png" alt="" draggable="false" />
+          </div>
+
           <div class="light-sheen" aria-hidden="true"></div>
         </div>
       </div>
@@ -57,6 +70,7 @@
         <button type="button" data-gesture="bounce">Bounce</button>
         <button type="button" data-gesture="step">Step</button>
       </div>
+      <div id="rigStatus" class="rig-status">Rig: verifica asset…</div>
     </aside>
   </main>
 
